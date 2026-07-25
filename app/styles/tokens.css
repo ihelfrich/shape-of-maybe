@@ -1,0 +1,97 @@
+/* tokens.css
+   The whole visual language in one file: colour, type, space, motion.
+   Change a value here and it changes everywhere. Nothing else defines a raw colour. */
+
+:root {
+  /* --- surfaces --------------------------------------------------------- */
+  --paper:        #FBF9F5;   /* the page itself */
+  --card:         #FFFFFF;   /* raised reading surface */
+  --sunk:         #F4F1EA;   /* recessed panels, instrument housings */
+  --line:         #E8E4DA;   /* hairlines, dividers, axes */
+  --line-strong:  #D6D1C4;
+
+  /* --- ink -------------------------------------------------------------- */
+  --ink:          #1F2024;   /* body text */
+  --ink-2:        #5F6270;   /* secondary text, captions */
+  --ink-3:        #8B8D99;   /* faint labels */
+
+  /* --- the four roles ---------------------------------------------------
+     Colour carries meaning here, never decoration. A reader who learns these
+     four in unit one can read every figure in the book without a legend. */
+  --truth:        #4C6EF5;   /* the population, the parameter, what is actually true */
+  --truth-soft:   #EDF2FF;
+  --data:         #E8590C;   /* the sample, the observed, what we measured */
+  --data-soft:    #FFF1E6;
+  --result:       #099268;   /* the conclusion, the estimate, the answer */
+  --result-soft:  #E6FCF5;
+  --test:         #7048E8;   /* the test statistic, the machinery of doubt */
+  --test-soft:    #F3F0FF;
+
+  /* --- verdicts --------------------------------------------------------- */
+  --wrong:        #E03131;
+  --wrong-soft:   #FFF5F5;
+  --right:        #2B8A3E;
+  --right-soft:   #EBFBEE;
+
+  /* --- type ------------------------------------------------------------
+     No web fonts. A book-quality serif for the voice, the system UI face for
+     instruments, tabular figures everywhere a number can change. */
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+           Georgia, "Times New Roman", serif;
+  --sans:  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono:  ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  --step--1: clamp(0.86rem, 0.83rem + 0.15vw, 0.94rem);
+  --step-0:  clamp(1.03rem, 0.99rem + 0.20vw, 1.15rem);
+  --step-1:  clamp(1.22rem, 1.14rem + 0.38vw, 1.45rem);
+  --step-2:  clamp(1.48rem, 1.33rem + 0.70vw, 1.95rem);
+  --step-3:  clamp(1.80rem, 1.52rem + 1.35vw, 2.75rem);
+  --step-4:  clamp(2.20rem, 1.68rem + 2.50vw, 4.00rem);
+
+  /* --- space ------------------------------------------------------------ */
+  --s-1: 0.35rem;  --s-2: 0.6rem;   --s-3: 0.9rem;
+  --s-4: 1.35rem;  --s-5: 2rem;     --s-6: 3rem;      --s-7: 4.5rem;
+
+  --measure: 68ch;          /* prose never gets wider than this */
+  --frame:   min(100% - 2.2rem, 74rem);
+
+  /* --- form ------------------------------------------------------------- */
+  --r-1: 8px;  --r-2: 14px;  --r-3: 22px;  --r-pill: 999px;
+  --shadow-1: 0 1px 2px rgb(31 32 36 / 0.05), 0 4px 14px rgb(31 32 36 / 0.05);
+  --shadow-2: 0 2px 6px rgb(31 32 36 / 0.07), 0 18px 40px rgb(31 32 36 / 0.09);
+
+  /* --- motion ----------------------------------------------------------- */
+  --fast: 140ms;  --med: 260ms;  --slow: 520ms;
+  --easing: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:       #131418;
+    --card:        #1B1D22;
+    --sunk:        #101116;
+    --line:        #2C2F37;
+    --line-strong: #3D414C;
+
+    --ink:         #ECEAE4;
+    --ink-2:       #A7AAB6;
+    --ink-3:       #7B7E8B;
+
+    /* Lifted so they still carry on a dark surface. Same meanings. */
+    --truth:       #7A96FF;  --truth-soft:  #1B2340;
+    --data:        #FF9052;  --data-soft:   #3A2214;
+    --result:      #35C79A;  --result-soft: #0E2F27;
+    --test:        #A98BFF;  --test-soft:   #251C46;
+    --wrong:       #FF6B6B;  --wrong-soft:  #3A1A1D;
+    --right:       #51CF66;  --right-soft:  #14301C;
+
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 14px rgb(0 0 0 / 0.3);
+    --shadow-2: 0 2px 6px rgb(0 0 0 / 0.45), 0 18px 40px rgb(0 0 0 / 0.4);
+  }
+}
+
+/* A reader who has asked for less motion gets less motion, everywhere,
+   without any component having to remember to check. */
+@media (prefers-reduced-motion: reduce) {
+  :root { --fast: 1ms; --med: 1ms; --slow: 1ms; }
+}

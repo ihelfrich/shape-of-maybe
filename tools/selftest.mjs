@@ -138,7 +138,9 @@ if (!has('app/core/stats.js')) {
   truthy('sd of one value is NaN, not zero', Number.isNaN(S.sd([5])));
   const flat = S.ols([1, 1, 1], [2, 3, 4]);
   truthy('ols on a vertical cloud returns null, not Infinity',
-         flat === null || flat.b1 === null || !Number.isFinite(flat.b1) === false ? flat.b1 === null : true);
+         flat === null || flat.b1 === null || !Number.isFinite(flat.b1));
+  truthy('corr with a flat column returns null', S.corr([1, 1, 1], [2, 3, 4]) === null);
+  truthy('meanCI of one value returns null', S.meanCI([5]) === null);
 }
 
 console.log(`\n${pass} passed, ${fail} failed, ${skipped} file(s) skipped\n`);

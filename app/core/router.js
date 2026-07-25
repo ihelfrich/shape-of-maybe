@@ -31,8 +31,10 @@ export function go(id) {
   else location.hash = next;
 }
 
+/* A route looks like #/01-noticing?w=777. The part before the ? picks the screen;
+   the part after it carries the world number, which main.js reads separately. */
 function currentId() {
-  const raw = location.hash.replace(/^#\/?/, '').trim();
+  const raw = location.hash.replace(/^#\/?/, '').split('?')[0].trim();
   return raw === '' ? '/' : raw;
 }
 

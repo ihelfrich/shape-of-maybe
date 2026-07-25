@@ -570,6 +570,9 @@ function sectionWorlds(kit) {
       seedCtl.set(world);
       syncing = false;
     }
+    // Put the world in the address bar. This is the whole promise of numbered
+    // worlds: the link you copy brings back the afternoon you were looking at.
+    if (typeof kit.setSeed === 'function') kit.setSeed(world);
     closeUp();
 
     if (cancel) { cancel(); cancel = null; }
@@ -903,6 +906,8 @@ function render(root, ctx) {
     makeRng,
     engine: ctx.engine || null,
     seed: ctx.seed == null ? 42 : ctx.seed,
+    // Lets the lesson write the current world into the address bar.
+    setSeed: typeof ctx.setSeed === 'function' ? ctx.setSeed : null,
     bin: [],       // teardown jobs
     redraws: [],   // one per figure
   };

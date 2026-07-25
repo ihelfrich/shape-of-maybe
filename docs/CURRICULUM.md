@@ -1,20 +1,19 @@
 # Curriculum
 
-The ordered spine of the course: sixteen units, 336 minutes of reading and playing, absolute
-zero to a reader who can take apart a published causal claim and say exactly where it fails.
+Sixteen units, 344 minutes, from a reader who has never willingly looked at a number to a
+reader who can take a published causal claim apart and say which joint it fails at.
 
-This document is an argument, not an inventory. The order is the design. Anyone can list the
-topics in an introductory statistics course, and almost every such list is the same list. What
-separates a course that works from one that does not is which idea arrives before which, and
-what the reader is already holding when it does. So each unit here carries its one question,
-the intuition it installs, the notation it earns, the misconception it kills, the instruments
-it needs, and its truths-and-lies thread. Four ordering decisions are argued at length before
-the units, because those four are where this spine departs from the standard one.
+This document is an argument. Listing the topics of an introductory statistics course is not
+hard, and almost every such list is the same list. The design is the order: which idea arrives
+before which, and what the reader is already holding in their hands when it does. Each unit
+below carries its one question, the intuition it installs, the notation it earns, the
+misconception it kills, the instruments it needs, and its truths-and-lies thread. Four ordering
+decisions are argued at length first, because those four are where this spine leaves the
+standard one.
 
-Companion documents: [PEDAGOGY.md](PEDAGOGY.md) governs the screens, [VOICE.md](VOICE.md)
-governs the words. `app/curriculum.js` is this file as data, and the site's map is built from
-it. If the two disagree, this file is the argument and that file is the deployment, and the
-fix is to change both in the same commit.
+Two companion documents govern the rest. [PEDAGOGY.md](PEDAGOGY.md) sets the screen loop and
+the depth mechanism, [VOICE.md](VOICE.md) sets the prose. `app/curriculum.js` is this file as
+data, and if the two disagree the fix is a single commit that changes both.
 
 ---
 
@@ -23,1049 +22,1035 @@ fix is to change both in the same commit.
 | # | id | Title | The one question | Min | Depends on |
 |---|---|---|---|---|---|
 | 1 | `01-noticing` | Bigger, smaller, how sure | How do I know one pile is bigger than another, and how sure am I? | 20 | nothing |
-| 2 | `02-numbers` | What a number leaves out | How do I put a number on something real, and what does the number cost? | 18 | 1 |
+| 2 | `02-numbers` | Putting a number on it | How do I turn something real into a number, and what does the number cost? | 20 | 1 |
 | 3 | `03-pile` | The pile | What does a whole group of numbers look like at once? | 18 | 2 |
-| 4 | `04-middle` | The middle | Where does this crowd sit? | 16 | 3 |
-| 5 | `05-spread` | The spread | Is this crowd tight or loose, and why does that matter more than the middle? | 20 | 4 |
-| 6 | `06-chance` | The machinery of chance | What does "likely" actually mean, and can I work one out? | 22 | 3, 5 |
-| 7 | `07-sampling` | A few, for many | How can 1,000 people tell you about 300 million? | 20 | 4, 5, 6 |
-| 8 | `08-wobble` | The wobble | If I did this study again, how different would the answer be? | 24 | 7 |
-| 9 | `09-bell` | Why this shape keeps coming back | Why does the same curve turn up everywhere, and when does it not? | 22 | 8 |
-| 10 | `10-range` | The honest range | What is the widest claim I am entitled to make? | 20 | 8, 9 |
-| 11 | `11-trial` | Putting a claim on trial | Is this gap real, or could luck have done it? | 24 | 10, 6 |
-| 12 | `12-together` | Two things at once | When one thing moves, does the other? | 20 | 5, 3 |
-| 13 | `13-third` | The third thing | How do I tell a cause from a coincidence? | 22 | 12 |
-| 14 | `14-line` | The line, and what a model is | Can one line stand in for a cloud, and how would I know when it stops working? | 26 | 13, 10 |
-| 15 | `15-designed` | Designed comparisons | How do you build a study that can actually settle a causal question? | 24 | 13, 11, 14 |
+| 4 | `04-reroll` | Reroll the world | If I ran the same thing again, what would change and what would stay? | 20 | 3 |
+| 5 | `05-pocket` | How few numbers can I get away with | How much of a crowd can I carry in my pocket? | 26 | 3, 4 |
+| 6 | `06-sampling` | A few, for many | How can a thousand people tell you about three hundred million? | 20 | 4, 5 |
+| 7 | `07-wobble` | The wobble | If I did this study again, how different would the answer be? | 24 | 6 |
+| 8 | `08-ruler` | The ruler that keeps turning up | How do I turn a distance into a probability? | 22 | 7 |
+| 9 | `09-range` | The honest range | What is the widest claim I am entitled to make? | 20 | 7, 8 |
+| 10 | `10-evidence` | What the evidence is evidence for | A test came back positive. What are the chances I have it? | 20 | 4, 6 |
+| 11 | `11-trial` | Putting a claim on trial | Is this gap real, or could luck have done it? | 24 | 9, 10 |
+| 12 | `12-together` | Two things at once | When one thing moves, does the other? | 18 | 3, 5 |
+| 13 | `13-third` | The third thing | How do I tell a cause from a coincidence? | 22 | 12, 10 |
+| 14 | `14-line` | The line through the cloud | Can one line stand in for a cloud, and how would I know when it stopped working? | 26 | 13, 9 |
+| 15 | `15-designed` | Comparisons built on purpose | How do you build a study that can settle a causal question? | 24 | 13, 11, 14 |
 | 16 | `16-rhetoric` | Telling the truth with numbers | How do I say something true, clearly, without misleading anyone, including myself? | 20 | all |
 
-Six parts, used as the `unit` field on each lesson module and as the grouping on the map:
+Six parts. Each lesson module passes its part through as the `unit` field on its default
+export, and the map screen groups on it.
 
 - **I. Before the symbols** (1, 2)
-- **II. The shape of a group** (3, 4, 5)
-- **III. Chance, and the sample** (6, 7, 8, 9)
-- **IV. What you are entitled to say** (10, 11)
+- **II. What a crowd looks like** (3, 4, 5)
+- **III. From a few to the many** (6, 7, 8)
+- **IV. What you are entitled to say** (9, 10, 11)
 - **V. Two things, and why** (12, 13, 14, 15)
 - **VI. Saying it out loud** (16)
 
-### The stopping-point hedge
+### Where a reader can stop
 
-336 minutes of screen time is longer than most people finish. I have no data on where
-readers stop, and neither does anyone else who is being honest about it, so the ordering is
-arranged to be robust to the reader quitting.
+Nobody finishes a 344-minute course. I have no completion data, and neither does anyone else
+who is being straight about it, so the ordering is built to survive the reader quitting at any
+point rather than to reward the reader who does not.
 
-A reader who stops after unit 5 can read a distribution and knows that a centre without a
-spread is half a claim. A reader who stops after unit 8 has the single most valuable idea in
-statistics, which is that an estimate has a wobble and the wobble is calculable. A reader who
-stops after unit 11 can evaluate almost every number in a newspaper. This is why the wobble is
-eighth rather than tenth, which is where the shipped list had it and roughly where a
-conventional syllabus puts it: the standard ordering back-loads the payoff, and the payoff is
-the reason to be here. If the course has to be cut in half, it gets cut after unit 8 and the
-second half ships as a sequel, and that is a survivable outcome rather than a broken one.
+A reader who leaves after unit 4 has the founding idea of the whole subject, which is that a
+process can be unpredictable one draw at a time and lawful in bulk. A reader who leaves after
+unit 5 knows that a centre without a spread is half a claim, and will never again read
+"average" as "typical" without checking. A reader who leaves after unit 7 has the single most
+valuable transferable idea in statistics: an estimate has a wobble, the wobble is calculable,
+and it shrinks like the square root of the sample size. A reader who leaves after unit 11 can
+evaluate most of the numbers in a newspaper.
+
+That last sentence is the reason the wobble is seventh. A conventional syllabus reaches the
+sampling distribution in about week nine of thirteen, which puts the payoff behind a wall of
+descriptive machinery. If half this course has to be cut, it gets cut after unit 8 and the rest
+ships as a sequel. That is a survivable outcome. Cutting a conventional syllabus in half leaves
+a reader who can compute a standard deviation and cannot do anything with it.
 
 ---
 
 ## Four arguments about order
 
-### (a) Probability comes sixth, and it arrives as an answer rather than a foundation
+### (a) Probability is not one unit, and its first half arrives fourth, before any summary
 
-The mathematician's order puts probability first: sample spaces, axioms, random variables,
-named distributions, and then statistics as an application of the machinery. Kolmogorov before
-Tukey. That order is logically clean, and it is how the subject sits in the mind of someone who
-already knows it. It also asks people to spend six weeks on machinery whose purpose has not yet
-been demonstrated to them, and that is where I think most of the quitting happens. I have no
-dropout data to put behind that sentence and neither, as far as I can find, does anyone else.
-Cobb makes the same charge from the same position, which is argument rather than evidence.
+Probability in this spine is split. The generative half is unit 4, immediately after the reader
+can read a distribution and before they compress one. The conditional half is unit 10,
+immediately before hypothesis testing. There is no chapter called "Probability" and there
+should not be.
 
-Here is the counter-argument at full strength, because it is a real one. You cannot define a
-sampling distribution, a standard error or a p-value without probability. Probability is
-therefore a genuine prerequisite for inference, and a course that defers it is storing up a
-debt it will have to pay with interest.
+Start with why the generative half comes so early, because that is the departure.
 
-All true, and it settles less than it appears to. Probability is a prerequisite for inference.
-It is not a prerequisite for description, and nothing in units 1 to 5 touches it. The
-probability that units 8 to 11 actually consume is also not measure theory and not
-combinatorics. It is "if I repeat this many times, what proportion of the time", which is
-exactly the object a seeded generator and a canvas can build in front of a person in about
-four seconds.
+The reader meets a histogram in unit 3. At that moment they hold a picture of some numbers, and
+they have no idea where the numbers came from. Everything the rest of the course wants to say
+depends on an answer to that question. A sample is a draw from a process. An estimate wobbles
+because the draw could have gone otherwise. A p-value is a count over worlds that did not
+happen. None of that means anything to somebody who thinks of a dataset as a fixed list that
+arrived from nowhere. A reader who spends units 4, 5 and 6 computing summaries of a fixed list
+is being trained into exactly that belief, right before we need them to abandon it.
 
-The second argument is the one I would defend hardest. Probability introduced as a topic is
-inert, and probability introduced as an answer sticks. Unit 1 ends with a reader saying one row
-sits further right and being unsure. Unit 3 shows them a shape that would have come out
-different with different data. By the end of unit 5 they have compared two groups and felt the
-question "could that gap have been an accident" without having any word for it. Unit 6 opens on
-that exact question. The content is identical under either ordering. What differs is whether
-the reader arrives wanting it, and wanting it is most of the battle with an adult who has
-already decided once that this subject was not for them.
+So unit 4 hands the reader the generator. They press a button, the world number changes, and
+440 new dots fall. Every dot is somewhere else. The shape is the same. That single experience
+does more work than any definition of a random variable, because it gives the reader the
+distinction the course runs on: **a shape is what survives a reroll, and a dot is what does
+not.** Signal and noise, before either word is used, with no notation at all.
 
-The third argument is George Cobb's, from "The Introductory Statistics Course: A Ptolemaic
-Curriculum?" (*Technology Innovations in Statistics Education*, 2007). Cobb's claim is that the
-conventional curriculum is organised around the normal distribution because in 1920 the normal
-approximation was the only computationally feasible route to an answer. The epicycles it now
-requires (z, t, chi-square and ANOVA taught as four separate rituals with four separate lookup
-tables) exist to serve a constraint that stopped binding decades ago. Given a computer, you can
-simulate the null world directly, and the logic of inference becomes visible instead of being
-sealed inside a formula. This site has a computer, a seeded generator, and a canvas.
-Cobb's argument applies to it with unusual directness, and Nathan Tintle and colleagues have
-since run comparisons of randomisation-based introductory curricula against conventional ones
-with encouraging results, published in the *Journal of Statistics Education* and elsewhere from
-2011 onwards.
+The medium forces this too, and this is the part a paper syllabus would never notice. The
+seeded world is the signature feature of the whole project. Every instrument in every unit
+carries a `seedBox`, because a teacher can say "everyone type world 42" and thirty screens
+agree, and because a surprising result can be found again instead of lost. If chance arrives at
+unit 6 or later, then units 1 through 5 put a control on the screen whose meaning the reader has
+not been given. That is a small daily lesson that some things on this site are not for them.
+Unit 4 makes the world number the reader's own instrument. From unit 5 onward, "reroll it and
+see what holds" becomes the course's core verb, available in every single unit, and it is the
+one move an interactive textbook can make that a printed one cannot.
 
-That has a sharp consequence, and it is where this spine departs most visibly from the shipped
-list in `app/curriculum.js` and from nearly every textbook: **the normal distribution is
-demoted from prerequisite to explanation.** It arrives ninth, after unit 8 has already built a
-sampling distribution by brute simulation and that distribution has already come out
-bell-shaped without anyone requesting it. The reader meets the bell as the answer to "why did
-that keep happening", which is a much better question than "here is a curve, learn its
-properties, the reason will be along in three weeks".
+The counter-argument at full strength. Randomness with nothing to be random about is empty, and
+a reader who meets a probability distribution before they have ever summarised data has no
+handle on it. This is a real objection and it is exactly why unit 4 is fourth rather than first.
+The reader needs one thing before the generator, and one thing only: a shape they can recognise
+on sight. Unit 3 gives them that and nothing more. There is no summary statistic in unit 3, no
+mean, no spread, and that is deliberate, because the reroll lands hardest when the only thing
+the reader owns is the picture. Then in unit 5 they compress the pile to a number, reroll, and
+find that the number moves a little while the shape holds. The standard error is planted there,
+three units before it is named, as a thing the reader has already watched happen.
 
-The cost, stated plainly: a reader who goes on to a conventional course will meet the normal
-distribution in week two and will have to reindex. That cost is real and I accept it. The cost
-of the other ordering is the one this whole project exists to address.
+Now the second half. Conditional probability, base rates and natural frequencies sit at unit 10,
+next to hypothesis testing, and this is not filler placement.
 
-### (b) Cause enters in unit 1 as a question and waits until unit 13 for a method
+The prosecutor's fallacy and the p-value misinterpretation are the same error. "The chance of
+this DNA match if he is innocent" is not "the chance he is innocent given the match." "The
+chance of a gap this big if the drug does nothing" is not "the chance the drug does nothing."
+One conditional, read backwards, in both cases. Teaching those five units apart wastes the
+identity, and the second one arrives looking like a fresh piece of pedantry about p-values that
+readers have to memorise. Teaching them adjacent means unit 11 can open by saying that the
+reader already made this mistake yesterday in a courtroom, and knows how it feels from the
+inside. That is the difference between a rule and a reflex.
 
-Neither early nor late. The causal *question* is present from the first screen and the causal
-*technique* cannot arrive before unit 13, and treating those as the same decision is what makes
-this question feel harder than it is.
+What the split costs: the reader never sees probability presented as a coherent subject with its
+own axioms. I think that is the right thing to give up. For this audience probability is not one
+subject, it is two tools that happen to share a name. A reader who leaves with "randomness makes
+stable shapes" and "a conditional read backwards is a different number" has everything an
+honest introduction can hand over, and wrapping those in a shared chapter title adds nothing
+except the appearance of coverage.
 
-Nobody has ever collected data because they wanted to know the mean. Every dataset that exists
-was gathered because someone wanted to know whether a thing works, or who is being harmed, or
-what would happen if. If causal reasoning first appears in unit 13, then units 1 through 12 are
-answering a question no reader asked. Worse, the reader will supply the causal interpretation
-anyway. They will do it silently, on the first scatterplot they see, with no equipment for it,
-because that is what human beings do with a gap between two groups.
+### (b) The causal question is in unit 1, the counterfactual is in unit 6, the diagnosis is unit 13, the design is unit 15
 
-So the causal question is installed in unit 1 in its crudest form, and it is installed as the
-reader's own. When they say the top row sits further right, the screen asks a second question:
-why do you think that is? The answer is stored locally and nothing is done with it. No lesson
-is drawn, no warning is issued, and the phrase "correlation is not causation" does not appear,
-because a warning issued to a reader with no tools produces helplessness rather than caution.
-The answer sits in a ledger for twelve units.
+Four arrivals, not one. Treating "when does causation enter" as a single decision is what makes
+the question feel harder than it is.
 
-The technique cannot come early, and the reason is structural rather than a matter of taste.
-The counterfactual question ("what would have happened to these same units without it") is
-empty until the reader can hold the idea of a distribution of possible outcomes, which is unit
-8. Confounding cannot be shown without the ability to read a scatter and compare groups, which
-is unit 12. Unit 13 depends on unit 12 depends on unit 5, and there is no shortcut through that
-chain that does not involve asking the reader to take something on trust.
+Nobody has ever gathered data because they wanted to know a mean. Every dataset in existence was
+collected because somebody wanted to know whether a thing works, or who is being hurt, or what
+would happen if. If cause first appears in unit 13, then twelve units answer a question no
+reader asked, and worse, the reader supplies the causal reading anyway. They will do it silently
+on the first scatterplot they see, with no equipment, because that is what people do with a gap
+between two groups.
 
-What I reject is the standard placement, which is a paragraph of "correlation is not causation"
-stapled to the end of the correlation chapter and a causal-inference chapter at the back of the
-book that most courses never reach. **Unit 13 sits before regression, not after.** That is the
-single ordering claim in this document I would defend hardest.
+So unit 1 asks for it. After the reader says which row of dots sits further right, a second
+prompt asks why they think that is, offering four candidate reasons and a free text box. Nothing
+is scored, no lesson is drawn, and the phrase "correlation is not causation" does not appear,
+because a warning handed to a reader with no tools produces helplessness rather than caution.
+The answer is read back twice: once at the end of unit 1, where the point is that a causal story
+arrived within ninety seconds of the reader's first look at any data, and again in unit 13.
 
-The reason: a slope is the most common vehicle in the world for an unearned causal claim. It
-has units, it has a direction, it can be read aloud as a sentence about the world ("each extra
-year of schooling is worth eight hundred pounds"), and it sounds like a mechanism. A reader who
-meets least squares before they meet the counterfactual will read that slope as an effect,
-because nothing in their equipment says otherwise. Teaching confounding first means the first
-line the reader ever fits arrives already carrying its own interrogation, and "compared to
-what" is a question they ask before the line is drawn rather than a caveat they are handed
-afterwards.
+The genuinely load-bearing placement is the second one, and it is the claim in this section I
+would defend hardest. **The counterfactual belongs in the sampling unit, not the causal unit.**
 
-The cost of this ordering is a genuine constraint on the instruments. Unit 13 has to
-demonstrate confounding without a fitted line, so Simpson's reversal is shown with group clouds
-and a real contingency table rather than with group regression lines. I think it survives that
-easily. The Berkeley admissions table, which is the best confounding example in the literature,
-needs no lines at all.
+Random sampling and random assignment are one trick pointed at two questions. Sampling asks
+about the units you did not draw and answers it by making the draw unbiased. Assignment asks
+about the version of these same units that did not get treated, and answers it by making the
+split unbiased. Both are the same act: manufacture ignorance on purpose so that the difference
+between what you saw and what you did not see is unsystematic. Students who learn these in
+separate months can recite "randomised controlled trial" without being able to say what the
+randomisation buys, and that gap is the single most common hole in an educated adult's
+statistical equipment.
 
-### (c) Notation becomes unavoidable at the standard deviation
+Unit 6 therefore ends with a ghost. The reader draws a sample from a visible population, and
+the sample they got is drawn in the data colour while the 990 units they did not get sit faded
+behind it. The screen names that faded set: the draw you did not make. Unit 15 opens on the same
+picture with one word changed, and the counterfactual arrives as a thing the reader has seen
+before rather than a philosophical import.
 
-Six gates, and the one that matters is unit 5.
+Diagnosis waits until 13 for a structural reason rather than a stylistic one. Confounding cannot
+be shown without the ability to compare groups inside a cloud, which is unit 12, and the
+counterfactual is inert until the reader can hold a distribution of possible outcomes, which is
+unit 7. There is no shortcut through that chain that does not ask for trust.
 
-Before that gate the load is carried by four things, and it is worth naming them because
-"delay the notation" is otherwise an instruction to teach nothing. The picture carries it,
-drawn in data space, honest about its axes. The physical operation carries it, because dragging
-a fulcrum until a beam balances is a computation performed with a hand. The table carries it,
-which is notation nobody has ever been frightened of. And named quantities in English carry
-most of it: "the middle", "the typical distance from the middle", "how many there are".
+**Unit 13 sits before regression, and that ordering is not negotiable.** A slope is the most
+efficient vehicle in the world for an unearned causal claim. It has units, it has a sign, and it
+reads aloud as a sentence about the world: each extra year of schooling is worth eight hundred
+pounds. A reader who meets least squares before they meet the third thing will hear that as a
+mechanism, because nothing they own says otherwise. Confounding first means the first line the
+reader ever fits arrives already carrying its own interrogation.
 
-The gates, in order:
+The cost is a real constraint on unit 13's instruments, which have to demonstrate confounding
+without a fitted line. Group clouds and a contingency table carry it. The Berkeley admissions
+table, which remains the best confounding example anybody has found, needs no lines at all.
 
-**1. Digits and place value (unit 1).** This is already notation and nobody flinches at it,
-which is worth saying out loud to a reader who has decided they cannot handle symbols. They
-handle a positional numeral system, fluently, several times a day.
+### (c) Notation becomes unavoidable at the standard error, and not one unit before
 
-**2. Units and rates (unit 2).** "41 per 100,000 per year" is notation, and it is the rare
-piece that makes a number less ambiguous rather than more. Introduced as a habit: a bare number
-is incomplete.
+The rule underneath every gate below: **a symbol is earned when a relationship has to be held in
+the head, not when a procedure has to be described.** Recipes survive in English. Relationships
+do not.
 
-**3. Names for quantities, x̄ (unit 4).** A name, not an instruction. The bar means "the average
-of the thing underneath it". The reader has already located that value by balancing a beam, so
-the symbol names something they are holding rather than something they must go and fetch. n
-arrives one unit earlier, in unit 3, where it is the only symbol on the screen and it means the
-count of things in the pile.
+This is where I part company with the conventional placement, and with the more careful version
+of it that puts the gate at the standard deviation. The standard deviation is a procedure. Take
+each value's distance from the middle, square them, average, take the root. Four steps, four
+English sentences, and the reader can execute it on eight numbers with a pencil. Sigma-notation
+makes that shorter. Shorter is not the same as necessary. Introducing a symbol on the grounds
+that it saves words teaches the reader that notation is a convenience for people who write a lot
+of maths, and that is a small false thing to believe.
 
-**4. Instructions over an index, Σ and xᵢ (unit 5).** The real gate. The standard deviation is
-the first quantity in the course whose definition is a *procedure* rather than a value. A
-procedure applied to every one of n things needs a way to say "each thing" and a way to say
-"add these up". This is the exact point where an English sentence becomes worse than the
-symbol, and that is the only honest reason to introduce any notation at all. Before unit 5,
-English wins. From unit 5, Σ wins, and the reader can feel which is which because they have
-just tried both on the same quantity.
+The standard error is not a procedure. It is a relationship among three quantities that vary
+together, and the whole content of the idea is how it behaves when you turn the knobs. Wobble
+goes up with spread and down with the root of the count. Try holding that in prose while moving
+a sample-size slider and watching a distribution narrow. It cannot be done, and the reader can
+feel that it cannot be done, which is the only honest reason to hand anybody a symbol.
 
-Two practical notes on this gate. The subscript is harder than the bar and it is a separate
-idea: indexing means referring to a *position* rather than to a value, and readers who are
-comfortable with x̄ stall on xᵢ routinely. PEDAGOGY budgets a paragraph for it and a paragraph
-is right. Second, Σ is introduced as an imperative verb rather than as a noun. Reading it out
-loud as "add up all the" fixes more confusion than any diagram of it will.
+The gates, in order.
 
-**5. Greek, μ and σ (unit 7).** Held back deliberately, and this is the piece of the sequencing
-I like best. The alphabet changes for exactly one reason: there are now two different objects in
-the room, the truth you do not have and the measurement you do. Introducing μ in unit 4
-alongside x̄, which is what most textbooks do, spends the one moment where the change of
-alphabet would have taught something, and leaves the reader believing that Greek letters are a
-stylistic preference of statisticians. Unit 7 is the screen where the reader has watched a
-sample mean land in three different places from the same population. That is when the alphabet
-should change, and it changes with the sentence "there are two different things here and they
-need two different names".
+**1. Digits, tallies and place value (unit 1).** This is already notation, and the reader is
+fluent in it, and saying so out loud to somebody who has decided they cannot handle symbols is
+worth a paragraph. They operate a positional numeral system several times a day without
+noticing.
 
-**6. Hats and functions, ŷ and ε (unit 14).** Prediction requires distinguishing what the model
-said from what happened, and the residual is the gap between them. The hat and the residual are
-introduced in the same breath because neither means anything alone.
+**2. Units and the "per" construction (unit 2).** 41 per 100,000 per year. The rare notation
+that makes a number less ambiguous rather than more, introduced as a habit rather than a rule: a
+bare number is incomplete.
 
-One rule underneath all six, taken from VOICE.md and restated here because it is what makes the
-gates work rather than merely delaying pain: once a symbol is earned, it is used. Retreating to
+**3. n (unit 3).** The only symbol on the screen in that unit. It means how many things are in
+the pile. One symbol, one meaning, no operations performed on it.
+
+**4. Nothing at all (units 4 and 5).** A deliberate hold across the two units where a
+conventional course front-loads the most algebra. Unit 5 names four summaries and writes none of
+them symbolically. They are "the middle", "the typical miss", "the middle half", and "the five
+numbers". The instrument computes; the reader drags a bracket and reads a number off it. This
+hold is the thing I would most expect a reviewer to argue with, and section "where this spine is
+most likely wrong" takes it seriously.
+
+**5. The alphabet changes: μ and σ against x̄ and s (unit 6).** Greek arrives for exactly one
+reason. There are now two different objects in the room, the truth you do not have and the
+measurement you do, and one word was covering both. Introducing μ back in unit 5 alongside x̄,
+which is what most textbooks do, spends the one moment where a change of alphabet would have
+taught something, and leaves the reader believing Greek letters are a house style. Unit 6 is the
+screen where the same population has produced three different sample means. That is when the
+names have to divide, and the sentence that does it is "there are two things here now."
+
+**6. The gate: Σ, xᵢ, and se = s/√n (unit 7).** Sigma and the subscript arrive here,
+retroactively, to write down the s the reader has been operating since unit 5, because s now has
+to appear inside a larger expression and English cannot nest. The subscript is the harder half
+and it is a separate idea: an index refers to a position rather than to a value, and readers
+comfortable with x̄ stall on xᵢ routinely. Sigma is introduced as an imperative verb, read
+aloud as "add up all the", which fixes more confusion than any diagram of it.
+
+There is a second payoff at this gate that most courses forfeit. Unit 5 introduces the typical
+miss as the mean absolute distance from the middle, because that is what an honest person means
+by "typical miss". The standard deviation then arrives beside it, as a near-identical number
+computed a stranger way. Unit 5 does not explain the squaring. It says outright that the reason
+is real and is two units away. Unit 7 pays: variances add and mean absolute deviations do
+not, so when two wobbles combine, only the squared version composes. The usual textbook line,
+that we square to get rid of the minus signs, is false, since absolute value also gets rid of
+them, and readers who are paying attention know they have been fobbed off.
+
+**7. x̄ ± t*·se (unit 9).** The first formula the reader operates rather than reads.
+
+**8. The vertical bar, P(A | B) (unit 10).** Read aloud as "the chance of A among the Bs", which
+is the reading that makes the flip visible.
+
+**9. p and α (unit 11), r (unit 12), ŷ and the residual (unit 14).** The hat and the residual
+arrive in the same breath because neither means anything alone.
+
+One rule sits under all nine, taken from VOICE.md and repeated here because it is what makes the
+gates work rather than merely postpone pain: once a symbol is earned, it is used. Retreating to
 "the average" for the rest of the unit out of kindness tells the reader the notation was a
-hurdle they cleared rather than a tool they now own.
+hurdle they cleared, not a tool they now own.
 
-### (d) The first beautiful moment is unit 3, and it is a list turning into a body
+### (d) The first beautiful moment is unit 4, and it is every dot moving while the shape stays still
 
-The instrument: a column of raw numbers scrolls past, the way data actually looks the first
-time you open a file, and it is deliberately a little unpleasant to look at. The reader presses
-one button. The numbers fall, stack up by value, and settle into a distribution with a peak, a
-long tail to the right and a hard floor at zero.
+The instrument. The screen holds 440 dots in a histogram the reader built in unit 3. Below it,
+one control: a world number, and a die-roll button. The reader presses it. Every dot leaves its
+place, falls, and lands somewhere else. The outline does not move. They press it again. And
+again, because everyone presses it again.
 
-Why this one, and why there.
+Why this one, and why fourth.
 
-Beauty needs a violated expectation, and unit 1 has not built one. A reader in unit 1 has no
-idea what data is supposed to look like, so nothing about it can surprise them. By unit 3 they
-have spent two units treating numbers as individual facts, one at a time, each with its unit
-and its denominator. The pile is the first moment where a group of numbers turns out to have a
-property that no number in it possesses. That is emergence, it is the actual reason
-distributions are worth studying at all, and it lands in about a second and a half of
-animation.
+Beauty needs a violated expectation, and this is the first place in the course where the reader
+has one to violate. They expect new random data to look different. It does not. The gap between
+what they expected and what happened is the entire content of the course's central idea. So the
+aesthetic moment and the load-bearing moment are the same moment, which is the condition
+PEDAGOGY section 6 sets for spending a beauty budget at all.
 
-It is also the cheapest beautiful moment in the course to build, which counts for something
-when every pixel is hand-written canvas. It needs `stage.dots`, `stage.bars`, and one tween.
+It is also the reader's own hand, repeatedly, on a control they can carry into every later unit.
+That matters more than it sounds. Principle 1 says name the thinking the reader already does,
+and an animation the reader watches is a thing done to them. The reroll is a thing they do, and
+the finding accumulates across presses rather than arriving in a single tween. Nobody has to be
+told the shape held. They watched it hold eleven times.
 
-The alternatives, and why they lose. The Galton board is more beautiful and it is unit 9,
-because a reader who meets the bell before they have felt variability reads it as decoration
-rather than as an explanation, and the board is worth too much to spend that way. The balance
-point in unit 4 is the first beautiful *theorem* in the course, because the signed distances
-from the mean sum to exactly zero and the reader locates that point by tipping a beam until it
-stops tipping. It loses on a narrower ground: it is a fact about a definition rather than a
-fact about the world. The sampling
-distribution assembling itself in unit 8 is the most important animation in the course and it
-cannot be first, because it is made out of everything before it.
+The alternatives, and why they lose.
 
-The full ladder, because the schedule matters more than any single choice on it:
+The pile assembling itself in unit 3 is the obvious candidate and it is genuinely lovely: a
+column of raw numbers, unpleasant to look at, falls and stacks into a body with a peak and a
+tail. It stays in the ladder below at position one. It loses the top spot on a narrow ground.
+Its surprise is small, because the reader already believed the numbers had a pattern and had not
+yet drawn it, so the emotion is recognition rather than shock. It is a good opening and a weak
+thesis.
+
+The Galton board is more beautiful than either and it is unit 8, because a reader who meets the
+bell before they have felt variability reads it as decoration. The board is worth too much to
+spend that way.
+
+The balance point in unit 5 is the first beautiful theorem in the course. The signed distances
+from the mean sum to exactly zero, and the reader finds the point by tipping a beam until it
+stops tipping. It loses because it is a fact about a definition rather than a fact about the
+world.
+
+The full ladder, since the schedule matters more than any single choice on it. One per unit at
+most, each paid for by an idea, none decorative.
 
 | Unit | The moment | What makes it beautiful |
 |---|---|---|
-| 3 | The fall | A group has a property that no member of it has |
-| 4 | The fulcrum | The distances balance exactly, and you find the point by feel |
-| 6 | The long run | The proportion settles while the raw count runs away |
-| 8 | The stack | An estimate turns out to have a distribution of its own |
-| 9 | The board | Any nudge with a finite spread, added often enough, gives the same curve |
-| 14 | The squares | The total area falls to a minimum and then stops |
-| 15 | The balancer | Randomising balances a variable nobody measured, on average |
-
-One per unit at most, each paid for by an idea, none of them decorative. PEDAGOGY section 6
-sets the beauty budget at typography, whitespace and one honest animation per unit. This table
-is what that budget buys.
+| 3 | The fall | A group turns out to have a property no member of it has |
+| 4 | The reroll | Every dot moves and the shape does not |
+| 5 | The beam | The distances balance exactly, and you find the point by feel |
+| 7 | The stack | The estimate turns out to have a distribution of its own |
+| 8 | The board | Any nudge with a finite spread, added often enough, gives the same curve |
+| 9 | The hundred | Five of the hundred intervals miss, and you cannot tell which |
+| 11 | The shuffle | Breaking the link by hand, a thousand times, builds the null world |
+| 14 | The squares | The hand-dragged line and the algebra land on the same place |
+| 15 | The balancer | Randomising balances a variable nobody measured |
 
 ---
 
 ## The units
 
+Field names match `app/curriculum.js` so that the data file can be regenerated mechanically.
+
 ### 1. Bigger, smaller, how sure
 
 **The one question.** How do I know one pile is bigger than another, and how sure am I?
 
-**Installs.** You can see "more" without counting, up to about four things. Past that the eye
-gives up, and the place where it gives up is the reason counting was invented. Comparison by
-eye is already estimation. The feeling of "I am not sure" is a standard error before it is a
-number, and it deserves to be treated as data rather than as a weakness.
+**Installs.** You can see "more" without counting, up to about four things. Past four the eye
+gives up, and the place where it gives up is the reason counting had to be invented. Comparison
+by eye is already estimation, and the feeling of not being sure is a standard error before it is
+a number. That feeling is data about the evidence, not a weakness in you.
 
 **Notation earned.** Tally marks, grouping into fives, then digits and place value, framed as
-the original compression technology. No algebra, no letters standing for numbers, nothing that
-looks like school.
+the original compression technology rather than as arithmetic. No letters standing for numbers.
 
-**Misconception killed.** "Maths starts when the numbers appear, and I was never any good at
-that part." By the end of the unit the reader has made three mathematical moves (comparing,
-estimating, and hedging) before a single symbol was on the screen, and the text says so in the
-past tense.
+**Misconception killed.** "Maths starts when the symbols appear, and that is where I got off."
+By the end of this unit the reader has made three mathematical moves, comparing and estimating
+and hedging, with no symbol on the screen, and the text says so in the past tense.
 
 **Instruments.**
-- *The two rows.* Two rows of scattered dots on a shared axis. The reader says which row sits
-  further right, commits a confidence on a three-way control, and then the truth is revealed.
-  Overlap is tuned across rounds so that the reader is right when they were confident and wrong
-  when they were not. That is a calibration experience, and most people have never had one.
-- *The glance.* Dots flash for 400 ms. At four, everyone is exact. At seven, nobody is. The
-  failure point is the punchline.
-- *The tally bench.* Count 63 objects three ways, one at a time, in fives, in tens, with the
-  clock running on each. Place value falls out as the answer to "how do I stop losing my place".
-- *The axis lever.* The distortion, below.
+- *The two rows.* Two rows of scattered dots on one axis. The reader says which row sits further
+  right, commits a confidence on a three-way control, then sees the truth. Overlap is tuned
+  across rounds so that they are right when confident and wrong when not. Needs `rng`, `stage`
+  (`dots`, `axisX`), `ui.segmented`, `ui.readout`.
+- *The glance.* Dots flash for 400 ms and vanish. At four, everybody is exact. At seven, nobody
+  is. The failure is the punchline, and the reader is told it is universal. Needs `engine.tween`,
+  `stage.dots`.
+- *The tally bench.* Count 63 objects three ways, one at a time, in fives, in tens, against a
+  clock. Place value falls out as the answer to "how do I stop losing my place".
+- *The floor slider.* The distortion, below.
 
-**Truths and lies.** The same true gap, drawn on a cropped axis, reads as a crisis. The reader
-drags the axis floor from 0 up to 94 and back down, and no number changes at any point.
+**Truths and lies.** The reader is handed a true 8% difference between two cafes' wait times and
+asked to make it look like a scandal. They drag the axis floor from 0 up to 4.9 minutes and the
+bar becomes five times its neighbour. No number changes at any point. Then they drag it back and
+are asked whether a temperature chart should start at zero, which it should not, so the tell
+cannot be the crop. The question the unit leaves them with is whether the size of the change on
+the screen matches the size of the change in the world.
 
 **Time.** 20 min. **Depends on.** Nothing. This is the door.
 
-**Note on the ledger.** When the reader says which row is bigger, a second prompt asks why they
-think that is, and stores the answer in `localStorage`. Nothing is taught and nothing is
-scored. It is reopened in unit 13, where the point is that the causal instinct arrived first,
-unprompted, twelve units before any equipment for it, and that the evidence for this is the
-reader's own sentence rather than our assertion.
+**The causal ledger.** After the reader picks a row, a second prompt asks why they think that
+row is higher, with four plausible options and a text box. It is read back at the end of this
+unit, and stored for unit 13. Storage is `localStorage` and it will often be gone by then, so
+unit 13 has a generic fallback that is weaker but works.
 
-### 2. What a number leaves out
+### 2. Putting a number on it
 
-**The one question.** How do I put a number on something real, and what does the number cost?
+**The one question.** How do I turn something real into a number, and what does the number cost?
 
-**Installs.** Units, scale, and precision against accuracy. Four kinds of number and what
-arithmetic is legal on each: a label, an order, an interval, an amount. The "per what" question
-attached to every rate. The habit of asking what was thrown away when the world was compressed
-into a figure.
+**Installs.** Every number is a fact plus a decision about what counts, plus a choice of unit,
+plus an instrument with a finite resolution. Four kinds of number and what arithmetic is legal
+on each: a label, an order, an interval, an amount. The reflex of asking "per what" of every
+rate, and the habit of asking what was thrown away when the world got compressed into a figure.
 
-**Notation earned.** Units written next to every number, and the "per" construction. 3.2 kg.
-41 per 100,000 per year. A bare number is incomplete, and this is the unit where that becomes
-a reflex.
+**Notation earned.** Units written beside every number, and the "per" construction. 3.2 kg. 41
+per 100,000 per year.
 
-**Misconception killed.** "A number is a fact." A number is a fact plus a decision about what
-counts, plus a choice of unit, plus an instrument with a finite resolution. A second, quieter
-one goes with it: more decimal places do not mean more accuracy.
+**Misconception killed.** "A number is a fact, and the argument only starts afterwards." A
+second one goes with it: more decimal places do not mean more accuracy.
 
 **Instruments.**
-- *The denominator switch.* One dataset of country totals with a toggle: total, per person, per
-  unit of GDP, per year. The ranking reorders on every switch and every ordering is true.
-- *What counts as a tree.* A picture containing ambiguous objects. The reader sets the counting
-  rule (a height threshold, a trunk count) and the answer changes. The rule is the finding.
-- *The ruler.* A measuring instrument with an adjustable resolution. Spurious digits appear as
-  the reader turns it up, and repeated measurements of the same object begin to disagree.
+- *The denominator switch.* One dataset of country totals with a four-way toggle: total, per
+  person, per unit of output, per year. The ranking reorders on every switch and every ordering
+  is true. Needs `ui.segmented`, `stage.bars`.
+- *What counts as a tree.* A drawing containing ambiguous objects, saplings and stumps and a
+  hedge. The reader sets the counting rule and the count changes. The rule is the finding.
+- *The ruler.* A measuring instrument with a resolution dial. Turn it up and spurious digits
+  appear; repeated measurements of the same object start disagreeing in the last place.
 
 **Truths and lies.** Change the denominator, change the villain. "Country A emits more than
-Country B" and "Country B emits more than Country A" are both true statements about the same
-year, one per country and one per person, and the reader performs the switch that flips them.
+Country B" and "Country B emits more than Country A" are both true of the same year, one total
+and one per person. The reader performs the flip themselves, then writes the headline for each.
 
-**Time.** 18 min. **Depends on.** 1.
+**Time.** 20 min. **Depends on.** 1.
 
 ### 3. The pile
 
 **The one question.** What does a whole group of numbers look like at once?
 
-**Installs.** You cannot hold 500 numbers in your head, so you either summarise them or draw
+**Installs.** You cannot hold 500 numbers in your head, so you either draw them or summarise
 them, and drawing first is the better habit because a summary computed before the picture is a
-summary of something you never looked at. A distribution is a picture of a crowd. Shape words
-arrive before any statistic: a bump, a tail, a gap, two peaks, a floor, a ceiling. The dotplot
-comes first and the histogram is introduced as a dotplot with the dots stacked into bins.
+summary of something nobody looked at. A distribution is a picture of a crowd. Shape words come
+before any arithmetic: peak, tail, gap, floor, ceiling, two humps.
 
-**Notation earned.** n. That is the whole list, on purpose. The argument of this unit is that
-shape is something you read before you compute anything.
+**Notation earned.** n, and nothing else. It means how many are in the pile.
 
-**Misconception killed.** "The average is the data." Alongside it: "a histogram is a bar
-chart". Bars are for categories and bins are for amounts, and the gap between bars means
-something different from the absence of one.
+**Misconception killed.** "The average is what a dataset is." Also the quieter one, that an
+outlier is a mistake. Some are errors and some are the finding, and telling them apart is a
+question about the world rather than about the numbers.
 
 **Instruments.**
-- *The fall.* A column of 500 raw numbers scrolls past, then drops and stacks into a shape on
-  one button press. The first beautiful moment in the course, argued in section (d).
-- *The bin dial.* One dataset, bin width from very fine to very coarse. At one setting there
-  are two peaks and at the next there is one. Same data throughout.
-- *Match the shape.* Four histograms and four labels: adult heights, household income, the sum
-  of two dice, age at death in a rich country. The reader matches them and then reads why each
-  shape is the shape it is. Income skews right because there is a floor at zero and no ceiling.
-  Age at death skews left for exactly the opposite reason.
+- *The fall.* A column of raw values scrolls past, deliberately unpleasant, the way a file
+  actually looks the first time you open it. One button. The numbers fall, stack by value and
+  settle into a shape with a peak, a right tail and a hard floor at zero. Needs `stage.dots`,
+  `stage.bars`, one `engine.tween`.
+- *The bin dial.* Same 400 numbers, bin width on a slider, running from a comb to a single
+  block.
+- *Three drawings.* Strip plot, histogram and box plot of one dataset side by side, with a
+  toggle. The box plot is introduced here as a picture, not as a calculation, and its numbers
+  are earned in unit 5.
+- *The shape zoo.* Six real distributions the reader names by eye: heights, income, city sizes,
+  reaction times, exam marks, days between earthquakes.
 
-**Truths and lies.** Bin width is a dial and somebody is always turning it. The reader makes a
-second peak vanish without deleting a single observation, then puts it back.
+**Truths and lies.** Bin width is a dial and somebody is always turning it. The reader is asked
+to produce a one-hump story and a two-hump story from the same 400 numbers, and both charts are
+honest.
 
 **Time.** 18 min. **Depends on.** 2.
 
-### 4. The middle
+### 4. Reroll the world
 
-**The one question.** Where does this crowd sit?
+**The one question.** If I ran the same thing again, what would change and what would stay?
 
-**Installs.** Three honest answers to three different questions: the balance point, the middle
-one, and the most common one. The mean as the place where the beam stops tipping. Why the mean
-chases an outlier across the room and the median moves by one place in a queue.
+**Installs.** Randomness as a generator rather than as a disclaimer. A process can be
+unpredictable one draw at a time and dependable in bulk, and those two facts are not in tension.
+A shape is what survives a reroll. Independence, stated as the thing that makes the last draw
+useless for predicting the next. The long run, and how long the long run actually is.
 
-**Notation earned.** x̄, standing next to the n the reader picked up in unit 3. Names for
-quantities, not instructions. Gate 3 in section (c).
+**Notation earned.** None, deliberately. The world number is an integer the reader types, and it
+is the only thing on the screen that looks like symbolism.
 
-**Misconception killed.** "Average means typical." The mean of a right-skewed distribution is
-routinely a value that almost nobody in the data actually has.
-
-**Instruments.**
-- *The fulcrum.* Dots on a number line resting on a beam. The reader drags the pivot until the
-  beam balances, and a readout shows the total distance above the pivot and the total below.
-  They come out equal at exactly one point, which is the mean. Σ(xᵢ − x̄) = 0 arrives as
-  something the reader balanced rather than something they were told.
-- *One more guest.* Thirty teachers on £38,000 and a slider that walks one further income from
-  £38,000 up to £100 million, with the mean and the median tracked live. The mean leaves the
-  building.
-- *Which would you quote.* Four contexts (a pay negotiation, a hospital waiting list, a house
-  price report, a class test) and a choice between mean and median in each, with the reasoning
-  written for both options.
-
-**Truths and lies.** Average income against typical income, performed by the reader on a real
-income distribution. Both figures are correct, they sit thousands of pounds apart, and either
-one is available to whoever is writing the headline.
-
-**Time.** 16 min. **Depends on.** 3.
-
-### 5. The spread
-
-**The one question.** Is this crowd tight or loose, and why does that matter more than the
-middle?
-
-**Installs.** The range as the crude answer, and why it is fragile: it depends on exactly two
-observations, and they are the two most likely to be flukes. Quartiles and the interquartile
-range. The standard deviation as the typical distance from the middle. Variance, and why nobody
-quotes it out loud.
-
-**Notation earned.** Σ, xᵢ, s and s². This is the gate, and section (c) argues at length why it
-falls here and not sooner.
-
-**Misconception killed.** "The standard deviation is a hard formula I never understood." It is
-four instructions, each of which the reader has already carried out with a mouse: take each
-value's distance from the middle, square them so that below and above both count, average those
-(divide by one less than n, and the depth block says why), then take the square root to get back
-into the units you started in.
+**Misconception killed.** Two, and they are twins. "Random means anything can happen, so nothing
+can be said about it" and "that run of six reds means something." The first refuses to look, the
+second over-reads. Both are cured by the same instrument.
 
 **Instruments.**
-- *Which bus.* Two routes with the same mean journey time of 24 minutes and different spreads.
-  The reader picks one to catch a flight, then watches 200 simulated journeys on both. The
-  spread decides, and the mean was silent about it.
-- *The ruler that grows.* A bracket that grows outward from the mean in both directions. The
-  reader drags it until roughly two thirds of the dots are inside. The distance from the mean to
-  either end of that bracket is s, discovered rather than issued, and it plants the 68% landmark
-  four units before unit 9 names it. The instrument runs on a roughly symmetric dataset and says
-  so, because two thirds inside one s of the mean is a fact about bell-shaped data rather than a
-  fact about all data. The second dataset in this instrument is skewed, the two-thirds rule
-  misses, and s is still the typical distance from the middle.
-- *Four steps on five numbers.* 4, 8, 9, 11, 13, with every step drawn as well as written, and
-  the arithmetic small enough to check on paper: the mean is 9, the squared distances are 25, 1,
-  0, 4 and 16, those add to 46, dividing by 4 gives s² = 11.5, and the square root gives
-  s = 3.39. Then the identical four steps on all 4,912 rows of the unit's dataset, at which
-  point the symbols have earned themselves in front of the reader.
-- Depth blocks: *why squares rather than absolute distances*, and *where the n − 1 comes from*,
-  the latter shown by simulation rather than derived. Divide by n across 10,000 simulated
-  samples and watch the estimate sit consistently low.
+- *The reroll.* The unit 3 histogram with a `seedBox` under it. Press the die, get a new world,
+  watch every dot move and the outline hold. A ghost outline of the previous world can be
+  toggled on. Needs `rng`, `ui.seedBox`, `stage.bars`, `engine.tween`.
+- *The long run.* A running proportion of heads plotted against the number of flips, next to the
+  raw count of heads minus tails. The proportion settles toward a half while the raw gap wanders
+  further from zero, and both are true at once. This is the single most useful picture in the
+  unit, because "the law of averages will even it out" is false in the second panel and true in
+  the first.
+- *The streak reader.* Two sequences of 80 coin flips, one generated and one written by a human
+  trying to look random. The reader picks which is real and gets it wrong, because people who
+  fake randomness underproduce long runs. Needs `rng.shuffle`, `ui.quiz`.
+- *The screenshot machine.* The distortion, below.
 
-**Truths and lies.** A centre quoted with no spread. "Average wait, 8 minutes", in a queue
-where half of callers wait under 3 minutes and one in ten waits over 40. The reader is given
-the mean, asked to predict their own wait, and then shown the distribution they were drawn
-from.
+**Truths and lies.** Reroll until it looks like what you wanted to say, then screenshot. The
+reader is given a genuine null effect, a reroll button and a target headline, and told to keep
+pressing until the chart supports the headline. It takes about eleven presses. The screen then
+shows the world numbers they discarded. This is p-hacking in its purest visible form, performed
+before the reader has ever heard of a p-value, and unit 11 calls back to it by name.
 
-**Time.** 20 min. **Depends on.** 4.
+**Time.** 20 min. **Depends on.** 3.
 
-### 6. The machinery of chance
+### 5. How few numbers can I get away with
 
-**The one question.** What does "likely" actually mean, and can I work one out?
+**The one question.** How much of a crowd can I carry in my pocket?
 
-**Installs.** Probability as the proportion in the long run, built by repetition rather than
-asserted by definition. The sample space as a list of equally likely things you can count.
-Independence, and what it means for two events to fail to have it. Conditional probability as a
-count within a count.
+**Installs.** Summarising is compression, compression discards, and the discarded part is where
+every later argument happens. The mean as the balance point of the beam. The median as the
+middle one, and the choice between them as a question about what you are asking rather than
+about which is better. The typical miss, first as the mean absolute distance from the middle and
+then as the standard deviation beside it. Quantiles and the five-number summary as the next rung
+up the compression ladder.
 
-**Notation earned.** P(A), P(A and B), P(A | B). The vertical bar is read aloud as "given
-that", and every conditional is computed by counting people in a table before it is ever
-computed by dividing one probability by another.
+**Notation earned.** None. Four quantities are named in English and used in English: the middle,
+the typical miss, the middle half, the five numbers. Section (c) argues this hold at length. The
+squaring in the standard deviation is flagged as unexplained, on purpose, with a promise
+attached to unit 7.
 
-**Misconception killed.** Two, and they are twins. The gambler's fallacy, where the coin is
-"due". And the law of small numbers, Tversky and Kahneman's 1971 name for our expectation that
-a small sample ought to look like the population it came from. One instrument kills both.
+**Misconception killed.** "The average is the typical person." Also that the mean and the median
+are two methods for one job, when they answer two different questions and disagree exactly when
+the disagreement is the finding.
 
 **Instruments.**
-- *The long run.* Ten thousand flips in world 42, with two traces drawn together. The running
-  proportion of heads settles onto 0.5. The running excess of heads over tails, as a raw count,
-  does not settle and wanders further from zero as the flips accumulate. The proportion
-  converges while the count diverges, and that single picture is the entire content of the
-  gambler's fallacy.
-- *A thousand people.* The medical test problem drawn as 1,000 dots. A condition affecting 10 in
-  1,000, a test that catches 9 of those 10 and falsely flags 99 of the healthy 990. The reader
-  clicks the flagged group and counts: roughly one in twelve of them has it. Bayes' theorem
-  waits in a depth block for anyone who wants the algebra afterwards.
-- *Rare things, many chances.* A wall of 10,000 events, each with a one-in-ten-thousand chance.
-  At least one of them lands on about 63 runs in 100, which the reader establishes by holding
-  the button down rather than by being told. The birthday problem is the same instrument with 23
-  people, where a shared birthday turns up just over half the time.
+- *The one-number challenge.* The reader is shown a pile and asked to pick one number to send to
+  somebody who will never see the data. Then a second pile appears with the same number and a
+  completely different shape. Needs `ui.slider`, `stage.bars`.
+- *The beam.* Values as weights on a plank. Drag the fulcrum until it stops tipping. The reader
+  has computed a mean with their hand, and the signed distances on each side are shown summing
+  to zero at the balance point. Drop one value at 100 million and watch the fulcrum leave the
+  crowd entirely while the middle one does not move. Needs `stage.dots`, `stage.vline`,
+  `stage.bracket`.
+- *The bracket.* Drag a bracket out from the middle until it feels like it covers a typical
+  distance. The reader's guess is then shown against the computed mean absolute deviation and
+  the standard deviation, which are close, and the reader is told the second one is computed a
+  strange way for a reason that arrives in unit 7.
+- *The rebuild.* Reconstruct the original pile from 1 number, then 2, then 5, then 9. What comes
+  back and what stays lost is the unit's whole argument, and the box plot from unit 3 gets its
+  numbers here.
 
-**Truths and lies.** The prosecutor's fallacy, and the case it is best known by in Britain.
-Sally Clark was convicted in 1999 of murdering two of her sons after the paediatrician Roy
-Meadow told the court that the chance of two cot deaths in one family was 1 in 73 million. That
-figure came from squaring a single-death rate, which assumes the two deaths were independent of
-each other, and it was then presented to a jury as though it were the probability that she was
-innocent. The Royal Statistical Society issued a public statement in 2001 saying the
-calculation had no statistical basis, and the conviction was quashed in 2003. The reader
-operates both errors in one instrument: multiply two dependent probabilities as if they were
-independent, then flip a conditional round, and watch the number move by orders of magnitude.
+**Truths and lies.** A centre quoted with no spread is a half-truth with a clean face. The
+reader publishes "average wait: 4 minutes" for two cafes with identical means, one of which
+never exceeds 5 minutes and one of which hits 25 twice a day. Then they write the sentence that would
+have been fair to both.
 
-**Time.** 22 min. **Depends on.** 3, and loosely 5. Placement argued in section (a).
+**Time.** 26 min. **Depends on.** 3, 4.
 
-### 7. A few, for many
+**Over budget, and where it splits.** PEDAGOGY budgets the loop at 17 to 25 minutes, so this
+unit is one minute over the ceiling with four instruments. It is one unit rather than two on
+principle. Teaching the centre in one session and the spread in the next tells the reader, by
+the shape of the course, that a centre can stand alone. That belief is the most common
+statistical error in public life. If a build agent finds it does not fit, the split is at the
+rebuild, and unit 5b takes quantiles, the five numbers and the box plot at about 10 minutes.
 
-**The one question.** How can 1,000 people tell you about 300 million?
+### 6. A few, for many
 
-**Installs.** The population as the thing you want and the sample as the thing you have. Random
-selection as the mechanism that earns the leap between them, rather than as a formality.
-The sampling frame, and the people it never contained. Non-response as a second and much
-quieter selection. Representativeness beating size.
+**The one question.** How can a thousand people tell you about three hundred million, and when
+can they not?
 
-**Notation earned.** μ and σ against x̄ and s. Gate 5, and the payoff for holding Greek back
-through six units.
+**Installs.** Random selection is a mechanism, not a virtue. Bias is a property of the procedure
+and not of the sample size, so a bigger sample drawn badly is a more confident wrong answer. The
+sampling frame, and the people it cannot reach. Nonresponse as the modern version of the same
+problem. And the counterfactual, introduced as the draw you did not make.
 
-**Misconception killed.** "A bigger sample is a better sample." The instrument makes a large
-biased sample look better and be worse at the same moment, which is the shape the real failure
-takes.
+**Notation earned.** μ and σ against x̄ and s. The alphabet changes because there are now two
+objects, the truth you do not have and the measurement you do.
+
+**Misconception killed.** "A bigger sample is a better sample." Killed by construction: a
+self-selected sample of 2,400,000 against a random sample of 50,000, run across many worlds
+against a known truth, with the big one wrong every single time.
 
 **Instruments.**
-- *The jar.* Ten thousand dots as a population with a visible true mean. Draw a sample of n,
-  watch the sample mean land. Draw again, and again. The estimate moves, and the reader is
-  looking straight at the wobble one unit before it is named.
-- *The magnet.* A biased sampler with a strength dial. Side by side: n = 2,000 with the magnet
-  on, and n = 100 with it off. The biased estimate is tighter and wrong, the fair estimate is
-  looser and centred on the truth, and precision and accuracy come apart on one screen.
-- *1936.* The *Literary Digest* mailed about ten million ballots, got about 2.4 million back,
-  and predicted Landon at 57%. Roosevelt took about 61% of the vote. George Gallup called it
-  correctly from a sample of roughly 50,000, which is smaller by a factor of about fifty. Every
-  figure in that sentence gets checked against Squire (1988) before it goes on a screen. The
-  reader runs both sampling frames against a simulated electorate.
+- *The urn.* A visible population of 1,000 units with a known mean. The reader picks 20 by hand,
+  by clicking, then compares their hand-picked mean with the truth. People pick spread-out
+  interesting-looking units and their mean is fine while their spread is badly wrong, which is a
+  better lesson than the usual one. Then they draw 20 at random. Needs `rng.sample`,
+  `stage.dots`.
+- *The two samplers.* The Literary Digest against Gallup, rebuilt live and rerun across worlds.
+- *The frame gap.* A population with a slice the frame cannot reach, mobile-only households or
+  people who do not answer unknown numbers, with a dial for how different that slice is.
+- *The other draw.* The sample the reader got, drawn in the data colour, with the 980 units they
+  did not get faded behind it. The screen names the faded set. Section (b) explains why this
+  picture is here and not in unit 15.
 
-**Truths and lies.** "Over two million people responded" offered as a defence of a survey. The
-reader builds a two-million-person self-selected sample that misses by twelve points, next to a
-fair sample of 800 that misses by two.
+**Truths and lies.** A huge biased sample beats a small fair one on every surface cue a reader
+has: it sounds more thorough, the margin of error printed under it is smaller, and it is wrong.
 
-**Time.** 20 min. **Depends on.** 4, 5, 6.
+**Time.** 20 min. **Depends on.** 4, 5.
 
-### 8. The wobble
-
-The centre of the course. Everything from unit 10 onwards is a consequence of this unit, and
-if only one unit is ever finished properly, it is this one.
+### 7. The wobble
 
 **The one question.** If I did this study again, how different would the answer be?
 
-**Installs.** The estimate is itself a random thing, and it has a distribution. That
-distribution is what all of inference is about. Its spread has a name, the standard error. The
-square-root rule, watched rather than derived.
+**Installs.** The sampling distribution as an object in its own right, built rather than
+asserted. The standard error as the spread of that object. The root-n law and what it costs: to
+halve your uncertainty you need four times the data. And the reason variance is the quantity
+that adds.
 
-**Notation earned.** SE, and s/√n. Also the distinction that most people who have passed a
-statistics course still cannot state on demand: the standard deviation describes the spread of
-the data, and the standard error describes the spread of an estimate. On this screen they are
-two different pictures on two different axes, and the reader builds the second one out of the
-first with their own hands.
+**Notation earned.** The gate. Σ and xᵢ, s written down properly for the first time, and
+se = s/√n.
 
-**Misconception killed.** "My estimate is the answer." Its sibling goes with it: the belief that
-the standard error is a property of the data rather than a property of the procedure that
-produced the estimate.
-
-**Instruments.**
-- *The stack.* The main event. Top half of the canvas: the population, and one sample drawn
-  from it. Bottom half: a second axis where each sample's mean drops as a single dot. Draw one.
-  Draw ten. Hold the button down and watch a thousand estimates pile up into a shape. The
-  population's shape is settable, and it can be made aggressively non-bell-shaped, and the pile
-  of means still comes out bell-shaped. Unit 9's question arrives on its own, from the reader,
-  which is the whole design.
-- *The √n lever.* Sample size 10, then 40, then 160. The pile halves in width each time the
-  sample size quadruples. The reader is asked to predict the width at n = 640 before it is
-  drawn.
-- *How many polls miss.* Two hundred simulated polls of 1,000 people in a world where true
-  support is 47%, drawn as a histogram of 200 honest headlines. About six of them cross 50% and
-  read as a lead for the other side. Nobody did anything wrong in any of them.
-
-**Truths and lies.** A number quoted with no wobble attached. Then the version that is much
-harder to spot: hospital league tables and school rankings, where the top and the bottom are
-populated by the smallest units because small units wobble most. The reader ranks 100 simulated
-hospitals that are identical by construction, and the resulting table looks meaningful, and
-they can read a plausible newspaper story off it.
-
-**Time.** 24 min. **Depends on.** 7.
-
-**Note on worlds.** This unit and the shuffle in unit 11 are where the seeded generator stops
-being a convenience and becomes the pedagogy. A teacher saying "everyone type world 42" and
-getting the same thousand-estimate pile on thirty screens at once is the reason `rng.js` is
-written the way it is, and the reason the seed is in the URL.
-
-### 9. Why this shape keeps coming back
-
-**The one question.** Why does the same curve turn up everywhere, and when does it not?
-
-**Installs.** Many small independent contributions, added together, give the same shape
-regardless of what the individual contributions look like, so long as each of them has a finite
-spread. The 68 / 95 / 99.7 landmarks as facts about that shape. The z-score as "how many
-spreads from the middle", which is what makes two different measurements comparable. And the
-boundary, which matters more than the theorem does.
-
-**Notation earned.** z = (x − μ)/σ, and N(μ, σ²) as the name of a family rather than as a
-hurdle.
-
-**Misconception killed.** "Everything is normally distributed." The reader breaks it themselves,
-which is the only way it stays broken.
+**Misconception killed.** "The standard error is the spread of my data." It is the spread of an
+answer, and the two are different objects living on different pictures, which is why the
+instrument keeps both on screen at once. A second one: "with enough data the wobble goes away."
+It shrinks and never reaches zero, and it shrinks slowly.
 
 **Instruments.**
-- *The board.* A Galton board. Balls fall through a lattice of pegs, each peg a coin flip, and
-  the pile at the bottom is a bell every time. The biggest single beautiful moment in the
-  course, placed ninth on purpose.
-- *The nudge shop.* Choose the shape of one contribution (uniform, heavily skewed, two-humped)
-  and how many to add (1, 2, 5, 30). Each of these has a finite spread, and the sum goes
-  bell-shaped in all three cases, but the number of nudges it takes differs a lot between them.
-  The skewed contribution takes considerably longer than the uniform one, which is the honest
-  version of "n large enough".
-- *The tail that does not close.* The same simulation with one change: contributions drawn from
-  a Cauchy, which is what you get from the horizontal position of a spinner pointing at a wall.
-  It has no mean to converge to and no finite spread, so the running average never settles and
-  the sum never goes bell-shaped however many nudges get added. This is the boundary of the
-  theorem, drawn rather than stated. A reader who watched the long run converge in unit 6 finds
-  it genuinely unsettling, which is the intended effect.
+- *The stack.* The population on top, one sample drawn from it in the middle, and that sample's
+  mean dropped as a single dot into an accumulating pile at the bottom. Draw again. Again. Watch
+  a second distribution build itself out of answers. Manual first, then a run-1000 button. Needs
+  `rng`, `stage` (`dots`, `bars`, `vline`), `engine.loop`.
+- *The n dial.* Sample size on a slider from 4 to 400, with the stack rebuilding and a √n
+  reference curve the reader can toggle over the width.
+- *The adding machine.* Two independent wobbles combined. Their variances add and their typical
+  misses do not, and the reader checks both numerically. This is unit 5's unpaid debt being
+  settled.
+- *The one you actually have.* The whole stack greys out except a single dot. That dot is your
+  study. You never see the rest, and the standard error is how you talk about the pile you
+  cannot see.
 
-**Truths and lies.** Assuming a bell where the world has a long tail. Financial risk models,
-flood return periods, and the remark a bank's chief financial officer made to the *Financial
-Times* in August 2007 about seeing twenty-five-standard-deviation moves several days in a row.
-Under a bell that is an event with no expected occurrence in the history of the universe. Under
-a heavy tail it is a Tuesday. The reader prices the same risk under both assumptions and reads
-off the two numbers.
+**Truths and lies.** Quoting the spread of the data as the precision of the study, and the
+"we surveyed 50,000 people" boast attached to a sample that was never random, which is unit 6
+returning with a formula attached.
 
-**Time.** 22 min. **Depends on.** 8.
+**Time.** 24 min. **Depends on.** 6.
 
-### 10. The honest range
+### 8. The ruler that keeps turning up
+
+**The one question.** How do I turn a distance into a probability?
+
+**Installs.** The normal family as a measuring device rather than as a description of the world.
+Its job in this course is to convert "how far out is this" into "how often does that happen".
+The 68/95/99.7 landmarks as a ruler the reader can use from memory. z as distance measured in
+units of wobble. And the central limit theorem, arriving as the explanation of something the
+reader already watched: the stack in unit 7 was bell-shaped no matter what was feeding it.
+
+**Notation earned.** z = (x − μ)/σ, and the density as a curve with two knobs.
+
+**Misconception killed.** "Data is normally distributed." This is the most damaging thing an
+intro course installs by accident, and it gets killed with an instrument rather than a caveat.
+Income, city sizes and word frequencies are shown failing a normal fit badly, and then the
+*means* of samples from those same populations are shown passing it. The normal curve is a fact
+about averages far more often than it is a fact about data.
+
+**Instruments.**
+- *The board.* A Galton machine. Beads, pins, pure coin flips at every pin, and the same heap at
+  the bottom every time. Needs `rng`, `engine.loop`, `stage.bars`.
+- *The population picker.* Feed the unit 7 stack from a uniform source, a heavily skewed one, a
+  two-humped one, and a fat-tailed one. Three converge quickly and one does not, and the failure
+  is kept in rather than hidden. Needs `stats.normPdf`, `stage.curve`.
+- *The two knobs.* μ slides the curve, σ scales it, and the shape is untouched by either. A
+  family, not a curve.
+- *The z ruler.* Drag a value along the axis and read the tail area off a shaded region, with
+  the three landmarks marked. Needs `stats.normCdf`, `stage.area`.
+
+**Truths and lies.** The fat tail. A risk model that assumes normality and prices a
+once-in-ten-thousand-years event that then shows up twice in a decade. The reader sets the
+tail thickness and reads the two answers side by side.
+
+**Time.** 22 min. **Depends on.** 7.
+
+### 9. The honest range
 
 **The one question.** What is the widest claim I am entitled to make?
 
-**Installs.** An interval is the estimate plus and minus a couple of wobbles. The 95% is a
-property of the method and not of the interval in front of you. The bootstrap as a way of
-getting an interval with no formula at all. t against z as the correction for not knowing σ,
-which is what "small sample" actually means.
+**Installs.** An interval is the set of values the data does not rule out. The confidence level
+is a property of the procedure and not of the interval in front of you. t against z, and why the
+correction exists, which is that you estimated the spread from the same small sample. Width as a
+design decision with a price in sample size.
 
-**Notation earned.** x̄ ± t* · s/√n, parsed piece by piece, with the margin of error named as
-the whole of the ± part.
+**Notation earned.** x̄ ± t*·se. The first formula the reader operates.
 
-**Misconception killed.** "There is a 95% chance the true value is in this interval." This is
-the most durable error in applied statistics and prose has never once killed it. The instrument
-does, because the instrument can show the truth and prose cannot.
+**Misconception killed.** "There is a 95% chance the true value is in my interval." Killed by
+construction rather than by assertion. Run 100 worlds, draw 100 intervals stacked vertically
+against the known truth, and watch about five of them miss. Any single interval is either right
+or wrong and you cannot tell which. The 95% describes the factory, not the item.
 
 **Instruments.**
-- *A hundred intervals.* The true value is drawn as a line, which is possible here because this
-  is a simulation and we built the world. One hundred samples, one hundred intervals, stacked
-  vertically, with the misses marked. About five miss. The reader is then asked which of the
-  individual intervals has a 95% chance of containing the truth, and the answer is none of
-  them, because the truth never moved and each interval either caught it or did not.
-- *The bootstrap.* One sample of 40, resampled with replacement 2,000 times, the 2,000 means
-  plotted, and the outer 2.5% at each end trimmed away so the middle 95% is what remains. An
-  interval out of nothing but the data and a resample, reproducible because the world number is
-  in the URL.
-- *Two intervals.* Two overlapping intervals and the question of whether the difference between
-  them is real, which is a different calculation, and the reader is shown that it is. This
-  plants unit 11.
+- *The hundred intervals.* The canonical picture, seeded, so that a room of thirty screens misses
+  on the same five worlds and the teacher can point at one. Needs `rng`, `stats.meanCI`,
+  `stage.line`, `stage.hline`.
+- *The confidence dial.* 50, 80, 95, 99. Width trades against capture rate in front of the
+  reader, and the 95 is revealed as a convention rather than a law.
+- *The width budget.* The reader is given a target width and has to buy the sample size that
+  delivers it, which makes root-n cost money.
+- *The difference interval.* Two group intervals that overlap, next to the interval for the
+  difference, which excludes zero. Both pictures are correct and they appear to disagree. This
+  screen is the bridge into unit 11.
 
-**Truths and lies.** Point estimate in the headline, interval in the footnote. Then the more
-interesting one: two overlapping intervals reported as "no difference", which is wrong often
-enough to be a standard failure mode in science journalism.
+**Truths and lies.** Overlapping intervals reported as "no difference between the groups", which
+is the most common inferential error in published science, and the interval quoted without ever
+saying what population it refers to.
 
-**Time.** 20 min. **Depends on.** 8, 9.
+**Time.** 20 min. **Depends on.** 7, 8.
+
+### 10. What the evidence is evidence for
+
+**The one question.** A test came back positive. What are the chances I have it?
+
+**Installs.** Conditional probability by counting bodies rather than dividing symbols. Base
+rates, and why they refuse to stay in people's heads. Sensitivity and specificity as two
+different conditionals that are easy to confuse and easy to keep apart once you have drawn the
+tree. Bayes as bookkeeping rather than as philosophy.
+
+**Notation earned.** The vertical bar. P(A | B), read aloud as "the chance of A among the Bs".
+The natural-frequency tree comes first and the symbol is written on top of the tree the reader
+has already built.
+
+**Misconception killed.** "A 99% accurate test means 99% of positives are real." The reader sets
+prevalence and accuracy with two sliders and watches the share of true positives among positives
+collapse to a third, then a tenth, while the accuracy number never moves.
+
+**Instruments.**
+- *The thousand people.* A natural-frequency tree drawn as 1,000 figures that split. No fractions
+  appear until the counting is done. Needs `stage.dots`, `ui.slider`.
+- *The flip.* One table, both conditionals side by side, computed from the same four cells. Two
+  sentences that sound identical and differ by a factor of thirty.
+- *The courtroom.* A match probability of one in a million in a city of ten million, and the
+  reader argues both sides.
+
+**Truths and lies.** The prosecutor's fallacy, performed twice by the reader, once as prosecutor
+and once as defence, with the same table on screen both times.
+
+**Time.** 20 min. **Depends on.** 4, 6.
 
 ### 11. Putting a claim on trial
 
 **The one question.** Is this gap real, or could luck have done it?
 
-**Installs.** The null world as something you build rather than something you invoke. Shuffling
-the labels as the way you build it. The p-value as a position in a pile you made. The two ways
-of being wrong. Power, as the chance of noticing a real thing when there is one.
+**Installs.** The shuffle test. The null world as a machine the reader builds rather than a
+formula they invoke: if the label made no difference, then the labels are interchangeable, so
+shuffle them and see what gaps turn up. The p-value as a count. The two ways to be wrong. The
+significance filter, the forking path and the file drawer, all as mechanisms rather than as
+scandal.
 
-**Notation earned.** H₀, p, α, and t, in that order, with the t arriving only after the shuffle
-has already produced the answer.
+**Notation earned.** p and α, and the null hypothesis written as a sentence describing a world
+rather than as a symbolic statement.
 
-**Misconception killed.** Several, and they carry the largest real-world cost of anything in
-this course. That p is the probability the null hypothesis is true. That p > 0.05 means there
-is no effect. That "statistically significant" means large, or means it matters.
+**Misconception killed.** "The p-value is the chance the result is a fluke." This is the flipped
+conditional from unit 10, arriving one unit later on purpose, and the text says so directly:
+you made this mistake yesterday in a courtroom.
 
 **Instruments.**
-- *The shuffler.* Two groups with a real observed gap, marked on the axis. Press shuffle: the
-  group labels are reassigned at random, the two means are recomputed, and the resulting gap
-  drops into a pile. Hold it down for 5,000 shuffles and the pile becomes the distribution of
-  gaps that a world with no effect produces. The observed gap either sits out in the tail or
-  sits inside the crowd. The p-value is the reader counting what fraction of the pile is
-  further out than the gap they measured, and no formula has appeared at any point. The t
-  statistic is then introduced as the algebraic shortcut that gets to nearly the same answer
-  without 5,000 shuffles. Nearly, not exactly: the two agree closely here and can come apart on
-  small or lopsided samples, and the instrument shows both numbers side by side rather than
-  claiming they are the same thing. Fisher made the same argument for t in *The Design of
-  Experiments*, which is the historical route as well as the honest one.
-- *The bench.* One dataset, twenty outcome variables, and a free hand. The reader hunts for
-  p < 0.05 in data with nothing in it, and finds it about two runs in three, because twenty
-  independent tests at the 5% level turn up at least one hit 64% of the time. This is Simmons,
-  Nelson and Simonsohn's 2011 demonstration in *Psychological Science*, made operable.
-- *The file drawer.* Forty studies of one real effect, twenty of which cleared significance.
-  Publish only those and the pooled estimate inflates by a factor the reader reads off the
-  screen.
+- *The shuffle.* Real group labels on real outcomes. The reader detaches the labels, shuffles
+  them by hand once, and records the gap. Then ten times. Then a thousand, and their actual
+  observed gap is shown landing somewhere in the resulting pile. Needs `rng.shuffle`,
+  `stats.twoGroup`, `stage.bars`, `stage.vline`.
+- *The tail counter.* The same picture with the tail shaded and counted, and the count written
+  as a fraction. The t-test is then offered as a shortcut that agrees with the shuffle to two
+  decimal places, and it is introduced as a shortcut rather than as the real thing.
+- *The forking path.* One dataset, six defensible analysis choices, and an instruction to find a
+  significant result. The reader will find one in under two minutes. This is unit 4's screenshot
+  machine wearing a lab coat.
+- *The file drawer.* Twenty honest studies of a null effect. One is significant. Only that one
+  is published, and the reader reads the published literature and reaches the wrong conclusion
+  by reasoning correctly.
 
-**Truths and lies.** This unit's distortion has the largest body count in the course, so it
-gets the most room. Significant and important are different words for a reason. A p-value is
-not a measure of effect size and never was. The garden of forking paths, where nobody cheated
-and every individual choice was defensible and all of them were made after looking at the data,
-is set out using Gelman and Loken's account in *American Scientist* (2014). The American
-Statistical Association's 2016 statement on p-values is quoted directly, because it is short
-and it says these things more bluntly than most textbooks are willing to.
+**Truths and lies.** "Not significant" reported as "no effect", which is a different claim, and
+p-hacking performed by the reader with no dishonesty at any step.
 
-**Time.** 24 min. **Depends on.** 10, 6.
+**Time.** 24 min. **Depends on.** 9, 10.
 
 ### 12. Two things at once
 
 **The one question.** When one thing moves, does the other?
 
-**Installs.** The scatterplot as the second great picture in statistics. Direction, form and
-strength as three separate readings taken from it. r as one number that captures direction and
-strength for straight-line relationships, and nothing else.
+**Installs.** Read the scatter before computing anything, for the same reason you drew the pile
+before summarising it. Correlation as a number with a narrow job and no units. The difference
+between r and a slope, which is the difference between how tightly and how steeply. Non-linearity
+and range restriction as the two ways r lies without anybody touching the data.
 
-**Notation earned.** (xᵢ, yᵢ) as a pair carrying one index, and r.
+**Notation earned.** r, and why it has no units, which is the first time the reader meets a
+quantity deliberately built to be unitless after unit 2 spent 20 minutes insisting on units.
 
-**Misconception killed.** "r = 0 means the two are unrelated", killed by a perfect parabola with
-an r near zero, which is a deterministic relationship that r cannot see. And "r = 0.9 means a
-big effect", which confuses how tightly the points hug the line with how steep the line is.
+**Misconception killed.** "A strong correlation means a big effect." Also "r near zero means no
+relationship", which the U-shaped cloud kills in one screen.
 
 **Instruments.**
-- *Guess the r.* A cloud appears, the reader guesses r on a dial, the answer is revealed,
-  repeat. Twenty rounds produces a calibrated eye, which is a skill practitioners have and were
-  never taught.
-- *Anscombe.* The four datasets from Frank Anscombe's 1973 note in *The American Statistician*.
-  Identical means, identical variances, identical r, identical fitted line, four completely
-  different pictures. The reader sees the summary statistics first and predicts the picture.
-- *The quadrant grid.* Cross-hairs at the two means. Points in the upper right and lower left
-  push r up, points in the other two push it down. r stops being a formula and becomes a vote
-  count.
+- *The guesser.* Estimate r from a cloud, then from a second cloud with the same r and a
+  different shape. Needs `rng.n`, `stats.corr`, `stage.dots`.
+- *Anscombe.* Four clouds, one set of summary statistics, and the reader computes before they
+  look.
+- *The window.* Slide the start year on a real series and watch r swing from strongly positive
+  to negative without a single value changing.
+- *The stretch.* Crop the x-range and watch r collapse while the underlying relationship sits
+  there unchanged. Range restriction is why "test scores barely predict performance" studies
+  inside selective institutions are so often misread.
 
-**Truths and lies.** Anything that trends correlates with anything else that trends. The reader
-picks a start year and an end year on one real pair of series and produces r values running
-from strongly positive to strongly negative out of the same data.
+**Truths and lies.** The chosen window. The reader picks a start year to make the same series
+tell either story, and then has to state the rule they would want a stranger to follow.
 
-**Time.** 20 min. **Depends on.** 5, 3.
+**Time.** 18 min. **Depends on.** 3, 5.
 
 ### 13. The third thing
 
 **The one question.** How do I tell a cause from a coincidence?
 
-**Installs.** The counterfactual question, which is what the word "cause" actually means: what
-would have happened to these same units without it. The confounder, and precisely what it does
-mechanically rather than as a caution. Simpson's reversal. The collider in a depth block,
-because a collider is the opposite case: it is a variable that adjusting for, or selecting on,
-*creates* a false association where none existed, so the reflex of controlling for everything
-available is itself a way to go wrong. Readers who have met only confounding get overconfident
-about that reflex.
+**Installs.** Confounding as a mechanism you can draw with three arrows. Stratification as the
+fix, and its limit, which is that you can only condition on what you measured. Simpson's
+reversal, as an arithmetic fact rather than a paradox. The difference between "does it predict"
+and "would it change anything if I intervened". And the collider, because "control for
+everything" is advice that creates associations out of nothing.
 
-**Notation earned.** Arrows. X → Y, and X ← Z → Y. A causal diagram is notation, it is cheap,
-and it is the correct notation for this idea. No algebra in this unit at all.
+**Notation earned.** A two-way table and an arrow diagram. No new algebra, which is deliberate:
+the hardest causal ideas in the course arrive with the least symbolism, and that is worth saying
+to a reader who has been assuming difficulty tracks notation.
 
-**Misconception killed.** "Correlation is not causation", taken as a slogan. The slogan is true
-and it makes people helpless, because it stops at the warning and never says what a third
-variable does or what it would take to rule one out. A reader who finishes this unit should be
-able to name a specific confounder for a specific claim, and say what evidence would remove it.
+**Misconception killed.** "Correlation is not causation" as a slogan. A slogan stops the
+sentence, and the unit replaces it with a procedure: name the third thing, then go and look
+inside it. A reader who leaves with the slogan can dismiss any finding they dislike, which is
+how the phrase is mostly used in public.
 
 **Instruments.**
-- *The splitter.* A scatter with a clear upward trend. One button press splits the points into
-  groups, and every group trends downward. Simpson's reversal in one motion. Then the real
-  case: Bickel, Hammel and O'Connell's 1975 paper in *Science* on Berkeley's 1973 graduate
-  admissions, where men were admitted at a higher rate overall and women at an equal or higher
-  rate in most individual departments. The reader aggregates and disaggregates the actual
-  table.
-- *The confounder dial.* Two variables with no causal link between them and a third that drives
-  both. Turn the third one's strength up and an association appears out of nothing. Turn it
-  back down and watch it go.
-- *The ledger.* The reader's own answer from unit 1, to "why do you think that row is bigger",
-  shown back to them. For most readers it is a causal claim made on a picture of two clouds.
-  Nothing is scored and nothing is corrected. The instinct arrived first, twelve units ago, and
-  the evidence is in their handwriting.
+- *The Berkeley table.* The aggregate favours men and every department favours women. The reader
+  works the arithmetic and it comes out both ways. Needs a table component and `ui.steps`.
+- *The splitter.* A single cloud with a hidden third variable. The reader drags a control that
+  colours by the hidden variable, the cloud separates into groups, and the within-group slopes
+  point the other way. Needs `stage.dots` with grouped fills.
+- *The collider.* Two independent traits, and a selection filter. Condition on the filter and
+  the traits become correlated inside the selected set. The example is admissions or dating, and
+  the reader creates the correlation out of two independent generators.
+- *The ledger.* Unit 1's stored answer comes back, with the reader's own sentence from ninety
+  seconds into the course, and the question is which of the four structures it assumed.
 
-**Truths and lies.** The lurking variable is the most common falsehood in public statistics and
-almost nobody involved is lying. The mirror image gets equal weight, because it is the abuse a
-reader of this course is most likely to commit: "correlation is not causation" deployed to
-dismiss evidence that is actually good. The tobacco industry ran that argument for thirty years
-against Doll and Hill's work, using the same sentence a careful reader uses correctly.
+**Truths and lies.** The same tool used honestly and dishonestly. Doll and Hill checked
+confounding seriously and the tobacco industry's constitutional hypothesis was formally the same
+move. Telling them apart is not a matter of the statistics, and the unit says so.
 
-**Time.** 22 min. **Depends on.** 12. Placement argued in section (b).
+**Time.** 22 min. **Depends on.** 12, 10.
 
-### 14. The line, and what a model is
+### 14. The line through the cloud
 
-**The one question.** Can one line stand in for a cloud, and how would I know when it stops
+**The one question.** Can one line stand in for a cloud, and how would I know when it stopped
 working?
 
-**Installs.** Least squares as the smallest total miss, discovered by dragging rather than
-handed over. The slope as a rate with units you can say in a sentence. Residuals as what the
-line failed to explain, and the residual plot as the place where a bad model confesses. r²
-parsed honestly. Regression to the mean. The model as a deliberate simplification with stated
-assumptions, which is George Box's 1976 framing and the reason the word "wrong" is not an insult
-about a model. Overfitting. The difference between fitting and predicting, which is the whole of
-the modern argument compressed into one slider.
+**Installs.** Fitting as minimising a total miss. Residuals as the leftovers, and the residual
+plot as the place where a model confesses. Prediction against explanation, which are different
+jobs with different standards. Regression to the mean. Overfitting. And the general idea of a
+model as a deliberate simplification with a stated cost, because a line is the reader's first
+model and there is no need for a separate unit to say so in the abstract.
 
-**Notation earned.** ŷ = b₀ + b₁x, the hat read as "predicted", eᵢ = yᵢ − ŷᵢ as the miss, and
-y = f(x) + ε where ε is the part of the world the model has agreed not to explain.
+**Notation earned.** ŷ, b0, b1, and the residual. The hat and the residual arrive together
+because neither means anything alone.
 
-**Misconception killed.** "A model that fits the data well is a good model." Alongside it,
-regression to the mean read as a treatment effect, which is a working error rather than a
-textbook one. The worst-performing schools improve the following year. The accident blackspots
-get quieter after the camera arrives. The second album is worse than the first. In each case a
-real effect may well exist, and the measured one is inflated by the selection that picked the
-units.
+**Misconception killed.** "A slope is an effect." Unit 13 pre-loaded the antibody and this is
+where it gets used. A second one, and it is the more interesting: regression to the mean read as
+a causal story, which is how a remedial programme takes credit for arithmetic.
 
 **Instruments.**
-- *The pivoting line.* A cloud and a draggable line, with every miss drawn as a literal square
-  and the total area shown as both a number and a bar. The reader hunts for the smallest total
-  by hand, gets close, and then presses a button that snaps to the least-squares solution. The
-  squares shrink to their minimum and the number stops falling. Least squares becomes something
-  the reader was already searching for.
-- *Past the edge.* Drag a prediction beyond the range of the data and watch the honest interval
-  fan out. Then a second dataset where the relationship curves outside the observed range, and
-  the line's extrapolation is confidently wrong.
-- *Two rounds.* Two hundred units measured twice with no intervention at all. Select the worst
-  20 from round one and watch them improve in round two, with a true effect of exactly zero.
-  This is Galton's 1886 observation about the children of tall parents, reduced to one button.
-- *The order dial.* A polynomial order slider from 1 to 15 on 25 points, with two error curves
-  drawn together. Error on the points that were fitted falls forever. Error on a fresh sample
-  from the same world falls and then climbs. Where the two curves cross is the whole of
-  overfitting, and it requires no vocabulary to see.
+- *The hand fit.* Drag a line through a cloud with a running total of squared misses displayed,
+  and a shrinking square drawn on each residual. Get it as low as you can. Then the machine's
+  answer drops in and lands on top of yours. Needs `stats.ols`, `stage` (`dots`, `line`),
+  `ui.slider` for slope and intercept.
+- *The residual strip.* A second panel under the scatter. Flat when the model fits, curved when
+  it does not, and the reader learns to read the second panel before believing the first.
+- *The order dial.* Fit a straight line, a gentle curve and a wiggle through 12 points. The
+  wiggle wins on the points it saw. Then reroll the world, keep the fitted curves, and watch the
+  wiggle fail badly while the line barely moves. This is unit 4's reroll doing the heaviest work
+  it does anywhere in the course.
+- *The tall fathers.* Galton's data. Predict the sons' heights, find the pull toward the middle,
+  and then be shown the same arithmetic applied to a school improvement programme.
 
-**Truths and lies.** Extrapolation past the edge of the data, which is where forecasts go to
-die. A model evaluated on the data it was tuned on. And the assumption nobody stated, which is
-the most common way a model lies, because an unstated assumption cannot be argued with.
+**Truths and lies.** Extrapolation past the edge of the data, performed with a slider that runs
+the fitted line out to absurdity while staying mathematically correct. And the press-office
+sentence: the reader is handed a fitted slope and asked to write the headline, then shown what
+they quietly assumed.
 
-**Time.** 26 min. **Depends on.** 13, 10. The fan-out interval in *past the edge* needs the
-honest range from unit 10. Unit 11 is needed only if the slope gets a significance test, which
-I would leave out of a first course.
+**Time.** 26 min. **Depends on.** 13, 9.
 
-**Note, and it is a real one.** This unit carries exactly four instruments, which is the ceiling
-PEDAGOGY section 1 sets rather than a breach of it. The problem is the 26 minutes. PEDAGOGY
-budgets its six-beat loop against a fifteen-minute unit, so this one is running at nearly
-double, and it is the unit most likely to split on contact with a real build. The split point is
-clean: 14a ends at the residual plot, and 14b opens with the order dial and is called "when a
-model stops working". I am proposing it merged because a line is the reader's first model, so
-the frame is native to it. A standalone modelling unit has to re-introduce fitting from
-scratch, and it tends to become the abstract philosophy lesson that nobody remembers having
-done.
+**Over budget, and where it splits.** Four instruments and 26 minutes against a 25-minute
+ceiling. The split is at the order dial: unit 14b takes overfitting, prediction against
+explanation, and what a model is, at about 12 minutes. If both this and unit 5 split, the course
+is eighteen units and about 350 minutes.
 
-### 15. Designed comparisons
+### 15. Comparisons built on purpose
 
-**The one question.** How do you build a study that can actually settle a causal question?
+**The one question.** How do you build a study that can settle a causal question?
 
-**Installs.** Randomised assignment as the thing that balances variables you did not measure
-and did not think of, which is the most valuable single idea in applied statistics. The control
-group. Blinding. Why before-and-after fails on its own. Difference-in-differences as two
-subtractions where one was not enough. The natural experiment. And the honest limit, because a
-randomised trial answers a narrow question about the people who were actually in it.
+**Installs.** Random assignment as the same trick as random sampling, pointed at a different
+question. Balance on variables nobody measured, which is the thing randomisation buys and the
+thing no amount of statistical adjustment can. Blinding, and what it protects against. The
+control group as a manufactured counterfactual. And what you do when randomising is impossible:
+a comparison group, a before and an after, and one assumption you have to argue for out loud.
 
-**Notation earned.** The two-by-two table of group means, and the difference of differences
-written out in full: the after-minus-before change in the treated group, minus the
-after-minus-before change in the comparison group.
+**Notation earned.** Difference-in-differences, written first as a 2x2 table of four means that
+the reader fills in, and then as one subtraction of two subtractions. The formula is the table,
+rearranged.
 
-**Misconception killed.** "You can only establish cause with an experiment", and its opposite,
-"observational data can never establish cause". Both are wrong, both are widely held, and
-plenty of people hold both on different days.
+**Misconception killed.** "You cannot run an experiment on that, so it is unknowable." And its
+opposite, which is more common among people who have had one statistics course: "it was an
+experiment, so it settles the matter."
 
 **Instruments.**
-- *The balancer.* A population where every unit carries a hidden attribute the reader cannot
-  see and the researcher never measured. Assign by choice and the hidden attribute ends up
-  lopsided every time. Assign at random and it comes out close to balanced, and the reader holds
-  the button down to see how close: mostly near even, occasionally lopsided by chance, and never
-  lopsided in a consistent direction. Then the reveal: the hidden attribute is displayed.
-  Randomisation balanced a variable that nobody knew existed, in expectation and without knowing
-  it existed. The promise is about the long run and about the size of the groups, which is why a
-  trial with twelve people in it is not protected by having been randomised. Even with that
-  caveat drawn on the screen, this is the most persuasive twenty seconds in the course, and it
-  is the reason unit 15 is the last technical unit rather than an appendix.
-- *Two lines.* Two groups measured before and after, with a treatment applied to one, and a
-  draggable counterfactual line. The reader constructs the difference-in-differences estimate by
-  hand, then breaks it by tilting the pre-trend, which is what the parallel-trends assumption
-  means and why it has to be shown rather than claimed. The worked case is Card and Krueger's
-  1994 study of the New Jersey minimum wage in the *American Economic Review*, with
-  Pennsylvania as the comparison.
-- *The pump.* John Snow, London, 1854. The Broad Street map, and then the better half of the
-  story that rarely gets told: households on the same streets supplied by two different water
-  companies, assigned to their supplier years earlier for reasons unconnected to cholera. A
-  natural experiment before the phrase existed.
-- *The lady and the tea.* Fisher's 1935 tea-tasting design as the smallest complete experiment
-  there is, and as the origin of the shuffle the reader already used in unit 11.
+- *The balancer.* A population with a hidden variable that affects the outcome. Assign at
+  random, and a readout shows the imbalance in that hidden variable across many worlds, centred
+  on zero and shrinking with group size. Then let the reader assign by judgement instead, and
+  watch the imbalance stop being centred on zero. Needs `rng.shuffle`, `stats.twoGroup`,
+  `ui.seedBox`.
+- *The 2x2.* Card and Krueger's fast-food table. Four numbers, and the reader fills in the
+  fourth after computing the other three.
+- *The parallel-trends slider.* The whole assumption made visible. The reader tilts the
+  counterfactual trend for the comparison group and watches the estimated effect slide from
+  large to zero to negative, without any observed data changing. This is the instrument the unit
+  exists for.
+- *The Snow map.* Two water companies serving interleaved houses on the same streets. The
+  cleanest natural experiment anybody has found, and it predates the theory by a century.
 
-**Truths and lies.** A comparison group chosen after the outcome is known can be chosen to win.
-Parallel trends assumed rather than plotted. And the one the reader is most likely to commit
-themselves: the before-and-after with no control group, which credits the intervention with
-everything else that happened that year.
+**Truths and lies.** Parallel trends smuggled in as a technical detail when it is the entire
+claim, and the "natural experiment" whose natural part was chosen after the results were seen.
 
-**Time.** 24 min. **Depends on.** 13 for the counterfactual, 11 for the shuffle that the tea
-tasting turns out to be, and 14 for reading a trend line off a pair of groups.
+**Time.** 24 min. **Depends on.** 13, 11, 14.
 
 ### 16. Telling the truth with numbers
 
 **The one question.** How do I say something true, clearly, without misleading anyone, including
 myself?
 
-**Installs.** The whole toolkit turned round and pointed at claims, starting with the reader's
-own. A reading checklist that fits on one screen. The practice of writing a finding with its
-wobble attached rather than in a footnote. Pre-registration as a personal habit rather than a
-bureaucratic one.
+**Installs.** The whole toolkit turned on prose. A working order of questions to put to any
+claim: what was measured, per what, compared to what, how big is the wobble, what else differs
+between the groups, and who never made it into the data. The difference between a lie and a
+framing, which is real but narrower than people want it to be. And the reader's position as a
+producer of numbers rather than only a consumer of them.
 
-**Notation earned.** None. This unit is about translating notation back into English without
-losing the uncertainty on the way out.
+**Notation earned.** Nothing new. The unit is about sentences, and that is the point.
 
-**Misconception killed.** "Misleading with statistics requires lying." Every distortion in this
-course was performed with true numbers, and the reader performed all of them personally.
+**Misconception killed.** "People who mislead with statistics are lying." Most misleading numbers
+are produced by people who believed they were being careful, using defaults they did not choose,
+under deadline. The reader has spent fifteen units doing exactly that on purpose.
 
 **Instruments.**
-- *The distortion studio.* One honest dataset and a rack of levers, every one of which the
-  reader has already pulled in an earlier unit: crop the axis (unit 1), switch the denominator
-  (unit 2), re-bin (unit 3), quote the mean instead of the median (unit 4), drop the spread
-  (unit 5), pick the window (unit 12), choose the outcome after looking (unit 11), drop the
-  control group (unit 15). The reader builds the most misleading true chart they can, sees a
-  list of which levers they reached for, and then writes the honest version of the same finding
-  in a text box with a model answer alongside it.
-- *The audit.* Six real published claims. For each one: what is the number, what is the
-  denominator, what is the comparison group, what is the wobble, and what would have to be true
-  for this to be causal.
+- *The headline machine.* One true finding. The reader writes three headlines, one that
+  overstates, one that understates and one they would defend, and each is scored against what a
+  reader would come away believing rather than against what it literally says.
+- *The claim autopsy.* A real published claim, taken apart with the six questions in order, with
+  the reader's answers accumulating into a verdict they wrote themselves.
+- *The rebuild.* A distorted chart handed back honestly. Sometimes the story survives, and that
+  case is included on purpose, because a course that only ever debunks teaches the reader that
+  the correct posture is refusal.
 
-**Truths and lies.** The whole unit. The closing move is the uncomfortable one, and it is aimed
-at the reader rather than at the press. They are shown a misleading chart they made themselves
-in an earlier unit by accepting a default, and told that this is how most misleading charts get
-made.
+**Truths and lies.** All of them, and one closing point that the reader is now equipped to hear:
+the tools in this course are equally good at both jobs, and nothing in the mathematics decides
+which one you are doing.
 
-**Time.** 20 min. **Depends on.** Everything.
+**Time.** 20 min. **Depends on.** All of them.
 
 ---
 
 ## What is deliberately absent
 
-**Bayesian inference as a framework.** Conditional probability is in unit 6 through natural
-frequencies, and Bayes' theorem sits in a depth block there. A full Bayesian unit is the
-strongest candidate for a seventeenth unit, and it would go directly after unit 10. The honest
-range is where the frequentist interpretation is at its least intuitive, and a posterior
-interval is exactly the object readers believed they were being handed. I left it out because
-two inferential frameworks taught in one introductory course produce readers who can operate
-neither, and because the misconception unit 10 exists to kill is precisely the one a Bayesian
-treatment would then make legitimate. That sequencing needs more care than I can specify here,
-and this is the weakest call in the document.
+**A Bayesian framework.** Conditional probability is unit 10 through natural frequencies, and
+Bayes' theorem sits in a depth block there. A full Bayesian unit is the strongest candidate for
+a seventeenth, and it would go directly after unit 9. The honest range is where the frequentist
+reading is at its least intuitive, and a posterior interval is exactly the object readers thought
+they were being handed. It is out because two inferential frameworks in one introductory course
+produce readers who can operate neither, and because the misconception unit 9 exists to kill is
+the one a Bayesian treatment then legitimises. This is the weakest call in
+the document.
 
-**Named tests as a catalogue.** No chi-square unit, no ANOVA unit, no non-parametric unit.
-Under a simulation-first spine these are variations on the shuffle in unit 11, differing only
-in what gets shuffled and what statistic gets recorded. Teaching them as separate rituals is
-the epicycle Cobb was describing. They belong in a reference appendix that maps each named test
-onto its shuffle, which is a page rather than a unit.
+**Named tests as a catalogue.** No chi-square unit, no ANOVA unit, no non-parametric unit. Under
+a shuffle-first spine these are variations on unit 11, differing in what gets shuffled and what
+statistic gets recorded. They belong in a reference page that maps each named test onto its
+shuffle, which is a page and not a unit.
 
-**Time series, survival analysis, multilevel models, machine learning.** Out of scope for a
-first course. The order dial in unit 14 plants overfitting, which is the one idea from that
-territory a general reader needs in order to read the news.
+**Combinatorics and formal probability axioms.** Counting arrangements is a genuine skill and it
+is not the skill this course exists to build. Unit 4 gets its probabilities from repetition and
+unit 10 gets them from counting bodies in a tree, and neither needs a factorial.
 
-**Calculus-based derivations.** Not because readers cannot handle them. Because every
+**Time series, survival analysis, multilevel models, anything called machine learning.** Out of
+scope for a first course. The order dial in unit 14 plants overfitting, which is the one idea
+from that territory a general reader needs in order to read the news.
+
+**Calculus-based derivations.** Not because readers cannot handle them, but because every
 derivation this course would need can be replaced by a simulation that shows the same thing and
-is more convincing to more people. The n − 1 correction is the test case: watching a biased
-estimator sit consistently low across 10,000 simulated samples persuades people that the
-algebra does not.
-
-**Formal probability axioms and combinatorics.** Counting arrangements is a genuine skill and
-it is not the skill this course exists to build.
+convinces more people. The n − 1 correction is the test case: watching a biased estimator sit
+consistently low across 10,000 simulated samples persuades people that the algebra does not.
 
 ---
 
 ## Where this spine is most likely wrong
 
-**Unit 14 is over-packed.** Twenty-six minutes against a loop PEDAGOGY budgets at fifteen, with
-four instruments and no room left. Unit 15 sits in the same place, at 24 minutes and four
-instruments. The split point for 14 is named in the unit entry. If a build agent tells me it
-does not fit, they are right and it should split, and the course becomes seventeen units.
+**The notation hold through units 4 and 5 may be too long.** Two consecutive units with no new
+symbols is a genuine risk, and the specific danger is condescension rather than confusion. A
+reader who can already do algebra may read the English-only summaries as being handled with
+care, which is the one tone VOICE.md bans outright. The mitigation is the depth mechanism from
+PEDAGOGY section 5, and a depth block in unit 5 that gives the symbolic forms in full to whoever
+opens it. If reader feedback says the hold reads as coddling rather than as sequencing, the fix is to
+move the Σ gate back to unit 5 and let unit 7 carry only se, which costs the variance-adds
+payoff and is survivable.
 
-**Unit 6 may be in the wrong place.** The prosecutor's fallacy and the natural-frequency tree
-are the best material in that unit and they have almost nothing to do with the inference that
-follows it. There is a defensible variant where conditional probability moves out to sit
-against unit 13, since confounding is a conditional-probability idea wearing different clothes,
-and unit 6 shrinks to long-run frequency alone at about 14 minutes. I did not take that variant
-because it splits the reader's one encounter with probability into two distant halves, but I
-hold it loosely.
+**Unit 4 may be doing too much of the course's work.** Four instruments, the beauty moment, the
+seed feature, the first distortion the reader manufactures, and the load-bearing signal-noise
+distinction. If it fails, five later units lose their foundation at once. That is a real single
+point of failure, and it argues for building unit 4 second, immediately after unit 1, so that it
+is tested on readers early rather than late.
 
-**The causal ledger assumes continuity.** Unit 1 stores the reader's answer in `localStorage`
-and unit 13 reads it back. Most readers will not arrive at unit 13 in the same browser, or the
-same month. The ledger has to degrade gracefully to a generic version, and when it degrades the
-payoff is much weaker, and the argument in section (b) leans on that payoff harder than is
-comfortable.
+**Splitting probability may leave a hole neither half covers.** Independence gets one instrument
+in unit 4 and never returns explicitly, and independence is the assumption that fails most often
+in real data. Clustered samples, repeated measures and network effects all break it, and this
+spine has nowhere to put that. The honest patch is a depth block in unit 7 on what happens to
+the standard error when the draws are not independent, and it is a patch rather than a solution.
 
-**Sixteen units is longer than anyone finishes.** The stopping-point hedge above is a response
-to that and not a solution to it. If the delayed transfer tests in PEDAGOGY section 8 ever get
-run, the first thing worth measuring is not whether the instruments beat static text, but where
-readers stop, and whether the ordering put the right thing before that point.
+**Unit 5 and unit 14 are both over the loop ceiling.** Split points are named in each entry. If
+a build agent reports that either does not fit, they are right and it should split.
+
+**The causal ledger assumes continuity across sessions.** Unit 1 writes to `localStorage` and
+unit 13 reads it back, and most readers will not reach unit 13 in the same browser or the same
+month. Unit 1 mitigates this by reading the answer back within its own session, so the ledger's
+main payoff is collected immediately and unit 13's callback is a bonus rather than a load-bearing
+beam. Section (b) leans on the immediate payoff, not the deferred one.
+
+**344 minutes is longer than anybody finishes.** The stopping-point section is a response and not
+a solution. If the delayed transfer tests in PEDAGOGY section 8 ever get run, the first thing to
+measure is not whether instruments beat static text but where readers stop, and whether the
+ordering put the right thing before that point.
 
 ---
 
 ## Reconciling with `app/curriculum.js`
 
-The shipped list has eighteen units. This spine has sixteen, and two of the moves are
+The shipped list has eighteen entries. This spine has sixteen, and five of the moves are
 substantive rather than editorial.
 
 | Shipped | Becomes | Why |
 |---|---|---|
-| `01-noticing`, `02-counting` | `01-noticing` | Merged. Subitising failing at about four objects is the reason counting exists, so the two halves are one argument |
+| `01-noticing`, `02-counting` | `01-noticing` | Merged. The eye failing at about four objects is the reason counting exists, so the two halves are one argument |
 | `03-measure` | `02-numbers` | Renumbered |
-| `04-piles` | `03-pile` | Renumbered |
-| `05-middle` | `04-middle` | Renumbered |
-| `06-spread` | `05-spread` | Renumbered; this is now the notation gate |
-| `07-chance` | `06-chance` | Position relative to description unchanged |
-| `08-bell` | `09-bell` | **Moved down two.** The normal family becomes an explanation of the sampling distribution rather than a prerequisite for it. Section (a) |
-| `09-sampling` | `07-sampling` | Moved up one, ahead of the bell |
-| `10-wobble` | `08-wobble` | Moved up one, ahead of the bell |
-| `11-range` | `10-range` | Renumbered |
-| `12-trial` | `11-trial` | Renumbered; rebuilt around the shuffle, with t as a shortcut |
+| `04-piles` | `03-pile` | Renumbered. Summary statistics removed from it entirely, so the unit is shape only |
+| `07-chance` | `04-reroll` | **Moved up three, ahead of all summarising.** Rebuilt around the generator and the seeded world. Section (a) |
+| `05-middle`, `06-spread` | `05-pocket` | **Merged.** A centre taught apart from a spread teaches that a centre can stand alone. Section (c) and the unit entry |
+| `09-sampling` | `06-sampling` | Moved up. Now carries the counterfactual. Section (b) |
+| `10-wobble` | `07-wobble` | Moved up three. The notation gate |
+| `08-bell` | `08-ruler` | **Held in place numerically but rebuilt.** No longer a shape-of-data unit; it is the device that turns a distance into a probability, and it explains unit 7 rather than preceding it |
+| `11-range` | `09-range` | Renumbered |
+| (part of `07-chance`) | `10-evidence` | **Split out and moved down four.** Conditional probability now sits against testing, because the prosecutor's fallacy and the p-value error are one error. Section (a) |
+| `12-trial` | `11-trial` | Rebuilt around the shuffle, with t as a shortcut that agrees |
 | `13-together` | `12-together` | Renumbered |
-| `15-cause` | `13-third` | **Moved up, ahead of regression.** Section (b) |
+| `15-cause` | `13-third` | Moved ahead of regression. Section (b). Collider added |
 | `14-line`, `17-models` | `14-line` | Merged. A line is the reader's first model |
-| `16-designed` | `15-designed` | Renumbered; now the final technical unit |
+| `16-designed` | `15-designed` | Renumbered. Now the final technical unit |
 | `18-rhetoric` | `16-rhetoric` | Unchanged in role |
 
-`app/curriculum.js` in this changeset is regenerated to match. Every existing field name is
-kept (`id`, `no`, `status`, `minutes`, `title`, `question`, `installs`, `lies`), so
-`app/views/map.js` needs no edit: it reads `id`, `no`, `status`, `minutes`, `title` and
-`question`, and `installs` and `lies` are carried for the unit pages. One field is added,
-`part`, which lessons pass through as the `unit` field on their default export. If the synthesis
-picks a different spine, drop the regenerated `app/curriculum.js` with it. Taking the data file
-without the argument is the drift both files exist to prevent.
+`app/curriculum.js` is not regenerated in this changeset, on purpose. Every field name here
+matches the shipped ones (`id`, `no`, `part`, `status`, `minutes`, `title`, `question`,
+`installs`, `lies`), so regeneration is mechanical once a spine is chosen, and `app/views/map.js`
+needs no edit either way. Taking the data file without the argument is the drift both files exist
+to prevent, so whoever picks a spine should write both in one commit.
+
+Two part titles change: part II becomes "What a crowd looks like" because chance now sits inside
+it, and part III becomes "From a few to the many" because chance no longer does.
 
 ---
 
 ## Sources this ordering leans on
 
-Named so that a contributor can go and disagree with them. None of these has been re-derived
-here, and any claim that reaches a reader's screen gets checked against the original first,
-which is the standard PEDAGOGY section 8 already sets.
+Named so a contributor can go and disagree with them. Nothing here has been re-derived, and any
+claim that reaches a reader's screen gets checked against the original first, which is the
+standard PEDAGOGY section 8 already sets.
 
 - George Cobb, "The Introductory Statistics Course: A Ptolemaic Curriculum?", *Technology
-  Innovations in Statistics Education*, 2007. The argument for simulation-first inference, and
-  the reason the bell is ninth.
+  Innovations in Statistics Education*, 2007. The case for simulation-first inference, and the
+  reason unit 11 is a shuffle before it is a formula.
 - Nathan Tintle and colleagues, randomisation-based introductory curricula and their assessment,
-  *Journal of Statistics Education* and elsewhere, 2011 onwards.
+  *Journal of Statistics Education* and after, 2011 onwards.
+- Gerd Gigerenzer and Ulrich Hoffrage, "How to Improve Bayesian Reasoning Without Instruction:
+  Frequency Formats", *Psychological Review*, 1995. The whole architecture of unit 10.
 - Amos Tversky and Daniel Kahneman, "Belief in the Law of Small Numbers", *Psychological
-  Bulletin*, 1971. Unit 6. Tversky is the first author, which the unit text gets right and half
-  the internet does not.
+  Bulletin*, 1971. Unit 4's streak reader and unit 6. Tversky is first author, which half the
+  internet gets wrong.
 - Frank Anscombe, "Graphs in Statistical Analysis", *The American Statistician*, 1973. Unit 12.
 - Peter Bickel, Eugene Hammel and J. William O'Connell, "Sex Bias in Graduate Admissions: Data
   from Berkeley", *Science*, 1975. Unit 13.
 - Francis Galton, "Regression Towards Mediocrity in Hereditary Stature", *Journal of the
-  Anthropological Institute*, 1886. Unit 14.
+  Anthropological Institute*, 1886. Unit 14, and the quincunx in unit 8.
 - David Card and Alan Krueger, "Minimum Wages and Employment: A Case Study of the Fast-Food
   Industry in New Jersey and Pennsylvania", *American Economic Review*, 1994. Unit 15.
 - John Snow, *On the Mode of Communication of Cholera*, second edition, 1855. Unit 15.
 - Ronald Fisher, *The Design of Experiments*, 1935. Unit 15.
 - Joseph Simmons, Leif Nelson and Uri Simonsohn, "False-Positive Psychology", *Psychological
-  Science*, 2011. Unit 11.
+  Science*, 2011. Unit 11's forking path.
 - Andrew Gelman and Eric Loken, "The Statistical Crisis in Science", *American Scientist*, 2014.
-  Unit 11.
+  Unit 11, and the reason unit 4's distortion is framed as an honest mistake.
 - Ronald Wasserstein and Nicole Lazar, "The ASA's Statement on p-Values: Context, Process, and
   Purpose", *The American Statistician*, 2016. Unit 11.
 - George Box, "Science and Statistics", *Journal of the American Statistical Association*, 1976.
   Unit 14.
 - Richard Doll and Austin Bradford Hill, "Smoking and Carcinoma of the Lung", *British Medical
-  Journal*, 1950. Unit 13, and the target of the tobacco industry's version of "correlation is
-  not causation".
-- Peverill Squire, "Why the 1936 Literary Digest Poll Failed", *Public Opinion Quarterly*, 1988.
-  Unit 7. The ballot counts, the response rate and Gallup's sample size all come from here and
-  all need checking against it before they reach a screen.
-- Royal Statistical Society, public statement on the Sally Clark case, 2001. Unit 6. The
-  1-in-73-million figure, the 1999 conviction date and the 2003 appeal all get verified against
-  the RSS statement and the Court of Appeal judgment before they go on a screen.
-- The remark about twenty-five-standard-deviation moves in unit 9 is attributed to a bank's
-  chief financial officer in the *Financial Times*, August 2007. I have not read the original
-  and the wording is from memory, so it is quoted as a paraphrase and marked for verification.
-  If it cannot be sourced, the instrument works with a flood return period instead and loses
-  nothing.
+  Journal*, 1950. Unit 13, and the target of the tobacco industry's version of the same argument.
+- Abraham Wald's memoranda on aircraft survivability, Statistical Research Group, 1943. Unit 6.

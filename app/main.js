@@ -43,11 +43,17 @@ async function boot() {
   view('map', map);
   view('about', about);
 
-  /* Lessons register themselves. Adding one is a two-line change here. */
-  const lessonModules = await Promise.all([
-    import('./lessons/01-noticing/index.js').catch(() => null),
-  ]);
-  lessonModules.forEach(m => { if (m && m.default) register(m.default); });
+  /* A lesson needs the whole toolkit. If any part failed to load we do not register
+     the lessons at all, so the map shows them as unfinished rather than handing a
+     reader a broken screen. The site is never allowed to overstate what works. */
+  const coreReady = !!(toolkit.rng && toolkit.stats && toolkit.viz && toolkit.ui && toolkit.engine);
+
+  if (coreReady) {
+    const lessonModules = await Promise.all([
+      import('./lessons/01-noticing/index.js').catch(() => null),
+    ]);
+    lessonModules.forEach(m => { if (m && m.default) register(m.default); });
+  }
 
   start({
     mount,
@@ -59,6 +65,8 @@ async function boot() {
         viz: toolkit.viz,
         ui: toolkit.ui,
         engine: toolkit.engine,
+        // Lessons reach for ctx.stage(canvas) constantly, so it is lifted out of viz.
+        stage: toolkit.viz ? toolkit.viz.stage : null,
         // A ready-to-use generator for this world, if core/rng.js is present.
         rng: toolkit.rng ? toolkit.rng.makeRng(seed) : null,
         makeRng: toolkit.rng ? toolkit.rng.makeRng : null,

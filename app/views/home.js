@@ -4,7 +4,7 @@
    that one moment, so the moment gets the best real estate. */
 
 import { UNITS, READY } from '../curriculum.js';
-import { go } from '../core/router.js';
+import { go, lessonById } from '../core/router.js';
 
 /* Canvas cannot read CSS variables on its own, so we look them up. Doing it this way
    means the drawing follows light and dark mode without a second palette. */
@@ -237,10 +237,12 @@ export function home(root) {
   /* ---------- where to go ---------- */
   const next = el('section', 'prose');
   next.style.marginTop = 'var(--s-7)';
+  // Count lessons that actually loaded, not lessons we intend to have written.
+  const live = READY.filter(u => lessonById(u.id)).length;
   next.append(el('h2', null, 'Where to start'));
   next.append(el('p', 'muted',
     `The course runs from noticing things to reading a regression table, in ${UNITS.length} units. ` +
-    `${READY.length === 1 ? 'One unit is' : READY.length + ' units are'} ready to work through today; ` +
+    `${live === 1 ? 'One unit is' : live + ' units are'} ready to work through today; ` +
     'the rest are being built in the open, and the map says plainly which is which.'));
   const goMap = el('button', 'ec-btn', 'Open the map');
   goMap.addEventListener('click', () => go('map'));

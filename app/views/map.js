@@ -2,8 +2,8 @@
    The whole course on one screen, honest about what is finished and what is not.
    A reader should be able to see the shape of the journey before committing to step one. */
 
-import { UNITS } from '../curriculum.js';
-import { go } from '../core/router.js';
+import { UNITS, PARTS } from '../curriculum.js';
+import { go, lessonById } from '../core/router.js';
 
 const el = (tag, cls, text) => {
   const n = document.createElement(tag);
@@ -26,8 +26,22 @@ export function map(root) {
   wrap.append(head);
 
   const list = el('div', 'map');
+  let shownPart = null;
   UNITS.forEach(u => {
-    const ready = u.status === 'ready';
+    // The course comes in six named parts. Print a heading the first time each appears,
+    // so the map reads as an arc rather than a list of sixteen equal things.
+    if (u.part && u.part !== shownPart) {
+      shownPart = u.part;
+      const meta = PARTS.find(p => p.id === u.part);
+      if (meta) {
+        const h = el('h2', 'part-head');
+        h.textContent = `Part ${meta.id} · ${meta.title}`;
+        list.append(h);
+      }
+    }
+    // A unit counts as ready only if its lesson actually loaded. The curriculum file
+    // says what is intended; the router says what exists. The reader gets the truth.
+    const ready = u.status === 'ready' && !!lessonById(u.id);
     const card = el('button', 'unit');
     card.type = 'button';
     if (!ready) {

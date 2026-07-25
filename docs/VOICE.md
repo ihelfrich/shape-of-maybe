@@ -8,8 +8,8 @@ This is binding. A pull request can be rejected on voice alone, and that is not 
 the tone is a load-bearing part of what the site claims to be. A screen that teaches the
 standard error correctly while making the reader feel small has failed at its actual job.
 
-Companion document: [PEDAGOGY.md](PEDAGOGY.md) governs the screens. This one governs the
-words.
+Companion documents: [PEDAGOGY.md](PEDAGOGY.md) governs the screens, [CURRICULUM.md](CURRICULUM.md)
+governs the order. This one governs the words.
 
 ---
 
@@ -81,6 +81,14 @@ is description. If it needs an opinion about the reader, it is praise.
 > the middle of each crowd, and you compared the two. That move has a name: comparing two
 > means.
 
+The line between a fact and a verdict is narrow enough to be worth drawing precisely. A
+statement about the **answer** is a fact and is allowed: "Correct", "The bottom row sits
+further right", "That is the one the data supports". A statement about the **reader** is a
+verdict and is not: "Great job", "Well done", "You're a natural", "See, that wasn't so bad".
+The landing page kicker in `app/views/home.js` reads "Correct — and look at what you
+skipped", which passes, because the sentence that follows is entirely about what happened
+on the screen.
+
 **Bad**
 
 > Don't be intimidated by the formula below. It looks scary, but it's actually really
@@ -130,6 +138,7 @@ These are checkable. A reviewer can search for them.
 | we will now, in this section, let us turn to | Narrates the document instead of teaching | Start the content |
 | let's dive in, welcome to, buckle up, get ready | Enthusiasm as a substitute for interest | Delete |
 | don't worry, don't be scared, no need to panic | Installs the fear it disclaims | Delete |
+| colour words for data roles: the blue line, the orange dots | Excludes colour-blind and screen-reader users | Name the role: the true value, the sample |
 
 ### Banned structures
 
@@ -139,10 +148,12 @@ These are checkable. A reviewer can search for them.
 - **Fake second-person questions that the text then answers.** These stage a conversation
   that is not happening and put a rhetorical question in the reader's mouth.
 - **Rule-of-three padding.** Two examples is fine. Four is fine. Three balanced clauses in
-  a row is the tell that the rhythm is choosing the content.
-- **Em-dashes in body prose.** Titles, kickers, and one-line verdicts may take one, which
-  matches the existing site. Running prose uses commas, colons, parentheses, or a new
-  sentence.
+  a row is the tell that the rhythm is choosing the content. A genuine enumeration that
+  happens to have three members is not padding.
+- **Em-dashes in body prose.** Titles, kickers, and one-line verdicts may take one. The
+  existing precedents are the page title in `index.html`, the `document.title` the router
+  builds, and the `.named__kicker` on the landing page. Running prose uses commas, colons,
+  parentheses, or a new sentence.
 
 **Bad**
 
@@ -175,6 +186,14 @@ These are checkable. A reviewer can search for them.
 > Put one person earning $100 million into a room with thirty teachers on $60,000. The
 > mean income in that room goes from $60,000 to $3.3 million. The median stays exactly
 > where it was. That difference is the entire reason both numbers exist.
+
+### The corpus is not yet clean
+
+One shipped sentence breaks this list. `app/views/about.js` ends with "a subject they were
+simply never shown properly", and "simply" is banned above. It is a real violation and it
+is on the list to fix rather than an exception the charter grants itself. Any other
+instance a reviewer finds in `app/` counts the same way. A charter with a private exemption
+for the prose that already exists is not a charter.
 
 ---
 
@@ -230,7 +249,8 @@ A caption is not a label. It is the shortest honest version of what the figure s
 it is written so that a reader who cannot see the figure still gets the point.
 
 Every caption states, in this order: what is being shown, of what, in what units, and what
-it means. If the figure is simulated, the caption says so and names the world number.
+it means. If the figure is simulated, the caption says so and names the world number. If
+the figure comes from published data, the caption names the source.
 
 **Bad**
 
@@ -238,10 +258,11 @@ it means. If the figure is simulated, the caption says so and names the world nu
 
 **Good**
 
-> Household income for the 4,912 households in this unit's example dataset, in 2023
-> dollars, grouped into $10,000 bins. The mean sits at $106,700 and the median at $75,400.
-> The gap between those two marks is the long right tail doing its work: a small number of
-> very high incomes pull the mean up and leave the median where it was.
+> Household income for the 4,912 households in this unit's synthetic example dataset, in
+> 2023 dollars, grouped into $10,000 bins. No survey was involved; the numbers were built
+> to make one point. The mean sits at $106,700 and the median at $75,400. The gap between
+> those two marks is the long right tail doing its work: a small number of very high
+> incomes pull the mean up and leave the median where it was.
 
 **Bad**
 
@@ -261,8 +282,8 @@ the figure is still the fastest route for everyone else.
 
 This is why colour words are banned in prose. Say **the true value**, not *the blue line*.
 The figure carries the colour, the prose carries the meaning, and the reader who cannot
-distinguish blue from orange loses nothing. The four roles have names for exactly this
-reason: truth, data, result, test.
+distinguish blue from orange loses nothing. The four roles in `app/styles/tokens.css` have
+names for exactly this reason: truth, data, result, test.
 
 ---
 
@@ -383,7 +404,8 @@ is about a choice we made or a promise we are keeping. There is no pedagogical *
 did a moment ago, which is where the naming move lives.
 
 **Spelling.** British. *Maths* in prose, *mathematics* in headings and titles, *randomised*,
-*summarise*, *centred*, *colour*. Data examples keep their own currencies and units.
+*summarise*, *centred*, *colour*, *licence* for the noun. Data examples keep their own
+currencies and units.
 
 **Numerals.** Spell out counts inside a sentence about what the reader did or could do
 ("sixty-eight numbers", "four seconds"). Use digits for data values, sample sizes,
@@ -398,20 +420,19 @@ of dispersion".
 nouns for settings ("Sample size", "World"). Never "Submit". Never "Click here".
 
 **Screen-reader text.** Every canvas gets an `aria-label` that is a sentence describing
-what a sighted reader would take from the picture, not a description of the drawing.
-"Two rows of scattered dots. The top row is centred to the left of the bottom row" is
-right. "A canvas showing a scatter plot" is not.
+what a sighted reader would take from the picture, not a description of the drawing. The
+landing page sets the standard: "Two rows of scattered dots. The top row is centred to the
+left of the bottom row." A canvas labelled "A canvas showing a scatter plot" fails.
 
-**Error messages.** The screen is at fault, never the reader. The existing router already
-sets the standard: "Something in this lesson threw an error, which is our fault rather
-than yours."
+**Error messages.** The screen is at fault, never the reader. The router already sets the
+standard: "Something in this lesson threw an error, which is our fault rather than yours."
 
 ---
 
 ## 10. Writing the curriculum fields
 
 `app/curriculum.js` is prose, and it is the most-read prose on the site because it builds
-the map. Each unit has four written fields and each has a shape.
+the map. Each unit carries four written fields and each has a shape.
 
 **`title`** is a phrase a reader would repeat to a friend. "The wobble" beats "Sampling
 variability". No colons, no subtitles.
@@ -424,9 +445,10 @@ question: "If I did this study again, how different would the answer be?"
 is the sentence that would be true of them afterwards.
 
 **`lies`** is the distortion, stated as a technique rather than an accusation, in one
-sentence, concrete. "Bin width is a dial, and someone is always turning it." A unit
-without a real `lies` field is not finished, and this is enforced by the field being
-required rather than by anyone remembering.
+sentence, concrete. Unit 3 has "Bin width is a dial, and someone is always turning it."
+All sixteen units currently carry one. Nothing in the code checks that, so today the
+guarantee rests on review; PEDAGOGY section 4 sets out the check that would make it
+structural.
 
 ---
 
@@ -434,12 +456,14 @@ required rather than by anyone remembering.
 
 Before opening a pull request that touches prose, read the screen out loud and check:
 
-- [ ] No banned word appears (search for: simply, just, obviously, clearly, of course, as
-      you can see, note that, trivial, don't worry).
+- [ ] No banned word appears (search for: simply, merely, just, obviously, clearly, of
+      course, as you can see, notice how, it is important to note, trivial, don't worry).
+- [ ] No colour word stands in for a data role.
 - [ ] No exclamation mark, no emoji, no em-dash in body prose.
 - [ ] Every symbol on the screen was preceded by the sentence it compresses.
 - [ ] Every naming move is a description of what happened, not a verdict on the reader.
-- [ ] Every caption states what, of what, in what units, and what it means.
+- [ ] Every caption states what, of what, in what units, and what it means, and says so
+      when the data are simulated.
 - [ ] The figure-vanishes test passes on every figure.
 - [ ] Every number has its unit and its denominator.
 - [ ] Uncertainty is stated once, specifically, where it is real.
@@ -448,5 +472,5 @@ Before opening a pull request that touches prose, read the screen out loud and c
 - [ ] No sentence runs past about forty words, and no paragraph opens with a fragment.
 - [ ] It sounds like a person who finds this interesting talking to a person they respect.
 
-The last one is the only check that matters, and the other eleven exist because it is hard
+The last one is the only check that matters, and the other twelve exist because it is hard
 to run on your own writing.

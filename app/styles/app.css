@@ -132,6 +132,12 @@ h3 { font-size: var(--step-1); }
 /* ---------- curriculum map ----------------------------------------------- */
 
 .map { margin-top: var(--s-6); display: grid; gap: var(--s-3); }
+.part-head {
+  font-size: var(--step-1); color: var(--ink-2); font-weight: 600;
+  margin-top: var(--s-5); padding-bottom: var(--s-2);
+  border-bottom: 1px solid var(--line);
+}
+.map > .part-head:first-child { margin-top: 0; }
 .unit {
   display: grid; grid-template-columns: 3.2rem 1fr auto; align-items: center;
   gap: var(--s-3); text-align: left; width: 100%;

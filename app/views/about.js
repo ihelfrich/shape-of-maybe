@@ -55,7 +55,7 @@ export function about(root) {
     'Ian Helfrich, an economist who spent a decade watching bright people decide they were bad ' +
     'at a subject they were simply never shown properly.'));
 
-  const btn = el('button', 'ec-btn', 'Start at the beginning');
+  const btn = el('button', 'ec-button', 'Start at the beginning');
   btn.addEventListener('click', () => go('01-noticing'));
   wrap.append(btn);
 

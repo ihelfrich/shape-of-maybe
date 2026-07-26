@@ -931,9 +931,9 @@ function sectionRecap(kit, state) {
     + 'course. The rest of it is this, with more customers and better instruments, and nothing '
     + 'later is a different kind of thinking from what you did on this screen.'));
 
-  const link = el('a', 'ec-btn', 'Back to the map');
+  const link = el('a', 'ec-button', 'Back to the map');
   link.href = '#/map';
-  /* .ec-btn has no display of its own, so an anchor needs one to keep the 44 px target
+  /* .ec-button has no display of its own, so an anchor needs one to keep the 44 px target
      it was designed with. router.js does the same three lines for the same reason. */
   link.style.display = 'inline-flex';
   link.style.alignItems = 'center';

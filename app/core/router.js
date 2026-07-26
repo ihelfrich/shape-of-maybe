@@ -89,7 +89,7 @@ function notFound(root, id) {
   p.className = 'lede';
   p.textContent = `There is nothing at "${id}" so far. The units that are ready are listed on the map.`;
   const a = document.createElement('a');
-  a.className = 'ec-btn';
+  a.className = 'ec-button';
   a.href = '#/map';
   a.textContent = 'See the units';
   a.style.display = 'inline-flex';

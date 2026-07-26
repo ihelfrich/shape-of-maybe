@@ -143,8 +143,8 @@ export function home(root) {
   body.append(fig);
 
   const row = el('div', 'opener__row');
-  const btnTop = el('button', 'ec-btn ec-btn--ghost', 'The top row');
-  const btnBottom = el('button', 'ec-btn ec-btn--ghost', 'The bottom row');
+  const btnTop = el('button', 'ec-button ec-button-ghost', 'The top row');
+  const btnBottom = el('button', 'ec-button ec-button-ghost', 'The bottom row');
   row.append(btnTop, btnBottom);
   body.append(row);
 
@@ -192,9 +192,9 @@ export function home(root) {
     verdict.append(named);
 
     const cta = el('div', 'opener__row');
-    const start = el('button', 'ec-btn', 'Start unit 1');
+    const start = el('button', 'ec-button', 'Start unit 1');
     start.addEventListener('click', () => go('01-noticing'));
-    const all = el('button', 'ec-btn ec-btn--ghost', `See all ${UNITS.length} units`);
+    const all = el('button', 'ec-button ec-button-ghost', `See all ${UNITS.length} units`);
     all.addEventListener('click', () => go('map'));
     cta.append(start, all);
     verdict.append(cta);
@@ -244,7 +244,7 @@ export function home(root) {
     `The course runs from noticing things to reading a regression table, in ${UNITS.length} units. ` +
     `${live === 1 ? 'One unit is' : live + ' units are'} ready to work through today; ` +
     'the rest are being built in the open, and the map says plainly which is which.'));
-  const goMap = el('button', 'ec-btn', 'Open the map');
+  const goMap = el('button', 'ec-button', 'Open the map');
   goMap.addEventListener('click', () => go('map'));
   next.append(goMap);
   wrap.append(next);

@@ -220,7 +220,9 @@ h3 { font-size: var(--step-1); }
 }
 
 .ec-button {
-  font: inherit; font-size: var(--step--1); font-weight: 700;
+  /* inline-flex so an <a> gets the same box and the same 44px target as a <button> */
+  display: inline-flex; align-items: center; justify-content: center;
+  font: inherit; font-size: var(--step--1); font-weight: 700; text-decoration: none;
   min-height: 44px; padding: 0 var(--s-4); border-radius: var(--r-2);
   border: 1px solid var(--ink); background: var(--ink); color: var(--paper);
   cursor: pointer; transition: transform var(--fast) var(--easing), opacity var(--fast) var(--easing);
@@ -290,11 +292,11 @@ h3 { font-size: var(--step-1); }
 .ec-seedbox-input {
   font: inherit; font-family: var(--mono); font-size: var(--step--1);
   width: 6ch; border: 0; background: transparent; color: var(--ink);
-  font-variant-numeric: tabular-nums; text-align: center; min-height: 38px;
+  font-variant-numeric: tabular-nums; text-align: center; min-height: 44px;
 }
 .ec-seedbox-die {
   display: inline-flex; align-items: center; justify-content: center;
-  min-height: 38px; min-width: 38px; border-radius: 50%;
+  min-height: 44px; min-width: 44px; border-radius: 50%;
   border: 1px solid var(--line-strong); background: var(--card); cursor: pointer; padding: 0;
 }
 .ec-seedbox-die:hover { background: var(--sunk); }

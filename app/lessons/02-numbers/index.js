@@ -9,10 +9,10 @@
    figures chosen so that every rate comes out exact to one decimal place and the
    arithmetic can be done in the head.
 
-   Harborside is 43 square kilometres of terraced streets behind a container port:
-   600,000 residents, short trips, most of them on foot or by bus. Kestrel Valley is
-   2,400 square kilometres of farmland with a highway across it, so most of the
-   miles driven inside it are driven by people who live somewhere else.
+   Harborside is 17 square miles of row houses behind a container port: 600,000
+   residents, short trips, most of them on foot or by bus. Kestrel Valley is 930
+   square miles of farmland with a highway across it, so most of the miles driven
+   inside it are driven by people who live somewhere else.
 
    Nothing on this screen is simulated. The numbers are fixed, which is why this
    lesson never touches ctx.rng and never rolls a world. */
@@ -304,7 +304,11 @@ function pileOfDays() {
 function mountFigure(kit, opts) {
   const fig = kit.ui.figure({ caption: opts.caption, height: opts.height });
   const canvas = fig.canvas;
-  canvas.setAttribute('role', 'img');
+  /* ui.figure points the canvas at its caption with aria-labelledby, and
+     aria-labelledby outranks aria-label, so a canvas left as it arrives would read out
+     the caption and never the sentence describing what is currently drawn. The caption
+     is still on the page as a figcaption and is still read there. */
+  canvas.removeAttribute('aria-labelledby');
   const st = kit.stage(canvas);
   let ro = null;
   let spoken = '';
@@ -406,11 +410,11 @@ function sectionCount(kit, state) {
     if (told) return;
     told = true;
     facts.append(para(
-      `${HARBOUR} is 43 square kilometres of terraced streets behind a container port. It has `
-      + '600,000 residents, and vehicles covered 1.5 billion miles inside it last year. '
-      + `${VALLEY} is 2,400 square kilometres of farmland with 270,000 residents, and vehicles `
-      + 'covered 3.6 billion miles inside it, most of them on the highway that crosses it '
-      + 'carrying traffic between two cities that are nowhere near it.'));
+      `${HARBOUR} is 17 square miles of row houses behind a container port. It has 600,000 `
+      + `residents, and vehicles covered 1.5 billion miles inside it last year. ${VALLEY} is 930 `
+      + 'square miles of farmland with 270,000 residents, and vehicles covered 3.6 billion miles '
+      + 'inside it, most of them on the highway that crosses it carrying traffic between two '
+      + 'cities that are nowhere near it.'));
     facts.append(para(
       'The two counts used none of that. Counting is not at fault: a count answers how many, and '
       + 'how many is worth knowing. It is the wrong tool for the question you were handed, which '
@@ -443,18 +447,26 @@ function sectionPerWhat(kit) {
   wrap.append(para(
     'The repair is division. Divide the deaths by the number of people who live there, or by the '
     + 'number of miles driven on the roads where they died, and the answer stops being about how '
-    + 'big the place is. What you divide by decides what is left. Try all three settings before '
-    + 'you read on.'));
+    + 'big the place is. What you divide by decides what is left.'));
+  wrap.append(para(
+    `Before you touch the switch, say what you expect. ${VALLEY} came out worse on the raw counts. `
+    + 'Dividing both counts by something is one operation applied to both of them evenly. Can it '
+    + 'put the two counties in the other order?'));
 
   let denom = DENOMS[0];
   const seen = new Set([denom.key]);
+  let predicted = false;
 
-  const valueH = kit.ui.readout({ label: HARBOUR, value: denom.show(DEATHS_H), tone: 'data', live: true });
-  const valueV = kit.ui.readout({ label: VALLEY, value: denom.show(DEATHS_V), tone: 'data', live: true });
+  const start = compare(denom, STANDARD);
+  /* Only the readout carrying the finding is spoken. Three live regions updating off one
+     click would read the same change out three times over. */
+  const valueH = kit.ui.readout({ label: HARBOUR, value: denom.show(start.a.v), tone: 'data' });
+  const valueV = kit.ui.readout({ label: VALLEY, value: denom.show(start.b.v), tone: 'data' });
   const worst = kit.ui.readout({
-    label: 'The higher of the two', value: VALLEY, tone: 'result', live: true,
+    label: 'The higher of the two', value: start.hi.name, tone: 'result', live: true,
   });
 
+  const guess = liveBox();
   const reveal = liveBox();
   const more = el('div');
   let opened = false;
@@ -483,18 +495,20 @@ function sectionPerWhat(kit) {
       ], { color: pal.data, gap: 2, alpha: 0.9 });
       /* The bare figure sits on the bar and the unit stays on the axis note. Both together
          would put two 90 px labels on a 254 px canvas, and they would overlap on a phone. */
-      const on = { size: 12, weight: 700, color: pal.ink };
+      const on = { size: 12, weight: 700, color: pal.ink, align: 'center' };
       st.note(denom.bare(c.a.v), st.X(1), st.Y(c.a.v) - 9, on);
       st.note(denom.bare(c.b.v), st.X(2), st.Y(c.b.v) - 9, on);
       st.note(denom.words, 10, 14, { align: 'left', size: 11, color: pal.ink2, weight: 600 });
     },
   });
 
-  /* The reveal waits until all three settings have been looked at, because the third one
-     is the one that turns the order over and a naming block that arrived before it would
-     be naming something the reader had not yet seen happen. */
+  /* Two conditions, and both are load-bearing. The prediction has to be on record first,
+     or the flip is something the reader watched rather than something that contradicted
+     them. All three settings have to have been looked at second, because the third one is
+     the one that turns the order over, and a naming block that arrived before it would be
+     naming something the reader had not yet seen happen. */
   function openUp() {
-    if (opened || seen.size < DENOMS.length) return;
+    if (opened || !predicted || seen.size < DENOMS.length) return;
     opened = true;
     reveal.append(named(
       'That move has a name',
@@ -522,9 +536,9 @@ function sectionPerWhat(kit) {
       + 'prices. The multiplier goes with the subject: deaths per 100,000 people, infant deaths '
       + 'per 1,000 live births, road deaths per billion vehicle-miles. Each was picked to put the '
       + 'usual answer between about 1 and 100. The consequence worth carrying is that two rates '
-      + 'with different multipliers cannot be compared until one is rewritten: 3.0 per 100,000 '
-      + 'and 0.4 per 10,000 look like the smaller and the larger, and they are the other way '
-      + 'round.'));
+      + 'with different multipliers cannot be compared until one is rewritten. Put 3.0 per '
+      + '100,000 next to 0.4 per 10,000 and the first one looks bigger. Rewrite the second on '
+      + 'the same base and it is 4.0 per 100,000, which is the larger of the two.'));
     more.append(deeper(
       'Who a denominator is about',
       'A denominator is a claim about who was exposed, and it is usually the weaker half of the '
@@ -555,11 +569,43 @@ function sectionPerWhat(kit) {
     },
   });
 
+  /* Both buttons stay live and stay focusable after a press, the way the two in the first
+     instrument do. Nothing downstream is locked, and a reader who wants the other answer
+     can go and read it. */
+  let btnNo = null;
+  let btnYes = null;
+
+  function predict(canFlip) {
+    predicted = true;
+    const chosen = canFlip ? btnYes : btnNo;
+    [btnNo, btnYes].forEach((b) => { if (b) b.setAttribute('aria-pressed', String(b === chosen)); });
+    guess.replaceChildren(para(canFlip
+      ? 'Then the setting to go to first is the third one, and the thing to watch is which bar '
+        + 'is taller rather than how tall either one is.'
+      : 'That is the common answer, and the reasoning under it is sound: dividing both counts by '
+        + 'something looks like a change of scale, and a change of scale leaves an order alone. '
+        + 'What breaks it is that the two counties are not being divided by the same number.'));
+    openUp();
+  }
+
+  const guessNo = kit.ui.button({
+    label: 'No, the order holds', kind: 'ghost', onClick: () => predict(false),
+  });
+  const guessYes = kit.ui.button({
+    label: 'Yes, it can turn over', kind: 'ghost', onClick: () => predict(true),
+  });
+  btnNo = asButton(guessNo.el);
+  btnYes = asButton(guessYes.el);
+  [btnNo, btnYes].forEach((b) => { if (b) b.setAttribute('aria-pressed', 'false'); });
+
   wrap.append(
+    controls(guessNo.el, guessYes.el),
+    guess,
     fig.el,
     controls(pickDenom.el),
     readoutRow(valueH.el, valueV.el, worst.el),
-    quiet('Three settings, one dataset. The bars redraw and the readouts follow.'),
+    quiet('Go through all three settings. One dataset underneath all of them, and no number is '
+      + 'edited between them.'),
     reveal,
     more,
   );
@@ -765,8 +811,11 @@ function sectionHeadline(kit) {
   let denom = DENOMS[1];
   let rule = STANDARD;
 
-  const valueH = kit.ui.readout({ label: HARBOUR, value: '', tone: 'data', live: true });
-  const valueV = kit.ui.readout({ label: VALLEY, value: '', tone: 'data', live: true });
+  /* The headline card is the live region here. The two readouts beside it are the same
+     two numbers the headline is built from, and speaking all three off one switch would
+     read the change out three times. */
+  const valueH = kit.ui.readout({ label: HARBOUR, value: '', tone: 'data' });
+  const valueV = kit.ui.readout({ label: VALLEY, value: '', tone: 'data' });
 
   const card = liveBox();
   const chose = liveBox();
@@ -774,7 +823,8 @@ function sectionHeadline(kit) {
   function headline() {
     const c = compare(denom, rule);
     if (denom.key === 'none') {
-      return `${c.hi.name} recorded more road deaths last year than ${c.lo.name}`;
+      return `${c.hi.name} recorded ${whole(c.hi.v)} road deaths last year and ${c.lo.name} `
+        + `recorded ${whole(c.lo.v)}`;
     }
     if (denom.key === 'people') {
       return `${c.hi.name} is ${c.times} times as deadly on the roads as ${c.lo.name}`;
@@ -833,8 +883,8 @@ function sectionHeadline(kit) {
     controls(pickDenom.el, pickRule.el),
     readoutRow(valueH.el, valueV.el),
     card,
-    para('Two of those headlines point at opposite counties. If you had one front page, which '
-      + 'would you run?'),
+    para('The residents setting and the miles setting blame opposite counties, under every one '
+      + 'of the three rules. If you had one front page, which would you run?'),
     controls(printPeople.el, printMiles.el),
     chose,
     warned(
@@ -910,10 +960,13 @@ function sectionRecap(kit, state) {
      invents a decision for them. */
   const yours = liveBox();
   state.onPick((name) => {
-    yours.replaceChildren(para(
-      `You called ${name} the more dangerous of the two before you knew how many people lived in `
-      + 'either place. That was not a guess. It was the only question the counts could answer at '
-      + 'the time.'));
+    yours.replaceChildren(para(name === VALLEY
+      ? `You called ${VALLEY} the more dangerous of the two before you knew how many people lived `
+        + 'in either place. That was not a guess. Which of two counts is larger was the only '
+        + 'question the counts could answer at the time.'
+      : `You called ${HARBOUR} the more dangerous of the two while the only figures on the screen `
+        + `pointed at ${VALLEY}. Whatever you were reaching for, it was not in the counts, and `
+        + 'the rest of the unit was about where to find it.'));
   });
   const rule = liveBox();
   state.onRule((r) => {
@@ -936,13 +989,11 @@ function sectionRecap(kit, state) {
     'Asking "per what" costs about a second and it is the cheapest habit in this course. The '
     + 'second cheapest is asking what a count had to decide before it could be a count.'));
 
-  const link = el('a', 'ec-btn', 'Back to the map');
+  /* .ec-button, not .ec-btn: the stylesheet only knows the long name, and an anchor given
+     the short one arrives as underlined blue text with no 44 px target on it. The rule
+     already sets display, alignment and text-decoration for exactly this case. */
+  const link = el('a', 'ec-button', 'Back to the map');
   link.href = '#/map';
-  /* .ec-btn has no display of its own, so an anchor needs one to keep the 44 px target it
-     was designed with. router.js does the same three lines for the same reason. */
-  link.style.display = 'inline-flex';
-  link.style.alignItems = 'center';
-  link.style.textDecoration = 'none';
   wrap.append(link);
   return wrap;
 }
@@ -958,10 +1009,11 @@ function head() {
   h.append(el('h1', null, 'What a number leaves out'));
   h.append(el('p', 'lesson__q', 'How do I put a number on something real, and what does the number cost?'));
   h.append(el('p', 'lede',
-    `Two counties published their road deaths for the year: ${DEATHS_H} in one, `
-    + `${DEATHS_V} in the other. Both figures are correct and both are about to change places. `
-    + 'Neither one, on its own, tells you which of the two you would rather cross the road in, '
-    + 'and getting from a published figure to that question is the work of this unit.'));
+    `Two counties published their road deaths for the year: ${DEATHS_H} in one, ${DEATHS_V} in `
+    + 'the other. Both figures are correct, and one division apiece is enough to put the two '
+    + 'counties in the other order. Neither figure, on its own, tells you which of the two you '
+    + 'would rather cross the road in, and getting from a published number to that question is '
+    + 'the work of this unit.'));
   h.append(quiet(
     'Both counties are invented and so is every figure below. Nothing here is simulated and '
     + 'there is no world number to roll: everybody reading this page sees the same figures, and '
@@ -994,15 +1046,13 @@ function render(root, ctx) {
   }
 
   /* Nothing on this screen is simulated and nothing on it moves, so the kit asks for no
-     generator and no clock, and ctx.stats goes untouched: the only arithmetic in the unit
-     is division the reader is meant to check by hand. The world number and the writer for
-     it are carried anyway, so that the day somebody adds a rolled figure to this unit the
-     wiring is where it is in every other lesson. */
+     generator, no clock and no world number, and ctx.stats goes untouched: the only
+     arithmetic in the unit is division the reader is meant to check by hand. A lesson that
+     carried ctx.seed and ctx.setSeed without ever rolling anything would put a world in the
+     address bar that changes nothing on the page. */
   const kit = {
     ui,
     stage,
-    seed: ctx.seed == null ? 42 : ctx.seed,
-    setSeed: typeof ctx.setSeed === 'function' ? ctx.setSeed : null,
     bin: [],       // teardown jobs
     redraws: [],   // one per figure
   };

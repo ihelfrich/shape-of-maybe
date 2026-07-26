@@ -38,7 +38,7 @@ const TOP_STEP = 100000;
 const REST_MID = 33000;      // $ a year, the middle of the other thirty-nine
 const REST_SHAPE = 0.24;     // how wide that crowd runs, multiplicatively
 /* Clamped to the axis that will draw them. viz.js does not clip, and the generator can
-   reach 6.7 standard deviations, which on this shape is an income of $166,000: a second
+   reach 6.7 standard deviations, which on this shape is an income near $165,000: a second
    household off the side of the picture, in the one unit that needs exactly one. Counted
    across worlds 1 to 4000, the clamps bite on about one draw in four hundred, so nine
    streets in ten never meet them and the ends of the crowd are drawn rather than
@@ -61,20 +61,34 @@ const PROP_START = 20000;
 /* $; how close to the balance point still reads as level. Wide enough to be findable by
    dragging a thumb across a 320 px phone, where one step of the dial is close to one
    pixel, and narrow enough that the plank at the edge of it is visibly flat: four
-   thousand dollars out moves the far end of the plank by about six pixels in two
+   thousand dollars out moves the far end of the plank by about seven pixels in two
    hundred and forty. */
 const BALANCE_TOL = 4000;
 const PLANK_Y = 0.34;        // the height of the pivot, in the 0-to-1 vertical data space
 const TILT_MAX = 0.30;       // how far the far end of the plank swings, up or down
-const TILT_REF = 40000;      // $ of imbalance per household that counts as a full tip
+const TILT_REF = 40000;      // $ of imbalance per household that reaches three quarters of that
 /* Half the width of the prop, in data units. Narrow, because near the left-hand end of
    the dial the foot on that side is drawn off the edge of the canvas, and a prop with a
    short foot loses less of itself there. */
 const PROP_HALF = 0.02 * PLANK_HI;
 const HEAP_ROWS = 13;        // the pile of thirty-nine is this many weights tall
 
-/* $1,234, with no dependence on the reader's locale. */
-const money = (v) => '$' + String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+/* $1,234, and $94,182.50 when the number really has cents, with no dependence on the
+   reader's locale. The cents are not fussiness. Forty incomes rounded to the nearest $100
+   give a mean that lands on a quarter of a dollar, and the deep block at the end invites the
+   reader to multiply that mean by forty and get the street's total back. Printed to the
+   nearest dollar it misses by up to $20, and a screen that fails its own arithmetic check is
+   the worst thing this site can put in front of somebody. */
+const money = (v) => {
+  const cents = Math.round(v * 100);
+  const whole = String(Math.floor(Math.abs(cents) / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const rest = Math.abs(cents) % 100;
+  return (cents < 0 ? '-$' : '$') + whole + (rest ? '.' + String(rest).padStart(2, '0') : '');
+};
+/* The nearest dollar, for the one quantity on this screen that does not land on a whole cent:
+   a total shared between thirty-nine rather than forty. It is quoted with the word "about" in
+   front of it, because printing cents on a number that has more of them is a small lie. */
+const dollars = (v) => money(Math.round(v));
 /* $2.4 million, and $2.4m where an axis has no room for the word. */
 const millions = (v) => '$' + (Math.round(v / 100000) / 10) + ' million';
 const mShort = (v) => '$' + (Math.round(v / 100000) / 10) + 'm';
@@ -201,8 +215,8 @@ function makeStreet(kit) {
     sumRest,
     axisTop,
     /* Quoted in a spoken description, so it is counted rather than asserted: across
-       worlds 1 to 4000 this runs from 19 to 36 of the thirty-nine, and a sentence
-       saying "most of them" would be false at the bottom of that range. */
+       worlds 1 to 4000 this runs from 21 to 38 of the thirty-nine, and a sentence
+       saying "nearly all of them" would be false at the bottom of that range. */
     under40: rest.filter((v) => v < 40000).length,
     meanAt: (top) => kit.stats.mean(all(top)),
     medianAt: (top) => kit.stats.median(all(top)),
@@ -342,9 +356,9 @@ function sectionMark(kit, street, state) {
       + `world ${kit.seed}. One dot is one household. The height of a dot means nothing: it is `
       + 'jitter, so that households on similar incomes do not hide behind each other. '
       + `Thirty-nine of them sit between ${money(street.lo)} and ${money(street.hi)}. The `
-      + `fortieth earns ${millions(TOP_START)}, which would sit `
-      + `${Math.round(TOP_START / STRIP_HI)} times further right than this axis reaches, so it `
-      + 'is marked at the edge instead. Your marker is the tick you can move.',
+      + `fortieth earns ${millions(TOP_START)}, which is `
+      + `${Math.round(TOP_START / STRIP_HI)} times as far right as this axis reaches, so it is `
+      + 'marked at the edge instead. Your marker is the tick you can move.',
     describe: () => {
       const shape = `Thirty-nine incomes drawn as dots between ${money(street.lo)} and `
         + `${money(street.hi)} a year, ${street.under40} of them below $40,000, and one `
@@ -362,27 +376,24 @@ function sectionMark(kit, street, state) {
   });
 
   const yours = kit.ui.readout({ label: 'Your mark', value: money(mark), tone: 'plain' });
-  /* Both counts stay blank until the reader commits. Live from the first frame, they
-     would hand over the answer to the next beat but one: a reader could hunt for the
-     split that comes out even and find the median without ever being told there was
-     one to find. Afterwards they follow the marker, because a sentence the reader can
-     make false by dragging is a sentence this site does not write. */
-  const under = kit.ui.readout({
-    label: 'Households below it', value: 'not yet', tone: 'data', live: true,
-  });
-  const over = kit.ui.readout({
-    label: 'Households above it', value: 'not yet', tone: 'data', live: true,
-  });
+  /* Both counts stay blank until the reader commits. Filled in from the first frame they
+     would hand over the answer to the next beat but one: a reader could hunt for the split
+     that comes out even and find the median without ever being told there was one to find.
+     Neither is spoken. Once the reader has committed, both follow the dial, and a polite
+     region that changes with every pixel of a drag reads sixty numbers a second to a screen
+     reader and lands none of them. The sentence under the press is what speaks. */
+  const under = kit.ui.readout({ label: 'Households below it', value: 'not yet', tone: 'data' });
+  const over = kit.ui.readout({ label: 'Households above it', value: 'not yet', tone: 'data' });
 
-  const counts = () => {
-    const below = street.rest.filter((v) => v < mark).length;
-    under.set(`${below} of ${N_HOMES}`);
-    over.set(`${N_HOMES - below} of ${N_HOMES}`);
-  };
+  const say = liveBox();
+  const below = () => street.rest.filter((v) => v < mark).length;
 
   const refresh = () => {
     yours.set(money(mark));
-    if (marked) counts();
+    if (marked) {
+      under.set(`${below()} of ${N_HOMES}`);
+      over.set(`${N_HOMES - below()} of ${N_HOMES}`);
+    }
     fig.draw();
   };
 
@@ -390,7 +401,12 @@ function sectionMark(kit, street, state) {
     label: 'Where the street sits',
     min: 0, max: STRIP_HI, step: 500, value: mark,
     fmt: (v) => money(v),
-    onInput: (v) => { mark = Number(v); refresh(); },
+    onInput: (v) => {
+      mark = Number(v);
+      /* Whatever the last press said about the marker stops being true the moment it moves. */
+      say.replaceChildren();
+      refresh();
+    },
   });
 
   /* The button is operable from the first frame. Gating it behind a drag would hide the
@@ -402,12 +418,15 @@ function sectionMark(kit, street, state) {
       const first = !marked;
       marked = true;
       refresh();
+      say.replaceChildren(para(
+        `Your marker is at ${money(mark)}. ${below()} of the ${N_HOMES} households sit below it `
+        + `and ${N_HOMES - below()} above.`));
       state.setMark(mark);
       if (!first) return;
       reveal.append(para(
-        'The counts beside the figure say how many households sit on each side of your marker, '
-        + 'and they follow it if you move it. Nothing has been added up. The marker stays on the '
-        + 'pictures below, beside the answers the arithmetic gives.'));
+        'Nothing has been added up. The two counts beside the figure follow the marker from here '
+        + 'on, and the marker itself stays on the pictures below, beside the answers the '
+        + 'arithmetic gives.'));
     },
   });
 
@@ -415,6 +434,7 @@ function sectionMark(kit, street, state) {
     fig.el,
     controls(slider.el, commit.el),
     readoutRow(yours.el, under.el, over.el),
+    say,
     quiet('Press again whenever you want to move it.'),
     reveal,
   );
@@ -457,7 +477,9 @@ function sectionBeam(kit, street) {
   const reveal = liveBox();
   const say = liveBox();
 
-  const where = kit.ui.readout({ label: 'Where the prop sits', value: money(prop), tone: 'plain' });
+  /* No readout repeats where the prop is: the dial already says that, above the reader's thumb
+     and in its aria-valuetext. Nothing here reports the size of the imbalance either, because
+     that number reaches zero at the answer and would turn the hunt into a reading. */
   const how = kit.ui.readout({ label: 'How the plank sits', value: sits(), tone: 'data' });
   const found = kit.ui.readout({ label: 'Where it balances', value: 'not yet', tone: 'result', live: true });
 
@@ -486,7 +508,7 @@ function sectionBeam(kit, street) {
       st.domain(0, PLANK_HI, 0, 1).pad(12, 16, 18, 30);
       st.axisX([0, 1000000, 2000000], (v) => (v === 0 ? '$0' : mShort(v)));
       st.note('income, $ a year', st.W - 8, 12,
-    { align: 'right', size: 11, color: HUE.ink2, weight: 600 });
+        { align: 'right', size: 11, color: HUE.ink2, weight: 600 });
 
       const t = tilt();
       const plankY = (x) => PLANK_Y - t * ((x - prop) / PLANK_HI);
@@ -530,7 +552,6 @@ function sectionBeam(kit, street) {
     fmt: (v) => money(v),
     onInput: (v) => {
       prop = Number(v);
-      where.set(money(prop));
       how.set(sits());
       /* Whatever the last press said about the plank stops being true the moment the
          prop moves, so it goes. The readout beside it is the thing that follows a drag,
@@ -571,12 +592,16 @@ function sectionBeam(kit, street) {
         `Nobody on ${STREET} earns ${money(mean)}. Of the ${N_HOMES} households, ${below} earn `
         + `less than it, and the one that does not earns ${Math.round(TOP_START / mean)} times `
         + 'that amount. Lift the weight at number 1 off the plank and the remaining thirty-nine '
-        + `balance at ${money(meanRest)}, which is a street somebody could live on.`,
+        + `balance at about ${dollars(meanRest)}, which is a street somebody could live on.`,
       ));
       reveal.append(deeper(
         'Why balancing and sharing out give the same number',
         'Level means the pulls cancel. Add up how far every household sits to the right of the '
         + 'prop, subtract how far every one sits to the left, and the two come to nothing.',
+        'Three households make that small enough to check in your head. On incomes of $10, $20 '
+        + 'and $60 the prop stands at $30. The $60 pulls 30 to the right of it, the other two pull '
+        + '20 and 10 to the left, and 30 is 20 plus 10. Add the three incomes and share the $90 '
+        + 'between three, and $30 comes back.',
         'Written out, that says the forty distances from the prop add to zero, so the forty '
         + 'incomes add to forty props. Divide both sides by forty and the prop is standing at the '
         + 'total shared equally. The balance point and the shared-out total are one fact reached '
@@ -590,7 +615,7 @@ function sectionBeam(kit, street) {
   wrap.append(
     fig.el,
     controls(slider.el, commit.el),
-    readoutRow(where.el, how.el, found.el),
+    readoutRow(how.el, found.el),
     say,
     quiet('The readout marked "How the plank sits" says which way it is going. Press as often '
       + 'as you like.'),
@@ -690,8 +715,8 @@ function sectionCrossOff(kit, street, state) {
       if (hadFocus && goEl) goEl.focus({ preventScroll: true });
     });
     const lines = {
-      above: 'The household at number 1 is the reason to think so, and it is the right thing to '
-        + 'be watching. See which round it goes out in.',
+      above: 'The household at number 1 is the reason to think so. Watch which round it goes out '
+        + 'in, and what the two households left standing are doing while it does.',
       about: 'That is the common answer, and worth knowing why it usually holds: your eye was '
         + 'looking at where the households are, and so is this procedure.',
       below: 'Then watch the bottom end, which loses a household every round at exactly the same '
@@ -719,8 +744,8 @@ function sectionCrossOff(kit, street, state) {
           + `between those two, ${money(median)}. That number is the median.`),
       'The household at number 1 was crossed off in the first round, and the picture never '
       + 'noticed it again. The median asked which incomes were higher and which were lower, and '
-      + 'never once asked by how much. That is the whole difference between the two answers, and '
-      + 'it is worth saying in one line: the mean weighs, the median counts.',
+      + 'never once asked by how much. That is the whole difference between the two answers: the '
+      + 'mean weighs, the median counts.',
     ));
     writeCompare();
   }
@@ -788,7 +813,8 @@ function sectionCrossOff(kit, street, state) {
     guessSay,
     controls(go.el),
     readoutRow(left.el, middle.el),
-    quiet('It runs on its own once you start it, and you can run it again.'),
+    quiet('Answering opens the button. The crossing off runs on its own once you start it, and '
+      + 'you can run it again.'),
     reveal,
     compare,
   );
@@ -822,7 +848,8 @@ function sectionPart(kit, street) {
   const guessSay = liveBox();
   const reveal = liveBox();
 
-  const at1 = kit.ui.readout({ label: 'Income at number 1', value: millions(top), tone: 'data' });
+  /* The dial says where number 1 is, so the readouts are given over to the two numbers the
+     beat is a race between, side by side and in the same units. */
   const avg = kit.ui.readout({ label: 'Average income', value: money(street.meanAt(top)), tone: 'result' });
   const mid = kit.ui.readout({ label: 'The middle one', value: money(street.medianAt(top)), tone: 'result' });
 
@@ -842,7 +869,7 @@ function sectionPart(kit, street) {
       st.domain(0, axisTop, 0, 1).pad(12, 14, 20, 30);
       st.axisX([0, 100000, 200000, 300000].filter((v) => v <= axisTop), thousands);
       st.note('income, $ a year', st.W - 8, 12,
-    { align: 'right', size: 11, color: HUE.ink2, weight: 600 });
+        { align: 'right', size: 11, color: HUE.ink2, weight: 600 });
       st.dots(street.rest.map((v, i) => [v, ROW_Y + street.jitter[i] * ROW_J]),
         { r: 4, fill: HUE.data, alpha: 0.8 });
       const m = street.meanAt(top);
@@ -869,7 +896,6 @@ function sectionPart(kit, street) {
     onInput: (v) => {
       top = Number(v);
       moved = true;
-      at1.set(millions(top));
       avg.set(money(street.meanAt(top)));
       mid.set(money(street.medianAt(top)));
       fig.draw();
@@ -906,8 +932,8 @@ function sectionPart(kit, street) {
     reveal.append(named(
       'One household, and a word for it',
       'Number 1 is an outlier: a value sitting a long way from the rest of its own data. Every '
-      + 'dollar added there adds a fortieth of a dollar to the average, which is two and a half '
-      + `cents, and adds nothing at all to the middle one. Take number 1 to ${millions(TOP_MAX)} `
+      + 'dollar added there adds a fortieth of a dollar to the average, which is 2.5 cents, and '
+      + `adds nothing at all to the middle one. Take number 1 to ${millions(TOP_MAX)} `
       + `and the average climbs to ${money(street.meanAt(TOP_MAX))} while the middle one has not `
       + 'moved by a penny.',
       'A crowd with a long tail on one side is skewed, which is the shape you sorted by eye in '
@@ -926,7 +952,7 @@ function sectionPart(kit, street) {
     guessSay,
     fig.el,
     controls(slider.el),
-    readoutRow(at1.el, avg.el, mid.el),
+    readoutRow(avg.el, mid.el),
     reveal,
   );
   return wrap;
@@ -940,19 +966,20 @@ function sectionApply(kit) {
   wrap.append(heading('Somewhere else entirely'));
   wrap.append(para(
     'A health center publishes its waiting times for last month. Half its patients were seen '
-    + 'within 3 days. The mean wait was 11 days, because a few hundred people waited six to '
-    + 'eight weeks for one clinic. All three numbers are correct.'));
+    + 'within 3 days. The mean wait was 11 days, because a few hundred people waited 6 to 8 weeks '
+    + 'for one clinic. Every one of those figures is correct.'));
 
   wrap.append(kit.ui.quiz({
     question: 'Which sentence should the health center publish?',
     options: [
       {
-        label: 'Patients wait 11 days on average, so a typical patient waits about a fortnight.',
+        label: 'Patients wait 11 days on average, so a typical patient waits about a week and a '
+          + 'half.',
         correct: false,
         why: 'The 11 days is correct arithmetic, and the word "typical" is what most people '
           + 'assume an average means, so this is the sentence that gets written. It describes '
-          + 'nobody here. More than half of these patients were seen inside 3 days, and the '
-          + 'people who waited eight weeks did not wait a fortnight either.',
+          + 'nobody here. Half of these patients were seen within 3 days, and the people who '
+          + 'waited 8 weeks did not wait a week and a half either.',
       },
       {
         label: 'Most patients are seen within 3 days, so the 11-day figure is wrong and should '
@@ -965,7 +992,7 @@ function sectionApply(kit) {
       },
       {
         label: 'Half of patients were seen within 3 days. The mean wait was 11 days, pulled up '
-          + 'by a few hundred people waiting six to eight weeks.',
+          + 'by a few hundred people waiting 6 to 8 weeks.',
         correct: true,
         why: 'Both numbers, and the reason they disagree. That last clause is what turns two '
           + 'numbers into a finding: there is a line behind one clinic, and it is long enough '
@@ -1036,7 +1063,7 @@ function sectionPress(kit, street) {
       + 'quoting either one, on your own numbers first.',
     ));
     after.append(para(
-      'Which would you want printed if it were your street? That depends on what the sentence is '
+      'Which one you would want printed if it were your street depends on what the sentence is '
       + 'for, and the two cases pull opposite ways. If a hardship fund is handed out street by '
       + `street, the average says ${STREET} does not need it, and ${below} of its ${N_HOMES} `
       + 'households would disagree. If the question is what the street pays in tax between them, '

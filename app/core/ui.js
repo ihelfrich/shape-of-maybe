@@ -490,5 +490,17 @@ export function figure(opts) {
   else if (cap) canvas.setAttribute('aria-labelledby', cap.id);
   else canvas.setAttribute('aria-label', 'Figure');
 
-  return { el: root, canvas };
+  return {
+    el: root,
+    canvas,
+    /* Give the canvas its own spoken description, replacing the caption pointer.
+       Use this rather than setting aria-label by hand: aria-labelledby outranks
+       aria-label, so a lesson that only sets the label is silently ignored and a
+       screen-reader user hears the caption while the picture says something else. */
+    describe(text) {
+      if (text == null || text === '') return;
+      canvas.removeAttribute('aria-labelledby');
+      canvas.setAttribute('aria-label', String(text));
+    },
+  };
 }

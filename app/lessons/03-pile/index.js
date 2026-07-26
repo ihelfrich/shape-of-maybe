@@ -10,6 +10,14 @@
    guarantee the lesson still works if it ever stops doing so. */
 import { makeRng as coreMakeRng } from '../../core/rng.js';
 
+/* viz resolves a color by looking the string up among its own palette's hex values, so a role
+   name handed over as text ('data', 'ink2') travels all the way to the canvas, where it is not
+   a color at all and the assignment is dropped without a word. Naming the role here and handing
+   viz the hex it recognises gets the themed color back, which is what keeps these three figures
+   legible after dark. */
+import { COLORS } from '../../core/viz.js';
+const hue = (role) => COLORS[role] || COLORS.ink;
+
 /* ---------------------------------------------------------------------------
    The scenario. Two hundred and forty apartments advertised to let in one town in one
    month, priced in dollars a month.
@@ -362,7 +370,7 @@ function sectionArrive(kit, town) {
 
   const spokenStrip = () => `Two hundred and forty rents strewn along an axis from ${money(RENT_LO)} `
     + `to ${money(RENT_HI)} a month, one dot for each apartment, at a height that means nothing. Below `
-    + '$900 they overlap so heavily that the dots run into one dark band.';
+    + '$900 they overlap so heavily that the dots run into one solid band.';
   const spokenPile = () => `${bins} columns of dots, one column for every ${money(FALL_BIN)} of rent. `
     + `The columns rise to a tall mass around ${money(OLD_MU)} a month, drop to almost nothing near `
     + `${money(GAP_AT)}, rise again to a smaller mass around ${money(NEW_MU)}, and trail off to a `
@@ -373,7 +381,8 @@ function sectionArrive(kit, town) {
     height: 300,
     caption:
       `The ${N_APARTMENTS} monthly rents, in dollars a month, invented for this unit and drawn in world `
-      + `${kit.seed}. One dot is one apartment. Along the top each dot sits at its own rent and its `
+      + `${kit.seed}. One dot is one apartment, and they run from ${money(town.lo)} to `
+      + `${money(town.hi)} a month. Along the top each dot sits at its own rent and its `
       + 'height means nothing, which is why the crowded stretch cannot be counted by eye. Stacking '
       + `drops every dot into a column ${money(FALL_BIN)} wide, and a column's height is then the `
       + 'number of apartments renting for somewhere inside it.',
@@ -397,9 +406,9 @@ function sectionArrive(kit, town) {
       const pts = [];
       const shown = mode === 'reading' ? arrived : (mode === 'waiting' ? 0 : values.length);
       for (let i = 0; i < shown; i++) pts.push(dotAt(i));
-      st.dots(pts, { r, fill: 'data', alpha: 0.78 });
-      if (mix > 0.6) st.note('number of apartments', 8, 12, { align: 'left', size: 11, color: 'ink2', weight: 600 });
-      st.note('rent, $ a month', st.W - 8, 12, { align: 'right', size: 11, color: 'ink2', weight: 600 });
+      st.dots(pts, { r, fill: hue('data'), alpha: 0.78 });
+      if (mix > 0.6) st.note('number of apartments', 8, 12, { align: 'left', size: 11, color: hue('ink2'), weight: 600 });
+      st.note('rent, $ a month', st.W - 8, 12, { align: 'right', size: 11, color: hue('ink2'), weight: 600 });
     },
   });
 
@@ -420,8 +429,8 @@ function sectionArrive(kit, town) {
     if (afterRead.childElementCount) return;
     afterRead.append(para(
       (streamed
-        ? `Two hundred and forty numbers went past in ${READ_WORD} seconds and you kept almost none `
-          + 'of them. Nobody keeps them, which is the whole reason data gets drawn rather than '
+        ? `That was ${N_APARTMENTS} numbers in ${READ_WORD} seconds, and you kept almost none of `
+          + 'them. Nobody keeps them, which is the whole reason data gets drawn rather than '
           + 'read. '
         : `There are ${N_APARTMENTS} numbers on that axis now and no holding them, which is the whole `
           + 'reason data gets drawn rather than read. ')
@@ -494,7 +503,7 @@ function sectionArrive(kit, town) {
     },
     {
       label: 'Could not tell',
-      why: 'That is the honest answer to two hundred and forty overlapping dots, and it is the '
+      why: `That is the honest answer to ${N_APARTMENTS} overlapping dots, and it is the `
         + 'reason the next button exists.',
     },
   ];
@@ -560,11 +569,12 @@ function sectionArrive(kit, town) {
       + `column stands on a bin: a stretch of rent ${money(FALL_BIN)} wide. The height of the column `
       + 'is the number of apartments whose rent falls inside that stretch. A picture built this way is a '
       + 'histogram, and the shape it draws is the distribution of the rents.',
-      `This town has two crowds in it. ${town.underGap} of the ${town.n} apartments sit in a mass around `
-      + `${money(OLD_MU)} a month, a second and smaller mass sits around ${money(NEW_MU)}, the ground `
-      + `between them near ${money(GAP_AT)} is nearly bare, and a few expensive apartments trail off to `
-      + 'the right. Nothing has been calculated to get that sentence. It was read off a picture, '
-      + 'which is the order this unit is arguing for.',
+      `This town has two crowds in it. The tall mass sits around ${money(OLD_MU)} a month, a second `
+      + `and smaller one sits around ${money(NEW_MU)}, and the ground between them near `
+      + `${money(GAP_AT)} is nearly bare. A few expensive apartments trail off to the right. Split `
+      + `the pile at ${money(GAP_AT)} and ${town.underGap} of the ${town.n} rents fall below it and `
+      + `${town.n - town.underGap} above. Nothing was calculated to get any of that. It was read off `
+      + 'a picture, which is the order this unit is arguing for.',
       `One symbol comes with the pile and it is the only one in this unit. The number of things in `
       + `a pile is written n. Here n = ${town.n}. It is the letter n, it means how many, and there `
       + 'is nothing else hiding inside it.',
@@ -661,7 +671,7 @@ function sectionShapes(kit, town) {
   const wrap = block();
   wrap.append(heading('Which pile does each sentence belong to?'));
   wrap.append(para(
-    'Four crowds from four different places, each drawn the same way and each with its numbers '
+    'Four crowds, each invented for this screen, each drawn the same way and each with its numbers '
     + 'taken off. Their heights are not comparable and are not meant to be, because every panel is '
     + 'scaled to its own tallest column. Shape is the only thing left to read.'));
 
@@ -708,10 +718,10 @@ function sectionShapes(kit, town) {
         st.pad(x0 + 6, W - (x0 + colW) + 4, y0 + 20, H - (y0 + rowH) + 16);
         st.domain(p.lo, p.hi, 0, p.top * 1.1);
         st.axisX([], () => '');
-        st.bars(p.bars, { color: 'data', gap: 1.5, alpha: 0.85 });
-        st.note(LETTERS[i], x0 + 6, y0 + 2, { size: 13, weight: 700, color: 'ink2' });
+        st.bars(p.bars, { color: hue('data'), gap: 1.5, alpha: 0.85 });
+        st.note(LETTERS[i], x0 + 6, y0 + 2, { size: 13, weight: 700, color: hue('ink2') });
         if (told) {
-          st.note(p.word, x0 + 6, y0 + rowH - 12, { size: 12, weight: 700, color: 'result' });
+          st.note(p.word, x0 + 6, y0 + rowH - 12, { size: 12, weight: 700, color: hue('result') });
         }
       });
     },
@@ -732,8 +742,22 @@ function sectionShapes(kit, town) {
       told = true;
       fig.draw();
       if (reveal.childElementCount) return;
+      /* Read the four settings back before naming anything. Without this the segmented
+         controls are scenery: a reader could commit without touching them and the screen
+         would never once refer to the thing they committed to. Nothing here is marked or
+         counted. It says where each sentence went and where each pile landed, and the
+         reader does their own comparing. */
+      const chosen = rows.map((r) => r.get());
+      /* .block carries the child spacing, and app.css resets every margin to zero, so four
+         bare paragraphs in a plain div would print as one run-on lump. */
+      const sent = el('div', 'block small muted');
+      ZOO_ORDER.forEach((kind, i) => {
+        sent.append(el('p', null,
+          `${ZOO[kind].sentence}: you said pile ${chosen[i]}, and it is pile ${letterOf(kind)}.`));
+      });
+      reveal.append(sent);
       reveal.append(named(
-        'Three words for what you sorted by',
+        'Four words for what you sorted by',
         'Sorting those took no arithmetic. What the four sentences ask about is where the weight '
         + 'sits and whether it falls away evenly, and that is the whole job the words below do.',
         `Pile ${letterOf('bell')} has its weight in the middle and falls away at about the same rate `
@@ -770,7 +794,10 @@ function sectionShapes(kit, town) {
   wrap.append(
     fig.el,
     para('Set each sentence to the pile you think it belongs to, then commit to all four at once.'),
-    controls(...rows.map((r) => r.el)),
+    /* One row per sentence. Four of these in a single wrapping row puts two matchings
+       side by side on a wide screen, and which letter belongs to which sentence is then
+       a layout puzzle on top of the actual question. */
+    ...rows.map((r) => controls(r.el)),
     controls(commit.el),
     reveal,
   );
@@ -847,9 +874,11 @@ function sectionDial(kit, town, state) {
   const peak = kit.ui.readout({ label: 'Apartments in the tallest column', value: String(tallest), tone: 'data' });
   /* Spoken, and set only when the number actually moves. The count changes perhaps a
      dozen times across the whole dial, so a live region here announces a finding rather
-     than narrating a drag. */
+     than narrating a drag. A live region reads out the value and not the label beside it,
+     so the value carries its own noun: a bare "2" arriving out of nowhere is not a
+     finding. */
   const humpBox = kit.ui.readout({
-    label: 'Humps the picture shows', value: String(humps), tone: 'result', live: true,
+    label: 'What the picture shows', value: humpPhrase(humps), tone: 'result', live: true,
   });
 
   const flatSay = liveBox();
@@ -873,15 +902,15 @@ function sectionDial(kit, town, state) {
       st.domain(RENT_LO, RENT_HI, floor, tallest * 1.14).pad(44, 14, 16, 30);
       st.axisY(countTicks(tallest), (v) => String(v));
       st.axisX(5, (v) => money(v));
-      st.bars(barsFrom(counts, width), { color: 'data', gap: 1, alpha: 0.85 });
+      st.bars(barsFrom(counts, width), { color: hue('data'), gap: 1, alpha: 0.85 });
       if (rug) {
         st.dots(
           town.values.map((v, i) => [v, floor * 0.55 + rugJit[i] * tallest * 0.035]),
-          { r: 2, fill: 'data', alpha: 0.55 },
+          { r: 2, fill: hue('data'), alpha: 0.55 },
         );
       }
-      st.note('number of apartments', 8, 12, { align: 'left', size: 11, color: 'ink2', weight: 600 });
-      st.note('rent, $ a month', st.W - 8, 12, { align: 'right', size: 11, color: 'ink2', weight: 600 });
+      st.note('number of apartments', 8, 12, { align: 'left', size: 11, color: hue('ink2'), weight: 600 });
+      st.note('rent, $ a month', st.W - 8, 12, { align: 'right', size: 11, color: hue('ink2'), weight: 600 });
     },
   });
 
@@ -892,7 +921,7 @@ function sectionDial(kit, town, state) {
     const next = humpsIn(counts);
     shown.set(String(counts.length));
     peak.set(String(tallest));
-    if (next !== humps) humpBox.set(String(next));
+    if (next !== humps) humpBox.set(humpPhrase(next));
     humps = next;
     if (humps === 1) {
       state.setFlat(width);
@@ -940,15 +969,17 @@ function sectionDial(kit, town, state) {
     warned(
       'Three pictures, one set of counts',
       `Every column in every one of those pictures is a true count of the apartments in that list. At `
-      + `${money(BIN_MAX)} a bin, wide enough to swallow both crowds at once, the picture shows `
-      + `${humpPhrase(wideHumps)}. At ${money(FALL_BIN)} the same 240 rents show `
-      + `${humpPhrase(midHumps)}. At ${money(BIN_MIN)} they show ${humpPhrase(fineHumps)} and no `
-      + `story at all, because n = ${town.n} spread over ${binCountOf(BIN_MIN)} bins leaves about `
-      + 'two apartments to a column, and the bumps are the luck of which apartments happened to be advertised '
-      + 'that month. Not one number was faked to produce any of the three.',
+      + `${money(BIN_MAX)} a bin the whole town fits in ${binCountOf(BIN_MAX)} columns, and they step `
+      + `down from left to right, so the new development stops being a top of its own and becomes a `
+      + `shoulder on the old stock. The picture shows ${humpPhrase(wideHumps)}. At ${money(FALL_BIN)} `
+      + `the same ${N_APARTMENTS} `
+      + `rents show ${humpPhrase(midHumps)}. At ${money(BIN_MIN)} they show ${humpPhrase(fineHumps)} `
+      + `and no story at all, because n = ${town.n} spread over ${binCountOf(BIN_MIN)} bins leaves `
+      + 'about two apartments to a column, and the bumps are the luck of which apartments happened to '
+      + 'be advertised that month. Not one number was faked to produce any of the three.',
       'The reason this is worth watching for rather than being angry about: most of the time the '
       + 'default is doing the choosing. Charting software picks a bin width the moment it is handed '
-      + 'a column of numbers, the rules it picks with are built for one-humped data, and the person '
+      + 'a column of numbers, and the rules it picks with are built for one-humped data. The person '
       + 'publishing the chart never sees the choice being made. You will do this by accident. The '
       + 'habit that catches it is turning the dial yourself before you believe a shape, on your own '
       + 'charts first.',
@@ -986,17 +1017,25 @@ function sectionDial(kit, town, state) {
 }
 
 /* What the two automatic rules do to this particular town, asked of the same predicate
-   the readout uses rather than assumed. On the shipped world both keep the second
-   crowd, which is worth saying plainly: the rules are not villains here. */
+   the readout uses rather than assumed. On most worlds both keep the second crowd, which
+   is worth saying plainly, because the rules are not villains here. On roughly one world
+   in eighty they both lose it, and that world needs its own sentence: a screen that said
+   nothing had gone wrong while both rules had just erased a housing estate would be doing
+   the thing this whole unit is against. */
 function ruleVerdict(town) {
   const a = humpsIn(countInto(town.values, town.fdWidth));
   const b = humpsIn(countInto(town.values, town.scottWidth));
-  if (a === b) {
-    return `Set the dial near either and this picture shows ${a === 1 ? 'one hump' : `${a} humps`}, `
-      + 'so nothing has gone wrong here.';
+  if (a !== b) {
+    return `Set the dial to the first and this picture shows ${humpPhrase(a)}; set it to the second `
+      + `and it shows ${humpPhrase(b)}. Two respectable rules, two towns.`;
   }
-  return `Set the dial to the first and this picture shows ${a === 1 ? 'one hump' : `${a} humps`}; `
-    + `set it to the second and it shows ${b === 1 ? 'one' : b}. Two respectable rules, two towns.`;
+  if (a === 1) {
+    return `Set the dial near either and this picture shows ${humpPhrase(a)}. In this world both `
+      + 'rules have counted the new development into the same columns as the old stock, and neither '
+      + 'of them was ever asked whether that was the right thing to do.';
+  }
+  return `Set the dial near either and this picture shows ${humpPhrase(a)}, so neither rule loses `
+    + 'the second crowd in this world.';
 }
 
 /* Look for a width where sliding the whole grid of bins sideways changes the answer,
@@ -1014,7 +1053,8 @@ function anchorLine(town) {
     }
     if (most && fewest && most.h !== fewest.h) {
       return `At ${money(w)} a bin, two starting points ${money(Math.abs(most.shift - fewest.shift))} `
-        + `apart give ${most.h} humps and ${fewest.h}, and not one rent moves between them.`;
+        + `apart give ${humpPhrase(most.h)} and ${humpPhrase(fewest.h)}, and not one rent moves `
+        + 'between them.';
     }
   }
   return 'Slide that starting point along by part of a bin and the columns are cut in different '
@@ -1090,7 +1130,7 @@ function sectionRecap(kit, town, state) {
   wrap.append(para(
     `Unit 04-middle asks where a pile like this sits, which is the obvious next question and the `
     + `dangerous one. The mean rent in this town is ${money(town.mean)} a month, and `
-    + `${town.nearMean} of the ${town.n} apartments rent for within ${money(50)} of that. A single middle `
+    + `${town.nearMean} of the ${town.n} apartments rent for within ${money(NEAR_MEAN)} of that. A single middle `
     + 'would hide precisely what you spent this unit learning to see, so it arrives next with the '
     + 'picture already drawn.'));
 
@@ -1111,13 +1151,19 @@ function head(kit) {
   h.append(el('h1', null, 'The pile'));
   h.append(el('p', 'lesson__q', 'What does a whole group of numbers look like at once?'));
   h.append(el('p', 'lede',
-    'Two hundred and forty apartments were advertised to let in one town last month, each with a rent on '
-    + 'it in dollars a month. Nobody can hold 240 numbers in their head, and nothing here asks you '
-    + 'to. This unit is about what happens when you draw them instead, and about the one setting '
+    `One town advertised ${N_APARTMENTS} apartments to let last month, each with a rent on it in `
+    + `dollars a month. Nobody can hold ${N_APARTMENTS} numbers in their head, and nothing here asks `
+    + 'you to. This unit is about what happens when you draw them instead, and about the one setting '
     + 'that decides which true picture you get.'));
+  /* 01-noticing can say "type the same world number" because it carries a seed box. This
+     unit has no world control anywhere on it, and nothing here writes ?w= into the address
+     bar, so a reader told to type a number would have nowhere to type it. What does work
+     today is a hand-written link: router.js splits the hash on ? before matching the unit,
+     and main.js reads w off the query. */
   h.append(quiet(
-    `Every rent on this screen is invented, drawn in world ${kit.seed}. Type the same world number `
-    + 'on another phone and the same 240 apartments come back.'));
+    `Every rent on this screen is invented, drawn in world ${kit.seed}. This unit stays in one town. `
+    + `Put ?w=${kit.seed} on the end of this page's address and the same ${N_APARTMENTS} apartments `
+    + 'come back on any phone.'));
   return h;
 }
 
@@ -1161,10 +1207,11 @@ function render(root, ctx) {
     engine: ctx.engine || null,
     seed: ctx.seed == null ? 42 : ctx.seed,
     /* Held for the same reason every lesson holds it, and never called here. All three
-       figures are drawn from one world, and this unit gives the reader no way to change
-       it: rolling a fresh town is the whole of 04-reroll, and spending that moment here
-       would leave that unit with nothing to show. Nothing on this screen moves the
-       world, so nothing writes one into the address bar. */
+       figures are drawn from one world and this unit gives the reader no way to change
+       it, because the question on this screen is what one town looks like rather than
+       how much a town moves between worlds. 08-wobble is where that second question
+       gets its own unit. Nothing here moves the world, so nothing writes one into the
+       address bar. */
     setSeed: typeof ctx.setSeed === 'function' ? ctx.setSeed : null,
     bin: [],       // teardown jobs
     redraws: [],   // one per figure

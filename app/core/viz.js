@@ -19,10 +19,21 @@ export const COLORS = Object.freeze({
 const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif';
 const TAU = Math.PI * 2;
 
-// Reverse lookup, so a lesson that passes COLORS.truth as a literal still gets
-// the themed color when CSS has overridden --viz-truth for dark mode.
+// The custom property each role reads from. These are the names tokens.css actually
+// publishes, which is what makes a figure follow the reader into dark mode.
+const ROLE_VAR = Object.freeze({
+  truth: '--truth', data: '--data', result: '--result', test: '--test',
+  wrong: '--wrong', right: '--right', ink: '--ink', ink2: '--ink-2', grid: '--line'
+});
+
+// Reverse lookup, so a lesson that passes COLORS.truth as a literal hex still gets
+// the themed version of that role. Role names map to themselves, because a lesson is
+// meant to be able to ask for 'data' by name and that is the friendlier way to write it.
 const ROLE_OF = {};
-for (const role of Object.keys(COLORS)) ROLE_OF[COLORS[role].toLowerCase()] = role;
+for (const role of Object.keys(COLORS)) {
+  ROLE_OF[COLORS[role].toLowerCase()] = role;
+  ROLE_OF[role] = role;
+}
 
 // Bumped when the OS color scheme flips, so every stage re-reads its palette on
 // the next fit() instead of waiting out its cache.
@@ -133,7 +144,8 @@ export function stage(canvas) {
     const next = {};
     let any = false;
     for (const role of Object.keys(COLORS)) {
-      const v = read('--viz-' + role);
+      // Prefer a figure-specific override, then the site token, then the built-in hex.
+      const v = read('--viz-' + role) || read(ROLE_VAR[role]);
       next[role] = v || COLORS[role];
       if (v) any = true;
     }

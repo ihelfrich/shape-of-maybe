@@ -3,7 +3,7 @@
    dependable and one a lottery. The reader drags a bracket out from the middle until it
    covers most of the journeys, then writes the standard deviation down as four
    instructions and meets the letter, then drops one 90-minute morning into a year of
-   journeys and watches the range break while s holds. The unit closes on a bus panel
+   journeys and watches the range break while s holds. The distortion beat is a bus panel
    that prints nothing but the average and is true the whole time. */
 
 /* Every dataset here is rebuilt from the world number in the address bar, and that needs
@@ -14,7 +14,7 @@ import { makeRng as coreMakeRng } from '../../core/rng.js';
 /* Marks name their color with one of these constants rather than with the name of the
    role, and the reason is inside viz.paint(): it resolves a color through a table that
    runs from palette constant to role, so a constant comes back as the themed version of
-   its role while an unrecognised string comes back unchanged, at which point the canvas
+   its role while an unrecognized string comes back unchanged, at which point the canvas
    quietly ignores it. The roles themselves mean what they mean everywhere else on the
    site: data for the journeys, truth for the average both routes share, result for
    something the arithmetic produced, ink for something the reader placed. */
@@ -57,7 +57,7 @@ const F1_HI = 50;
 const STRIP_MAX = 54;     // minutes; the axis on the two crowd figures never moves
 
 /* The year of journeys behind the last two beats: twelve morning-peak departures a day
-   on the 6, 250 weekdays, and one February morning stuck behind a burst water main. */
+   on the 6, 250 weekdays, and one February morning stuck behind a broken water main. */
 const YEAR_N = 3000;
 const FREAK = 90;         // minutes, that one morning
 const YEAR_MAX = 96;      // minutes; the axis on the year figure, wide enough for it
@@ -83,8 +83,8 @@ const JITTER = 0.15;
 const TICK_HALF = 0.19;
 const LABEL_TOP_Y = 0.96;
 const LABEL_BOT_Y = 0.52;
-const BRACKET_Y = 0.90;   // the reader's measuring bar, clear of the dots
-const NAMED_Y = 0.78;     // the arithmetic's bar, below the reader's and clear of its label
+const BRACKET_Y = 0.86;   // the reader's measuring bar, clear of the dots
+const NAMED_Y = 0.72;     // the arithmetic's bar, below the reader's and clear of its label
 
 /* The recipe figure. Five squares standing in a row, then the average square beside
    them. Sides are in minutes and read against the same scale as everything else. */
@@ -92,8 +92,8 @@ const RECIPE_SPAN = 56;   // minutes across the frame
 const SLOT_X0 = 1.5;
 const SLOT_GAP = 1.2;
 const AVG_X0 = 45.4;      // where the average square stands
-const LADDER_TOP = 0.95;  // the five journeys hang here, one under another
-const LADDER_STEP = 0.082;
+const LADDER_TOP = 0.92;  // the five journeys hang here, one under another
+const LADDER_STEP = 0.075;
 const Y_FLOOR = -0.14;    // room under the baseline for a bracket and its label
 
 const min1 = (v) => (Math.round(v * 10) / 10).toFixed(1);
@@ -308,6 +308,9 @@ function mountFigure(kit, opts) {
     const said = opts.describe();
     if (said !== spoken) {
       spoken = said;
+      // aria-labelledby outranks aria-label, so the caption pointer ui.figure sets
+      // has to go or this sentence is never the one that gets read out.
+      canvas.removeAttribute('aria-labelledby');
       canvas.setAttribute('aria-label', said);
     }
   };
@@ -346,16 +349,18 @@ function sectionSameMiddle(kit, data) {
   const sixHi = kit.stats.max(six.values);
   const f1Lo = kit.stats.min(f1.values);
   const f1Hi = kit.stats.max(f1.values);
-  const sixBand = sixHi - sixLo;
-  const f1Band = f1Hi - f1Lo;
+  /* Widths taken from the ends as the screen rounds them, so that a reader who subtracts
+     the two numbers in the caption gets the number in the prose. */
+  const sixBand = Number(min1(sixHi)) - Number(min1(sixLo));
+  const f1Band = Number(min1(f1Hi)) - Number(min1(f1Lo));
 
   const fig = mountFigure(kit, {
     height: 240,
     caption:
-      `Forty journeys timed on each route in one month, in minutes, invented for this screen and `
-      + `drawn in world ${kit.seed}. Both rows average exactly ${min1(MIDDLE)} minutes, marked by a `
-      + `tick inside each row and by the line running the height of the frame. The 6's journeys all `
-      + `landed between ${min1(sixLo)} and ${min1(sixHi)} minutes. The 41's are strewn from `
+      'Forty journeys timed on each route in one month, in minutes, invented for this screen and '
+      + `drawn in world ${kit.seed}. Both rows average exactly ${min1(MIDDLE)} minutes, marked by `
+      + `a tick inside each row and by the line running the height of the frame. The 6's journeys `
+      + `all landed between ${min1(sixLo)} and ${min1(sixHi)} minutes; the 41's are strewn from `
       + `${min1(f1Lo)} to ${min1(f1Hi)}. The averages are identical and the mornings are not.`,
     describe: () => `Two rows of forty dots each, in minutes on the bus. Both rows average `
       + `${min1(MIDDLE)} minutes. The 6's dots are packed into a band ${min1(sixBand)} minutes `
@@ -372,7 +377,9 @@ function sectionSameMiddle(kit, data) {
       st.dots(points(f1, ROW_BOT, JITTER), { r: 4.5, fill: HUE.data, alpha: 0.8 });
       rowMark(st, MIDDLE, ROW_TOP, TICK_HALF, { color: HUE.truth, width: 3 });
       rowMark(st, MIDDLE, ROW_BOT, TICK_HALF, { color: HUE.truth, width: 3 });
-      st.label(`${min1(MIDDLE)} min`, MIDDLE, LABEL_TOP_Y, {
+      /* In the band between the two rows, where it belongs to both of them and where
+         the unit note at the top right has room of its own on a narrow screen. */
+      st.label(`${min1(MIDDLE)} min`, MIDDLE, 0.5, {
         align: 'center', size: 12, weight: 700, color: HUE.truth,
       });
     },
@@ -392,9 +399,9 @@ function sectionSameMiddle(kit, data) {
       ? 'That is what nearly everybody picks, and the reason people give is some version of: I '
         + 'know what the 6 is going to do.'
       : 'That is the answer with the better best case, and the 41 does have one: it has come in '
-        + `at ${min1(f1Lo)} minutes. The trouble is that the two mistakes cost different amounts. `
-        + 'Arriving twenty minutes early costs you a corridor and a magazine, and arriving five '
-        + 'minutes late costs you the appointment.'));
+        + `at ${min1(f1Lo)} minutes, faster than the 6 has ever managed. The trouble is that the `
+        + 'two mistakes cost different amounts. Arriving ten minutes early costs you a hallway and '
+        + 'a magazine, and arriving five minutes late costs you the appointment.'));
     reveal.append(named(
       'That reason has a name',
       `The 6's forty journeys sit inside a band ${min1(sixBand)} minutes wide. The 41's are `
@@ -436,12 +443,12 @@ function sectionSameMiddle(kit, data) {
 
 function sectionBracket(kit, data, state) {
   const wrap = block();
-  wrap.append(heading('Reach out from the middle until you have caught most of them'));
+  wrap.append(heading('How far do you have to reach to catch most of them?'));
   wrap.append(para(
-    'One route at a time now. The tick at 24 minutes is the middle both routes share. The bracket '
-    + 'reaches the same distance out on each side of it, and the dots it has caught are the ones '
-    + 'drawn solid. Widen it until it covers most of the journeys, then commit to that width. Do '
-    + 'the 6 first, then switch to the 41 and do it again.'));
+    'One route at a time now. The bracket reaches the same distance out on each side of the '
+    + '24-minute middle, and the journeys it has caught are the dots drawn solid. Widen it until '
+    + 'it covers most of them and commit to that width, then switch to the other route and do it '
+    + 'again.'));
 
   let which = 'six';
   let half = 5;           // minutes each side of the middle; deliberately not the answer
@@ -463,11 +470,10 @@ function sectionBracket(kit, data, state) {
     height: 260,
     caption:
       'One route at a time, forty journeys, in minutes, on the same axis as the figure above. The '
-      + 'tick in the middle of the row is the 24-minute average both routes share. The bar across '
-      + 'the top is your bracket, reaching the same distance out on each side; the journeys it '
-      + 'covers are drawn solid and the ones outside it are faint. Once you have committed a width '
-      + "for both routes, a second bar appears underneath at the arithmetic's own answer for the "
-      + 'route on screen.',
+      + 'tick inside the row is the 24-minute average both routes share. The bar across the top is '
+      + 'your bracket, reaching the same distance out on each side; the journeys it covers are '
+      + 'drawn solid and the ones outside it are faint. Commit a width for both routes and a '
+      + "second bar appears underneath, at the arithmetic's own answer for the route on screen.",
     describe: () => {
       const n = caught();
       const base = `Forty journeys on ${label()}, in minutes, with a bracket reaching `
@@ -475,34 +481,37 @@ function sectionBracket(kit, data, state) {
         + `${n} of the ${N_TIMED} journeys, ${share(n, N_TIMED)}%.`;
       return bothIn()
         ? `${base} A second bracket, ${min1(sd())} minutes out on each side, covers `
-          + `${caughtBySd()} of them.`
+          + `${caughtBySd()} of the ${N_TIMED}.`
         : base;
     },
     draw: (st) => {
       stripFrame(st);
       const s = set();
       const pts = points(s, ROW_ONE, 0.16);
-      st.label(label(), 0.4, LABEL_TOP_Y, { align: 'left', size: 12, weight: 700, color: HUE.ink2 });
       st.dots(pts.filter((p, i) => !inside(s.values[i])), { r: 5, fill: HUE.data, alpha: 0.22 });
       st.dots(pts.filter((p, i) => inside(s.values[i])), { r: 5, fill: HUE.data, alpha: 0.85 });
       rowMark(st, MIDDLE, ROW_ONE, 0.26, { color: HUE.truth, width: 3 });
-      st.label(`${min1(MIDDLE)} min`, MIDDLE, 0.71, {
-        align: 'center', size: 12, weight: 700, color: HUE.truth,
-      });
       /* The reader's own edges stay inside the row, and two faint guides carry them up
          to the measuring bar, so the bar is visibly a measurement of this row. */
       [MIDDLE - half, MIDDLE + half].forEach((x) => {
         st.vline(x, { color: HUE.ink2, width: 1, dash: 3, alpha: 0.28 });
-        rowMark(st, x, ROW_ONE, 0.3, { color: HUE.ink, width: 2.5 });
+        rowMark(st, x, ROW_ONE, 0.26, { color: HUE.ink, width: 2.5 });
       });
       st.bracket(MIDDLE - half, MIDDLE + half, BRACKET_Y, {
-        color: HUE.ink, label: `your bracket, ${min1(half)} min each side`,
+        color: HUE.ink, label: `yours, ${min1(half)} min each side`,
       });
       if (bothIn()) {
         st.bracket(MIDDLE - sd(), MIDDLE + sd(), NAMED_Y, {
           color: HUE.result, label: `${min1(sd())} min each side`,
         });
       }
+      /* Both written last, so that their haloes sit on top of the guides rather than
+         under them. The route name is at the foot of the frame beside the middle it
+         shares with the other route; the top of this frame belongs to the two bars. */
+      st.label(label(), 0.4, 0.09, { align: 'left', size: 12, weight: 700, color: HUE.ink2 });
+      st.label(`${min1(MIDDLE)} min`, MIDDLE, 0.09, {
+        align: 'center', size: 12, weight: 700, color: HUE.truth,
+      });
     },
   });
 
@@ -554,37 +563,37 @@ function sectionBracket(kit, data, state) {
       reveal.replaceChildren();
       reveal.append(named(
         'You have measured a spread with your hands',
-        'You reached out from the middle until the bracket had caught most of the journeys, and '
-        + 'then read the width off. That is the whole idea of a spread: a distance, out from the '
-        + 'middle, in the same units as the thing you measured. Minutes here, and dollars or '
-        + 'degrees or kilograms somewhere else.',
-        'A second bar has appeared under yours, and it is the width the arithmetic settles on: '
-        + `${min1(SD_SIX)} minutes each side on the 6, ${min1(SD_F1)} minutes each side on the 41. `
-        + 'That distance is called the standard deviation, and it is roughly the bracket that '
-        + 'catches two thirds of a crowd rather than nearly all of it. Slide your own bracket in '
-        + 'to meet it and the readout will tell you how many journeys it catches on the forty in '
-        + 'front of you.',
-        'It is the number the rest of this course is built out of, and the four instructions that '
-        + 'produce it are on the next screen. Nothing about them will change what you have already '
-        + 'done here: they only make your bracket into something two strangers can agree on.',
+        'You reached out from the middle until the bracket had caught most of the journeys, then '
+        + 'read the width off. That is the whole idea of a spread: a distance out from the middle, '
+        + 'in the units of the thing you measured. Minutes here, inches or dollars elsewhere.',
+        'A second bar has appeared under yours at the width the arithmetic settles on: '
+        + `${min1(SD_SIX)} minutes each side on the 6 and ${min1(SD_F1)} on the 41. That distance `
+        + 'is the standard deviation, roughly the bracket that catches two thirds of a crowd '
+        + 'rather than nearly all of it. Slide yours in to meet it and the readout counts what it '
+        + 'catches. The four instructions that produce it are on the next screen, and they change '
+        + 'nothing you have already done: they make your bracket into something two strangers can '
+        + 'agree on.',
       ));
+      const missed = missedBySdOn(data.f1, SD_F1);
       reveal.append(deeper(
         'Where the two thirds comes from, and when it lets you down',
         'Two thirds is a fact about the shape of a pile rather than a definition of the standard '
         + "deviation. The 6's journeys are heaped up symmetrically around the middle, which is the "
-        + 'shape 09-bell is about, and on that shape a bracket one standard deviation wide covers '
-        + 'about 68% of everything, and two standard deviations covers about 95%. On any '
-        + `particular forty journeys it comes out a few either way: on these forty it catches `
-        + `${caughtBySdOn(data.six, SD_SIX)}.`,
-        'The 41 is lopsided, a clump of clear runs with a long tail of mornings behind something. '
-        + `Its one-standard-deviation bracket catches ${caughtBySdOn(data.f1, SD_F1)} of its `
-        + `${N_TIMED} journeys, more than two thirds, and nearly everything it leaves out is on `
-        + 'the slow side. That asymmetry is the thing a passenger actually cares about, and it is '
-        + 'why 03-pile asks you to look at the shape of a pile before computing anything about it.',
+        + 'shape 09-bell is about, and on that shape one standard deviation each side covers about '
+        + `68% and two cover about 95%. Any particular forty come out a few either way: these `
+        + `forty give ${caughtBySdOn(data.six, SD_SIX)} of ${N_TIMED}. The 41 is lopsided, a clump `
+        + 'of clear runs with a long tail of mornings behind something, so its bracket catches '
+        + `${caughtBySdOn(data.f1, SD_F1)} of ${N_TIMED}. Of the ${missed.fast + missed.slow} it `
+        + `misses, ${missed.fast} were fast and ${missed.slow} were slow. The two sides do not `
+        + `reach the same distance: the quickest of the forty came in `
+        + `${min1(MIDDLE - kit.stats.min(data.f1.values))} minutes under the middle and the `
+        + `slowest ran ${min1(kit.stats.max(data.f1.values) - MIDDLE)} minutes over it. That `
+        + 'lopsidedness is what a passenger cares about, and it is why 03-pile asks you to look at '
+        + 'the shape before computing anything.',
         'For any shape at all, including ones nobody has drawn yet, Chebyshev proved that at least '
         + '75% of a pile lies within two standard deviations of its middle and at least 89% within '
-        + 'three. That guarantee is much weaker than the bell-shaped numbers, and unlike them it '
-        + 'cannot be broken by any data anybody will ever collect.',
+        + 'three. Much weaker than the bell-shaped numbers, and unlike them it cannot be broken by '
+        + 'any data anybody will ever collect.',
       ));
     },
   });
@@ -593,8 +602,8 @@ function sectionBracket(kit, data, state) {
     fig.el,
     controls(routes.el, slider.el, commit.el),
     readoutRow(widthOut.el, inOut.el, callSix.el, callF1.el),
-    quiet('There is no right width here. Yours is a judgement about what "most of them" means, '
-      + 'and the point is that you can make it at all.'),
+    quiet('There is no right width here. Yours is a judgment about what "most of them" means, and '
+      + 'two people who read that phrase differently will stop in different places.'),
     reveal,
   );
   return wrap;
@@ -606,6 +615,18 @@ function caughtBySdOn(set, sd) {
   return set.values.filter((v) => Math.abs(v - MIDDLE) <= sd + 1e-9).length;
 }
 
+/* The journeys that bracket misses, split by which side of the middle they fell on. Both
+   counts are printed rather than summarized, because on any particular forty the split can
+   come out anywhere from three fast and eight slow to the other way about, and a sentence
+   asserting the tail always wins would be false in worlds a reader can visit. */
+function missedBySdOn(set, sd) {
+  const out = set.values.filter((v) => Math.abs(v - MIDDLE) > sd + 1e-9);
+  return {
+    fast: out.filter((v) => v < MIDDLE).length,
+    slow: out.filter((v) => v > MIDDLE).length,
+  };
+}
+
 /* ---------------------------------------------------------------------------
    Beat 3. The recipe, on five numbers, with the reader inverting the last step by hand
    before it is named. This is the figure that earns its frame rate. */
@@ -615,13 +636,15 @@ function sectionRecipe(kit, state) {
   wrap.append(heading('Four instructions, and then a letter'));
   wrap.append(para(
     'Forty journeys is more arithmetic than anybody wants to do by hand, so here is one week on '
-    + `the 41: ${WEEK.join(', ')} minutes, Monday to Friday. Those five were chosen because they `
-    + `average exactly ${min1(MIDDLE)} minutes, the same as the route, and because every step below `
-    + 'can be checked on the back of an envelope.'));
+    + `the 41: ${WEEK.join(', ')} minutes, Monday to Friday. Those five average exactly `
+    + `${min1(MIDDLE)} minutes, the same as the route, and every step below can be checked on the `
+    + 'back of an envelope.'));
 
   let step = 0;            // 0 nothing yet, 1 distances, 2 squares, 3 average square, 4 the root
   let side = 6;            // minutes, the side of the reader's candidate square
   let sided = false;
+  let grow = 1;            // how much of each square has come up out of the floor
+  let cancel = null;
   let nextEl = null;
   let sideEl = null;
 
@@ -655,13 +678,12 @@ function sectionRecipe(kit, state) {
   const fig = mountFigure(kit, {
     height: 330,
     caption:
-      `The week on the 41 and what the four instructions do to it. The five journeys hang one `
+      'The week on the 41 and what the four instructions do to it. The five journeys hang one '
       + `under another at the top, at their own times, with the ${min1(MIDDLE)}-minute middle `
-      + 'marked through them. Each journey then becomes a square standing on the floor of the '
-      + "frame, with a side equal to that journey's distance from the middle and therefore an area "
-      + 'equal to that distance multiplied by itself. The square on the right is the average of the '
-      + 'five, and the last instruction asks how wide it is. Every side on this figure is measured '
-      + 'in minutes on the same scale, which is why the squares can be compared by eye.',
+      + "marked through them. Each becomes a square with a side equal to that journey's distance "
+      + 'from the middle, and therefore an area equal to that distance multiplied by itself. The '
+      + 'square on the right is the average of the five, and the last instruction asks how wide it '
+      + 'is. Every side here is in minutes on one scale, so the squares can be compared by eye.',
     describe: () => {
       const head = `The five journeys of the week, ${WEEK.join(', ')} minutes, hanging under one `
         + `another with the ${min1(MIDDLE)}-minute middle marked.`;
@@ -678,21 +700,31 @@ function sectionRecipe(kit, state) {
         + `${whole(WEEK_VAR)} square minutes.`;
       if (step === 3) {
         return `${head} ${squares} ${avg} Your own square, ${min1(side)} minutes a side, is drawn `
-          + `on top of it and has an area of ${whole(areaOf())} square minutes.`;
+          + `on top of it and has an area of ${min1(areaOf())} square minutes.`;
       }
       return `${head} ${squares} ${avg} Its side measures ${min1(WEEK_SD)} minutes, marked by a `
         + 'bracket underneath it and by a second bracket of the same length reaching that far out '
         + 'from the middle of the week.';
     },
     draw: (st) => {
-      st.domain(0, RECIPE_SPAN, Y_FLOOR, 1).pad(14, 14, 16, 20);
+      /* One scale for the whole frame, in pixels per minute, so that a square's side and
+         the brackets that measure it are the same length when they are the same number
+         of minutes. It is capped, because on a wide screen an uncapped scale would grow
+         the 14-minute square until it reached the journeys hanging above it. Past the
+         cap the frame holds more minutes than the picture needs, and the picture
+         sits in the middle of them. */
+      st.pad(14, 14, 24, 20);
+      const perMin = Math.min(7, Math.max(1, st.W - 28) / RECIPE_SPAN);
+      const span = Math.max(RECIPE_SPAN, Math.max(1, st.W - 28) / perMin);
+      const left = -(span - RECIPE_SPAN) / 2;
+      st.domain(left, left + span, Y_FLOOR, 1);
       /* The five journeys, one under another, each on its own line so that a distance
-         can be drawn beside it without landing on top of its neighbor. */
+         can be drawn beside it without landing on top of its neighbour. */
       const ys = WEEK.map((v, i) => LADDER_TOP - i * LADDER_STEP);
-      st.line([[MIDDLE, ys[4] - 0.03], [MIDDLE, LADDER_TOP + 0.025]], {
+      st.line([[MIDDLE, ys[4] - 0.03], [MIDDLE, LADDER_TOP + 0.03]], {
         color: HUE.truth, width: 2.5,
       });
-      st.label(`${min1(MIDDLE)} min`, MIDDLE, LADDER_TOP + 0.04, {
+      st.label(`${min1(MIDDLE)} min`, MIDDLE, LADDER_TOP + 0.045, {
         align: 'center', size: 11.5, weight: 700, color: HUE.truth,
       });
       WEEK.forEach((v, i) => {
@@ -713,14 +745,19 @@ function sectionRecipe(kit, state) {
       });
 
       if (step >= 2) {
-        st.bars(slots.map((s, i) => ({ x0: s.x0, x1: s.x1, h: sideToY(st, s.w) })), {
+        /* Mid-rise a square is still a square: the side grows in both directions at
+           once, out of the corner it stands on, so the picture never shows a rectangle
+           and calls it a square. */
+        st.bars(slots.map((s) => ({ x0: s.x0, x1: s.x0 + s.w * grow, h: sideToY(st, s.w * grow) })), {
           color: HUE.data, gap: 0, alpha: step >= 3 ? 0.35 : 0.7,
         });
-        const big = slots[4];
-        st.label(`${Math.abs(WEEK_DEV[4])} × ${Math.abs(WEEK_DEV[4])}`,
-          (big.x0 + big.x1) / 2, sideToY(st, big.w) / 2, {
-            align: 'center', size: 11.5, weight: 700, color: HUE.ink,
-          });
+        if (grow > 0.7) {
+          const big = slots[4];
+          st.label(`${Math.abs(WEEK_DEV[4])} × ${Math.abs(WEEK_DEV[4])}`,
+            (big.x0 + big.x1) / 2, sideToY(st, big.w) / 2, {
+              align: 'center', size: 11.5, weight: 700, color: HUE.ink,
+            });
+        }
       }
 
       if (step >= 3) {
@@ -744,7 +781,7 @@ function sectionRecipe(kit, state) {
         });
         /* The same width, carried back to the middle of the week. Two brackets of equal
            length in one frame is the whole point of the last instruction. */
-        st.bracket(MIDDLE, MIDDLE + WEEK_SD, ys[4] - 0.055, {
+        st.bracket(MIDDLE, MIDDLE + WEEK_SD, ys[4] - 0.045, {
           color: HUE.result, down: true, label: `${min1(WEEK_SD)} min from the middle`,
         });
       }
@@ -754,38 +791,34 @@ function sectionRecipe(kit, state) {
   const steps = kit.ui.steps([
     {
       title: 'How far each journey sat from the middle',
-      body: `${listOf(WEEK_DEV, signed)} minutes. Three of the five ran early and two ran late. `
-        + 'Add those five distances up and they come to zero, and they would come to zero on any '
-        + 'set of numbers whatsoever, because that is what the middle is. So the distances cannot '
-        + 'be averaged as they stand: the answer would be zero every time, on a tight crowd and a '
-        + 'loose one alike.',
+      body: `${listOf(WEEK_DEV, signed)} minutes. Add those five up and they come to zero, and `
+        + 'they would come to zero on any set of numbers whatsoever, because that is what the '
+        + 'middle is. So they cannot be averaged as they stand.',
     },
     {
       title: 'Square each distance, so nothing cancels',
       body: `${listOf(WEEK_SQ)} square minutes. A negative distance multiplied by itself comes out `
-        + 'positive, so the early mornings stop cancelling the late ones. On the figure each '
-        + 'distance has become a square with that distance as its side, which is what the word '
-        + 'means: Friday, 14 minutes out from the middle, is now 196 square minutes of floor.',
+        + 'positive, so the early mornings stop canceling the late ones. Each distance is now a '
+        + 'square with that distance as its side: Friday, 14 minutes out, is 196 square minutes of '
+        + 'floor.',
     },
     {
       title: 'Average the squares',
-      body: `The five areas come to ${WEEK_SS} square minutes. Shared out, that is `
-        + `${whole(WEEK_VAR)} square minutes: the size of the average square. The sharing is `
-        + `between four rather than five, which is a real question with a real answer rather than `
-        + 'a rounding trick, and the second block below has it. Every calculator and every '
-        + 'spreadsheet does the same thing.',
+      body: `The five areas come to ${WEEK_SS} square minutes, and shared out that is `
+        + `${whole(WEEK_VAR)}: the size of the average square. The sharing is between four rather `
+        + 'than five, which every spreadsheet also does and which the second block below explains.',
     },
     {
       title: 'Take the square root, to get back to minutes',
       body: `A square of ${whole(WEEK_VAR)} square minutes is ${min1(WEEK_SD)} minutes along each `
-        + `side. That is the answer: on this week, the typical distance from the middle is about `
-        + `${min1(WEEK_SD)} minutes. Square minutes were never a unit anybody could picture, and `
-        + 'the root puts the answer back into the units of the thing that was measured.',
+        + `side, so the typical distance from the middle this week was about ${min1(WEEK_SD)} `
+        + 'minutes. Nobody can picture a square minute. The root puts the answer back into the '
+        + 'units of the thing that was measured.',
     },
   ]);
 
   const yourSq = kit.ui.readout({
-    label: 'Your square', value: `${min1(side)} × ${min1(side)} = ${whole(side * side)}`, tone: 'plain',
+    label: 'Your square', value: `${min1(side)} × ${min1(side)} = ${min1(side * side)}`, tone: 'plain',
   });
   const target = kit.ui.readout({
     label: 'The average square', value: 'not yet', tone: 'result', live: true,
@@ -800,15 +833,42 @@ function sectionRecipe(kit, state) {
     onInput: (v) => {
       side = Number(v);
       sided = true;
-      yourSq.set(`${min1(side)} × ${min1(side)} = ${whole(side * side)}`);
+      yourSq.set(`${min1(side)} × ${min1(side)} = ${min1(side * side)}`);
       fig.draw();
     },
   });
 
+  /* The one piece of motion in the unit, and it is the moment the unit turns on: five
+     distances stand up out of the floor as five squares. A reader who has asked for less
+     motion gets the finished picture instead, and loses nothing, because the still frame
+     says the same thing. The live query is asked rather than the exported constant,
+     because the setting can change halfway through a session. */
+  function riseSquares() {
+    const engine = kit.engine;
+    const still = engine && typeof engine.prefersReducedMotion === 'function'
+      ? engine.prefersReducedMotion()
+      : Boolean(engine && engine.reducedMotion);
+    if (cancel) { cancel(); cancel = null; }
+    if (!engine || typeof engine.tween !== 'function' || still) { grow = 1; return; }
+    /* Left at 1 rather than set to 0: the first frame of the tween pushes it back down
+       to nothing and the rise begins there. If no frame ever arrives, because the tab is
+       in the background or the browser is throttling, the reader comes back to the
+       finished picture rather than to five squares that never grew. */
+    grow = 1;
+    cancel = engine.tween({
+      from: 0, to: 1, ms: 620,
+      ease: engine.ease ? engine.ease.outCubic : undefined,
+      onStep: (v) => { grow = Number.isFinite(v) ? v : 1; fig.draw(); },
+      onDone: () => { grow = 1; cancel = null; fig.draw(); },
+    });
+  }
+
   function showStep(n) {
+    const rising = n >= 2 && step < 2;
     step = n;
     steps.reveal(n - 1);
     if (n >= 3) target.set(`${whole(WEEK_VAR)} square minutes`);
+    if (rising) riseSquares();
     fig.draw();
   }
 
@@ -835,23 +895,23 @@ function sectionRecipe(kit, state) {
       if (reveal.childElementCount) return;
       reveal.append(named(
         'That number has a name, and now it earns a letter',
-        `You worked backwards from an area to a side, which is what a square root is. The average `
+        'You worked backwards from an area to a side, which is what a square root is. The average '
         + `square came to ${whole(WEEK_VAR)} square minutes, so its side is ${min1(WEEK_SD)} `
-        + 'minutes, and that is the standard deviation of this week. The four instructions in the '
-        + `list above are the whole definition. Run them on the 41's forty journeys instead of `
-        + `these five and the answer is ${min1(SD_F1)} minutes, which is the width you dragged a `
-        + `bracket to two screens ago; run them on the 6 and it is ${min1(SD_SIX)}.`,
-        'Written down, the standard deviation of a set of numbers is s. The letter is doing one '
-        + 'job, standing in for the phrase "the standard deviation of these numbers", in the same '
-        + 'way that a plus sign stands in for "add". The average of the squares, the '
-        + `${whole(WEEK_VAR)} square minutes before the root was taken, has its own name and its `
-        + 'own written form: it is the variance, and it is written s², which is read aloud as "s '
-        + 'squared" and means s multiplied by itself. The two symbols are the same fact written on '
-        + 'either side of a square root, one in square minutes and one in minutes.',
+        + 'minutes, and that is the standard deviation of this week. Those four instructions are '
+        + `the whole definition. Run them on the 41's forty journeys and the answer is `
+        + `${min1(SD_F1)} minutes, which is where the second bar sat on the screen before this `
+        + `one; run them on the 6 and it is ${min1(SD_SIX)}.`,
+        'Written down, the standard deviation of a set of numbers is s. The letter does one job, '
+        + 'standing in for the phrase "the standard deviation of these numbers" the way a plus '
+        + `sign stands in for "add". The average of the squares, the ${whole(WEEK_VAR)} square `
+        + 'minutes before the root was taken, has its own name and its own written form: it is the '
+        + 'variance, written s², read aloud as "s squared", and meaning s multiplied by itself. '
+        + 'The two symbols are one fact written on either side of a square root, one in square '
+        + 'minutes and one in minutes.',
         'From here on this unit writes s rather than spelling the phrase out, because you have '
         + 'done the thing the letter stands for. The shorthand that packs "add up all the squared '
-        + 'distances" into a single character belongs to 08-wobble, and it arrives there '
-        + 'because s has to sit inside a larger expression by then and English will not nest.',
+        + 'distances" into a single character belongs to 08-wobble, where s has to sit inside a '
+        + 'larger expression and English stops fitting.',
       ));
       reveal.append(deeper(
         'Why square them, rather than drop the minus signs',
@@ -864,15 +924,13 @@ function sectionRecipe(kit, state) {
         + 'who notice this and get told "we square to remove the sign" have been fobbed off, and '
         + 'they know it.',
         'The real reason is that squared distances add up and unsquared ones do not. Put two '
-        + 'independent sources of wobble together, a slow bus and a slow lift, and the variances '
+        + 'independent sources of wobble together, a slow bus and a slow elevator, and the variances '
         + 'of the two add to give the variance of the total; the mean absolute deviations do no '
         + 'such thing. Everything in Part III leans on that one property, which is why the '
-        + 'stranger-looking summary is the one that survived. 08-wobble is where the debt gets '
-        + 'paid.',
-        'There is a second reason, and it arrives in 14-line. The middle is the single number '
-        + 'whose squared distances come to the smallest total, so squaring is already the '
-        + 'measuring stick the mean was built with. Fitting a line by making its squared misses '
-        + 'as small as possible is the same idea one dimension up.',
+        + 'stranger-looking summary is the one that survived, and 08-wobble is where the debt gets '
+        + 'paid. There is a second reason waiting in 14-line: the middle is the number whose '
+        + 'squared distances come to the smallest total, so squaring is already the measuring '
+        + 'stick the mean was built with.',
       ));
       reveal.append(deeper(
         'Why the sharing out is between four rather than five',
@@ -884,27 +942,28 @@ function sectionRecipe(kit, state) {
         `Sharing the ${WEEK_SS} square minutes between four instead of five pushes the answer back `
         + `out by the right amount: ${whole(WEEK_VAR)} square minutes rather than `
         + `${min1(WEEK_SS / WEEK.length)}, and ${min1(WEEK_SD)} minutes rather than `
-        + `${min1(Math.sqrt(WEEK_SS / WEEK.length))}. The rule is n − 1 where n is how many `
-        + 'numbers you have, so it matters enormously on five journeys and hardly at all on three '
-        + 'thousand.',
-        'One honest footnote, because textbooks tend to leave it out. Dividing by n − 1 makes the '
-        + 'variance come out right on average across repeated samples. It does not quite do the '
-        + 'same for the standard deviation, because the square root of a quantity that is right on '
-        + 'average is not itself right on average. The residual bias is small and nobody corrects '
-        + 'for it in practice, and saying so is cheaper than letting you find out later that the '
-        + 'tidy story had a seam in it.',
+        + `${min1(Math.sqrt(WEEK_SS / WEEK.length))}. The rule is n − 1, where n is how many `
+        + 'numbers you have, so it matters on five journeys and hardly at all on three '
+        + 'thousand. One footnote textbooks tend to leave out: dividing by n − 1 makes the '
+        + 'variance come out right on average across repeated samples, and it does not quite do '
+        + 'the same for the standard deviation, because the square root of a quantity that is '
+        + 'right on average is not itself right on average. Nobody corrects for that in practice, '
+        + 'and it is cheaper to say so than to let you find the seam later.',
       ));
     },
   });
   sideEl = asButton(commit.el);
+  kit.bin.push(() => { if (cancel) cancel(); });
 
   wrap.append(
     fig.el,
     controls(next.el),
     steps.el,
-    para(`Instruction four is one you can do yourself. The average square covers `
-      + `${whole(WEEK_VAR)} square minutes of floor. How wide is it? Set a side, watch the area in `
-      + 'the readout, and commit when your square looks the same size as it.'),
+    para('Instruction four is one you can do yourself. The average square covers '
+      + `${whole(WEEK_VAR)} square minutes of floor, so how wide is it? Set a side, watch the area `
+      + 'in the readout, and commit when you have got as close to that area as the slider will '
+      + 'let you. Nothing in tenths of a minute lands on it exactly, which is worth knowing before '
+      + 'you hunt for it.'),
     controls(sideSlider.el, commit.el),
     readoutRow(yourSq.el, target.el),
     reveal,
@@ -917,13 +976,13 @@ function sectionRecipe(kit, state) {
 
 function sectionOutlier(kit, data) {
   const wrap = block();
-  wrap.append(heading('One morning behind a burst water main'));
+  wrap.append(heading('One morning behind a broken water main'));
   wrap.append(para(
-    `The transport authority holds every morning-peak journey the 6 made last year, `
-    + `${YEAR_N.toLocaleString('en-GB')} of them, which is the pile below. It has the same middle `
-    + `and the same s as the forty journeys you started with: ${min1(MIDDLE)} minutes and `
-    + `${min1(SD_SIX)} minutes. One morning in February a 6 sat behind a burst water main on the `
-    + `ring road and took ${FREAK} minutes.`));
+    'The transport authority holds every morning-peak journey the 6 made last year, '
+    + `${YEAR_N.toLocaleString('en-US')} of them, and that is the pile below: the same `
+    + `${min1(MIDDLE)}-minute middle and the same s of ${min1(SD_SIX)} minutes as the forty you `
+    + `started with. One morning in February a 6 sat behind a broken water main and took ${FREAK} `
+    + 'minutes.'));
 
   const base = data.year6;
   const withFreak = base.values.concat([FREAK]);
@@ -933,7 +992,7 @@ function sectionOutlier(kit, data) {
     counts[b] += 1;
   });
   const peak = Math.max(...counts);
-  const top = peak * 1.4;
+  const top = peak * 1.5;
   const pileLo = kit.stats.min(base.values);
   const pileHi = kit.stats.max(base.values);
 
@@ -951,13 +1010,14 @@ function sectionOutlier(kit, data) {
   const fig = mountFigure(kit, {
     height: 280,
     caption:
-      `Every morning-peak journey on the 6 for one invented year, ${YEAR_N.toLocaleString('en-GB')} `
+      `Every morning-peak journey on the 6 for one invented year, ${YEAR_N.toLocaleString('en-US')} `
       + `journeys drawn in world ${kit.seed}, counted into one-minute columns. The axis runs to `
       + `${YEAR_MAX} minutes throughout, so the pile keeps the same width on screen whether or not `
       + 'the February morning is in it. The upper bar measures the range, from the fastest journey '
-      + 'to the slowest. The lower bar reaches one s out on each side of the middle. Watch which '
-      + 'of the two bars changes when one journey is added to three thousand.',
-    describe: () => `A column chart of ${values().length.toLocaleString('en-GB')} journeys on the `
+      + 'to the slowest. The lower bar reaches one s out on each side of the middle. Those two bars '
+      + 'are the two summaries this screen sets against each other when one journey joins three '
+      + 'thousand.',
+    describe: () => `A column chart of ${values().length.toLocaleString('en-US')} journeys on the `
       + `6, in minutes, ${added ? 'including' : 'without'} the ${FREAK}-minute February morning. `
       + `The pile stands between ${min1(pileLo)} and ${min1(pileHi)} minutes`
       + `${added ? `, with one lone column far out to the right at ${FREAK}` : ''}. The range is `
@@ -967,24 +1027,32 @@ function sectionOutlier(kit, data) {
       st.axisY(4);
       st.axisX(6);
       st.note('journeys', 10, 12, { align: 'left', size: 11, color: HUE.ink2, weight: 600 });
-      st.note('minutes on the bus', st.W - 8, 12, { align: 'right', size: 11, color: HUE.ink2, weight: 600 });
+      /* The unit note sits at the foot of this figure rather than the head of it: the
+         two measuring bars run along the top and the range bar reaches almost to the
+         right-hand edge once the February morning is in. */
+      st.note('minutes on the bus', st.W - 8, st.H - 34, {
+        align: 'right', baseline: 'bottom', size: 11, color: HUE.ink2, weight: 600,
+      });
       const bins = counts.map((c, i) => ({ x0: i, x1: i + 1, h: c })).filter((b) => b.h > 0);
       if (added) bins.push({ x0: FREAK, x1: FREAK + 1, h: 1 });
       st.bars(bins, { color: HUE.data, gap: 0.5, alpha: 0.9 });
       if (added) {
         st.vline(FREAK + 0.5, { color: HUE.data, width: 1.5, dash: 4, alpha: 0.5 });
-        st.label('one journey', FREAK + 0.5, top * 0.16, {
-          align: 'center', size: 11, weight: 600, color: HUE.data,
+        /* The label reads back toward the pile rather than out past the frame: at
+           320 px the axis has nothing to the right of 90 minutes to hold it. */
+        st.label('one journey', FREAK - 1.5, top * 0.16, {
+          align: 'right', size: 11, weight: 600, color: HUE.data,
         });
       }
-      /* Both bars sit above the tallest column: the pile reaches 1/1.4 of the way up the
-         frame by construction, so 0.95 and 0.82 are clear of it at every width. */
-      st.bracket(lo(), hi(), top * 0.95, {
+      /* Both bars sit above the tallest column. The frame is built half again as tall as
+         that column, so the top third of it is empty whatever the width, which is the band
+         the two bars and their labels live in. */
+      st.bracket(lo(), hi(), top * 0.92, {
         color: HUE.data, label: `range ${min1(rangeNow())} min`,
       });
       const m = meanNow();
       const s = sdNow();
-      st.bracket(m - s, m + s, top * 0.82, {
+      st.bracket(m - s, m + s, top * 0.79, {
         color: HUE.result, label: `s, ${min1(s)} min each side`,
       });
     },
@@ -997,10 +1065,10 @@ function sectionOutlier(kit, data) {
   let sdBtn = null;
 
   function guess(saidRange) {
-    [rangeBtn, sdBtn].forEach((b) => {
-      if (!b) return;
-      b.disabled = true;
-    });
+    /* Read before disabling: a disabled button loses focus to the top of the document, and
+       by then there is no way to tell whether the reader was on the keyboard. */
+    const held = [rangeBtn, sdBtn].some((b) => b && document.activeElement === b);
+    [rangeBtn, sdBtn].forEach((b) => { if (b) b.disabled = true; });
     if (guessed) return;
     guessed = true;
     const toggle = kit.ui.toggle({
@@ -1022,8 +1090,10 @@ function sectionOutlier(kit, data) {
           + 'Put the morning in and watch the two bars.'),
       controls(toggle.el),
     );
+    /* Only if the reader was navigating by keyboard. Yanking focus out from under a mouse
+       or a thumb moves the caret somewhere they did not ask for. */
     const input = asInput(toggle.el);
-    if (input) input.focus({ preventScroll: true });
+    if (held && input) input.focus({ preventScroll: true });
   }
 
   function closeUp() {
@@ -1031,25 +1101,24 @@ function sectionOutlier(kit, data) {
     const sdAfter = kit.stats.sd(withFreak);
     after.append(named(
       'Two summaries, one of them decided by two journeys',
-      `The range is the distance from the fastest journey to the slowest, and it is a summary of `
-      + `exactly two of the ${YEAR_N.toLocaleString('en-GB')} mornings. One burst water main takes `
-      + `it from ${min1(rangeBefore)} minutes to ${min1(kit.stats.range(withFreak))}, and it will `
-      + 'stay there for as long as that morning is in the file, however many ordinary mornings '
-      + 'follow it.',
+      'The range is the distance from the fastest journey to the slowest, so it is a summary of '
+      + `exactly two of the ${YEAR_N.toLocaleString('en-US')} mornings. One broken water main takes `
+      + `it from ${min1(rangeBefore)} minutes to ${min1(kit.stats.range(withFreak))}, and there it `
+      + 'stays for as long as that morning is in the file.',
       `s went from ${min1(SD_SIX)} minutes to ${min1(sdAfter)}, because s hears every journey and `
-      + `the February morning is one voice in ${YEAR_N.toLocaleString('en-GB')}. It is a loud `
-      + `voice: squaring means a journey ${whole(FREAK - MIDDLE)} minutes from the middle `
-      + `contributes ${(FREAK - MIDDLE) ** 2} square minutes where an ordinary morning contributes `
-      + `about ${min1(SD_SIX * SD_SIX)}. Loud, and outnumbered.`,
+      + `February is one voice in ${YEAR_N.toLocaleString('en-US')}. It is a loud voice: squaring `
+      + `means a journey ${whole(FREAK - MIDDLE)} minutes out contributes `
+      + `${((FREAK - MIDDLE) ** 2).toLocaleString('en-US')} square minutes where an ordinary `
+      + `morning contributes about ${min1(SD_SIX * SD_SIX)}. Loud, and outnumbered.`,
     ));
     after.append(para(
-      'The size of that rescue depends on how much other evidence there is, and it is worth being '
-      + 'exact about it rather than leaving you with a slogan. Time only forty journeys on the 6, '
-      + `drop the same ${FREAK}-minute morning into those, and s goes from ${min1(SD_SIX)} minutes `
-      + `to about ${min1(kit.stats.sd(data.six.values.concat([FREAK])))}. One journey in forty is a `
-      + 'fortieth of the evidence and the squaring makes it shout. s is not immune to a freak '
-      + 'value. It is outvoted by a big enough crowd, and the range never is, because two numbers '
-      + 'decide it whether there are forty of them or three thousand.'));
+      'How much of a rescue that is depends on how much other evidence there is. Time only forty '
+      + `journeys on the 6, drop the same ${FREAK}-minute morning into those, and s goes from `
+      + `${min1(SD_SIX)} minutes to about `
+      + `${min1(kit.stats.sd(data.six.values.concat([FREAK])))}, because one journey in forty is a `
+      + 'fortieth of the evidence and the squaring makes it shout. So s is not immune to a freak '
+      + 'value. What saves it is a big enough crowd, and the range never gets that rescue: two '
+      + 'journeys decide the range whether there are forty of them or three thousand.'));
   }
 
   const sayRange = kit.ui.button({ label: 'The range', kind: 'ghost', onClick: () => guess(true) });
@@ -1075,12 +1144,12 @@ function sectionOutlier(kit, data) {
 
 function sectionPanel(kit, data) {
   const wrap = block();
-  wrap.append(heading('What the panel at the bus stop prints'));
+  wrap.append(heading('The panel at the bus stop prints one number'));
   wrap.append(para(
     'The operator has room for one line per route on the panel at the stop, and both routes '
-    + `genuinely average ${min1(MIDDLE)} minutes. Below is a year of journeys on each route rather `
-    + 'than a month, so nothing here turns on a small sample. Choose what the panel prints and '
-    + 'read what a passenger can work out from it.'));
+    + `genuinely average ${min1(MIDDLE)} minutes. The figures below come from a year on each `
+    + 'route, so nothing here turns on a small sample. Choose what the panel prints and read what '
+    + 'a passenger can work out from it.'));
 
   const y6 = data.year6.values;
   const y41 = data.year41.values;
@@ -1090,16 +1159,23 @@ function sectionPanel(kit, data) {
   const best41 = kit.stats.min(y41);
   const worst6 = kit.stats.max(y6);
   const worst41 = kit.stats.max(y41);
-  /* How often allowing the advertised average leaves you standing at a closed door.
-     Counted on the year rather than reasoned about, because the 41's pile is lopsided
-     and the two routes do not come out the same. */
-  const over6 = share(y6.filter((v) => v > MIDDLE).length, y6.length);
-  const over41 = share(y41.filter((v) => v > MIDDLE).length, y41.length);
+  /* How often a passenger who allowed the advertised average and a six-minute cushion was
+     still on the bus, counted on the year rather than reasoned about. The first statistic to
+     hand, the share of journeys over 24 minutes, is the wrong one and points the wrong way:
+     the 41's clear runs put most of its mornings below the middle, so it beats the 6 on that
+     count while being the worse bus to catch. A lopsided pile does not split at its mean. */
+  const CUSHION = 6;
+  const LATE = MIDDLE + CUSHION;
+  const over6 = share(y6.filter((v) => v > LATE).length, y6.length);
+  const over41 = share(y41.filter((v) => v > LATE).length, y41.length);
 
   const panel6 = kit.ui.readout({ label: 'The 6, on the panel', value: '', tone: 'data', live: true });
   const panel41 = kit.ui.readout({ label: 'The 41, on the panel', value: '', tone: 'data', live: true });
-  const plan6 = kit.ui.readout({ label: 'The 6, 19 mornings in 20', value: `${whole(late6)} min`, tone: 'result' });
-  const plan41 = kit.ui.readout({ label: 'The 41, 19 mornings in 20', value: `${whole(late41)} min`, tone: 'result' });
+  /* Held back until the reader has printed a panel of their own. These two are the answer
+     the whole beat is walking toward, and a screen that shows the answer beside the puzzle
+     has run the distortion past somebody who never got to be fooled by it. */
+  const plan6 = kit.ui.readout({ label: 'The 6, leave this early', value: 'not yet', tone: 'result', live: true });
+  const plan41 = kit.ui.readout({ label: 'The 41, leave this early', value: 'not yet', tone: 'result', live: true });
 
   const says = liveBox();
 
@@ -1108,38 +1184,45 @@ function sectionPanel(kit, data) {
       six: `average ${min1(MIDDLE)} min`,
       f1: `average ${min1(MIDDLE)} min`,
       text: 'Two identical lines, both true. A passenger reading this panel cannot tell the two '
-        + 'routes apart and cannot work out what time to leave. Allow the advertised '
-        + `${min1(MIDDLE)} minutes and you are still on the bus at 9am on ${over6}% of mornings on `
-        + `the 6 and ${over41}% of mornings on the 41.`,
+        + 'routes apart and cannot work out what time to leave. Give yourself '
+        + `${whole(LATE)} minutes, ${CUSHION} more than the panel promises: of the `
+        + `${YEAR_N.toLocaleString('en-US')} mornings in each year, the 41 needed longer than that `
+        + `on ${over41}% of them and the 6 on ${over6}%.`,
     },
     range: {
       six: `average ${min1(MIDDLE)} min, range ${whole(best6)} to ${whole(worst6)} min`,
       f1: `average ${min1(MIDDLE)} min, range ${whole(best41)} to ${whole(worst41)} min`,
       text: 'The routes now look different, which is progress, and the number doing the work is '
-        + 'the slowest morning of the year. Plan by it and you leave '
-        + `${whole(worst6)} minutes early for the 6 and ${whole(worst41)} for the 41, allowing `
-        + 'every day for something that happened once. A range is a distance between two extremes '
-        + 'and it never says how often either of them turns up, which is why the panel is now '
-        + 'longer without being much more use.',
+        + `the slowest morning of the year. Plan by it and you leave ${whole(worst6)} minutes `
+        + `early for the 6 and ${whole(worst41)} for the 41, allowing every day for something that `
+        + 'happened once. A range is a distance between two extremes and it never says how often '
+        + 'either of them turns up.',
     },
     sd: {
       six: `average ${min1(MIDDLE)} min, s ${min1(SD_SIX)} min`,
       f1: `average ${min1(MIDDLE)} min, s ${min1(SD_F1)} min`,
       text: `Two numbers each, and the routes come apart: ${min1(MIDDLE)} give or take `
-        + `${min1(SD_SIX)} against ${min1(MIDDLE)} give or take ${min1(SD_F1)}. A bracket two s `
-        + 'wide either side of the middle catches all but about one morning in twenty on piles '
-        + `like these, so a passenger can do the arithmetic on the panel: `
-        + `${whole(MIDDLE + 2 * SD_SIX)} minutes for the 6 and ${whole(MIDDLE + 2 * SD_F1)} for `
-        + `the 41. The year of journeys says ${whole(late6)} and ${whole(late41)}. Two numbers on `
-        + 'a sign got a passenger within a minute of the truth on both routes.',
+        + `${min1(SD_SIX)} against ${min1(MIDDLE)} give or take ${min1(SD_F1)}. Two s each side of `
+        + 'the middle catches all but about one morning in twenty on piles like these, so a '
+        + `passenger can do the arithmetic off the panel: ${whole(MIDDLE + 2 * SD_SIX)} minutes `
+        + `for the 6 and ${whole(MIDDLE + 2 * SD_F1)} for the 41. The year itself says `
+        + `${whole(late6)} and ${whole(late41)}. Two numbers on a sign got a passenger within a `
+        + 'minute of the truth on both routes.',
     },
   };
 
-  function show(key) {
+  let printed = false;
+
+  function show(key, byReader) {
     const line = lines[key];
+    if (!line) return;
     panel6.set(line.six);
     panel41.set(line.f1);
     says.replaceChildren(para(line.text));
+    if (!byReader || printed) return;
+    printed = true;
+    plan6.set(`${whole(late6)} min`);
+    plan41.set(`${whole(late41)} min`);
   }
 
   const choice = kit.ui.segmented({
@@ -1150,7 +1233,7 @@ function sectionPanel(kit, data) {
       { value: 'sd', label: 'Average and s' },
     ],
     value: 'mean',
-    onChange: show,
+    onChange: (v) => show(v, true),
   });
   show('mean');
 
@@ -1159,9 +1242,9 @@ function sectionPanel(kit, data) {
     readoutRow(panel6.el, panel41.el),
     says,
     readoutRow(plan6.el, plan41.el),
-    quiet('The last two readouts come from the year of journeys itself rather than from the panel: '
-      + 'they are the times that got a passenger to the hospital on 19 mornings out of 20 on each '
-      + 'route.'),
+    quiet('The last two readouts fill in once you have printed a panel, and they come from the '
+      + 'year of journeys rather than from the panel: they are the times that got a passenger to '
+      + 'the hospital on 19 mornings out of 20 on each route.'),
     warned(
       'Every number on that panel is true',
       `Nobody typed a false figure. The 6 averages ${min1(MIDDLE)} minutes and so does the 41, and `
@@ -1170,13 +1253,11 @@ function sectionPanel(kit, data) {
       + 'is the difference between a passenger who makes the appointment and one who is told to '
       + 'rebook.',
       'This one is rarely done on purpose. An average is the number a spreadsheet offers first, it '
-      + 'fits in a sentence, and a second number always looks like clutter to whoever is laying '
-      + 'out the panel. You will publish a middle with no spread yourself at some point, and the '
-      + 'habit that catches it is asking, before the thing goes out, what the crowd behind the '
-      + 'average looked like.',
-      'The question to carry away is not whether an average is being quoted. Averages are fine. It '
-      + 'is whether the person quoting it could tell you how wide the crowd was, and whether the '
-      + 'people acting on it need to know.',
+      + 'fits in a sentence, and a second number looks like clutter to whoever is laying out the '
+      + 'panel. You will publish a middle with no spread yourself at some point. The question to '
+      + 'carry is not whether an average is being quoted, because averages are fine. It is whether '
+      + 'the person quoting it could tell you how wide the crowd was, and whether the people '
+      + 'acting on it need to know.',
     ),
   );
   return wrap;
@@ -1191,8 +1272,10 @@ function sectionEcho(kit) {
   wrap.append(para(
     'Two emergency departments publish their figures for the year, and both report a mean wait of '
     + '3 hours 10 minutes. At the county hospital nearly everybody waits between two and a half '
-    + 'and four hours. At the city hospital most people are seen inside an hour, and one patient '
-    + 'in eight waits longer than eight hours.'));
+    + 'and four hours. At the city hospital three patients in four are seen within 40 minutes, and '
+    + 'the other one in four waits an average of 10 hours 40 minutes. Those two groups average out '
+    + 'to the same 3 hours 10: three quarters of 40 minutes is 30 minutes of it, and one quarter '
+    + 'of 10 hours 40 is the other 2 hours 40.'));
 
   wrap.append(kit.ui.quiz({
     question: 'Which sentence is fair to both hospitals?',
@@ -1200,38 +1283,38 @@ function sectionEcho(kit) {
       {
         label: 'The two are performing about the same. The average wait is the average wait.',
         correct: false,
-        why: 'The two averages really are equal, and for a whole year of patients the total time '
-          + 'spent waiting comes out the same at both places, so this is not a careless answer. '
-          + 'What it cannot see is that the same 3 hours 10 minutes is built out of two completely '
-          + 'different nights. One patient in eight at the city hospital is having an experience '
-          + 'that nobody at the county hospital is having.',
+        why: 'The two averages really are equal, and for the same number of patients the total '
+          + 'time spent waiting comes out the same at both places, so this is not a careless '
+          + 'answer. What it cannot see is that one 3 hours 10 minutes is built out of two '
+          + 'different nights. The quarter of city patients waiting most of a day are having an '
+          + 'experience nobody at the county hospital is having.',
       },
       {
-        label: 'The city hospital is better, because most people there are seen inside an hour.',
+        label: 'The city hospital is better, because three patients in four are out within 40 '
+          + 'minutes.',
         correct: false,
-        why: 'Most people are, and for most people it is the better door to walk through. The '
-          + 'sentence goes wrong by dropping the eighth of patients waiting past eight hours, '
+        why: 'Three in four are, and for those three it is the better door to walk through. The '
+          + 'sentence goes wrong by dropping the quarter of patients waiting 10 hours and more, '
           + 'which is the group every argument about emergency care is actually about. Describing '
           + 'the majority and leaving out the tail is the same move as quoting a middle with no '
-          + 'spread, one story up.',
+          + 'spread, one floor up.',
       },
       {
         label: 'One average is coming out of two different nights. Ask each hospital how long the '
           + 'long waits are and how many people have them.',
         correct: true,
         why: 'The averages match and the spreads do not, so the average has stopped being a useful '
-          + 'comparison and the next question is about the shape of each pile. That is a complete '
-          + 'sentence and it is also the only one of the three that tells a health board what to '
-          + 'go and ask for.',
+          + 'comparison and the next question is about the shape of each pile. It is also the only '
+          + 'one of the three that tells a health board what to go and ask for.',
       },
     ],
   }).el);
 
   wrap.append(para(
-    "England's NHS reports emergency care not as an average wait but as the share of "
-    + 'patients admitted, transferred or discharged within four hours. Choosing a threshold '
-    + 'instead of a mean is a decision about spread: an average can be held down by a fast '
-    + 'majority while the longest waits get longer, and the four-hour figure moves when they do.'));
+    "England's NHS reports emergency care as the share of patients admitted, transferred or "
+    + 'discharged within four hours rather than as an average wait. Choosing a threshold instead '
+    + 'of a mean is a decision about spread: an average can be held down by a fast majority while '
+    + 'the longest waits get longer, and the four-hour figure moves when they do.'));
 
   return wrap;
 }
@@ -1242,7 +1325,7 @@ function sectionEcho(kit) {
 
 function sectionRecap(kit, state) {
   const wrap = block();
-  wrap.append(heading('Four things you did'));
+  wrap.append(heading('Five things you did'));
   wrap.append(para(
     'One letter arrived on this screen, and it arrived last, after you had done the thing it '
     + 'stands for with a slider and a bracket. Everything below is sayable without it.'));
@@ -1250,37 +1333,34 @@ function sectionRecap(kit, state) {
   const steps = kit.ui.steps([
     {
       title: 'You chose a bus on something the average could not tell you',
-      body: 'Two routes with the same 24.0-minute middle, and you picked the one whose journeys '
-        + 'disagreed with each other less. How much a crowd of numbers disagrees with itself is '
-        + 'its spread, and 03-pile is where the shape of that crowd gets read off a picture.',
+      body: 'Two routes, one 24.0-minute middle, and you picked the one whose journeys disagreed '
+        + 'with each other less. How much a crowd disagrees with itself is its spread.',
     },
     {
       title: 'You measured a spread with your hands',
-      body: 'You reached a bracket out from the middle until it had caught most of the journeys, '
-        + 'and read the width off in minutes. Pull it back to about two thirds of the journeys and '
-        + 'you are on the standard deviation, which is a distance from the middle in the units of '
-        + 'the thing you measured.',
+      body: 'You reached a bracket out until it had caught most of the journeys and read the width '
+        + 'off in minutes. Pull it back to about two thirds of them and you are on the standard '
+        + 'deviation: a distance from the middle, in the units of the thing you measured.',
     },
     {
       title: 'You wrote it down as four instructions, then as a letter',
       body: 'Distance from the middle for each journey, square each one, average the squares, take '
-        + 'the square root. The average of the squares is the variance, written s², and its square '
-        + 'root is the standard deviation, written s. 08-wobble is where s goes inside something '
-        + 'bigger and picks up the notation for the adding-up step.',
+        + 'the square root. The average of the squares is the variance, written s², and its root '
+        + 'is the standard deviation, written s.',
     },
     {
       title: 'You broke the range with one morning and watched s hold',
-      body: 'The range is the distance from smallest to largest, and two journeys decide it. s '
-        + 'listens to every journey, which is why a crowd of three thousand can outvote a freak '
-        + 'and a crowd of forty cannot. 04-middle does the same comparison for the middle, where '
-        + 'the mean moves and the median does not.',
+      body: 'The range is the distance from smallest to largest and two journeys decide it. s '
+        + 'listens to every journey, which is why three thousand of them can outvote a freak '
+        + 'morning and forty cannot. 04-middle runs that comparison on the middle, where the mean '
+        + 'moves and the median does not.',
     },
     {
       title: 'You published a true panel that told a passenger nothing',
-      body: 'A middle with no spread is a half-truth with a clean face. It is the most common one '
-        + 'in public life, because it is the shortest thing to print and nobody has to lie to '
-        + 'produce it. 16-rhetoric is this whole toolkit turned around: reading the claims other '
-        + 'people make, and writing ones that survive being checked.',
+      body: 'A middle with no spread is a half-truth with a clean face, and the commonest one in '
+        + 'public life, because it is the shortest thing to print and nobody has to lie to produce '
+        + 'it. 16-rhetoric is this toolkit turned around: reading the claims other people make, '
+        + 'and writing ones that survive being checked.',
     },
   ]);
   for (let i = 0; i < 5; i++) steps.reveal(i);
@@ -1300,25 +1380,24 @@ function sectionRecap(kit, state) {
   state.onBracket((b) => {
     if (b.six == null || b.f1 == null) return;
     lines.bracket = `You called most of them at ${min1(b.six)} minutes each side on the 6 and `
-      + `${min1(b.f1)} on the 41. The arithmetic's own answers are ${min1(SD_SIX)} and `
-      + `${min1(SD_F1)}, and the ratio between your two numbers is the thing to look at rather `
-      + 'than either one on its own.';
+      + `${min1(b.f1)} on the 41, against the ${min1(SD_SIX)} and ${min1(SD_F1)} the arithmetic `
+      + `gives.${b.f1 > b.six ? ' You reached further out on the 41, which is the whole finding: '
+        + 'one middle, two widths.' : ''}`;
     rewrite();
   });
   state.onSide((v) => {
     lines.side = `Your square came out ${min1(v)} minutes a side against the ${min1(WEEK_SD)} the `
-      + 'root gives. Working back from an area to a side is the only step in the recipe that has '
-      + 'no shortcut, which is why it is the one worth having done by hand once.';
+      + 'root gives. Working back from an area to a side is the step with no shortcut, which is '
+      + 'why it is the one worth doing by hand once.';
     rewrite();
   });
   wrap.append(mine);
 
   wrap.append(para(
-    'Part III is built on s. The wobble in a result you would get by running a study again is a '
-    + 'spread, measured the same four ways, and 08-wobble puts s inside the expression that '
-    + 'measures it. The bell in 09-bell is the shape that made two thirds a useful rule of thumb '
-    + 'in the first place. The honest range in 10-range is a middle with its spread attached, '
-    + 'which is what the panel at the bus stop should have printed.'));
+    'Part III is built on s. The wobble you would get by running a study again is a spread, '
+    + 'measured the same four ways, and 08-wobble puts s inside the expression that measures it. '
+    + '10-range turns that into a middle with its spread attached, which is what the panel at the '
+    + 'bus stop should have printed.'));
 
   const link = el('a', 'ec-button', 'Back to the map');
   link.href = '#/map';

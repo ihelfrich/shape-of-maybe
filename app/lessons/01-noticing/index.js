@@ -216,6 +216,9 @@ function mountFigure(kit, opts) {
     const said = opts.describe();
     if (said !== spoken) {
       spoken = said;
+      // aria-labelledby outranks aria-label, so the caption pointer ui.figure sets
+      // has to go or this sentence is never the one that gets read out.
+      canvas.removeAttribute('aria-labelledby');
       canvas.setAttribute('aria-label', said);
     }
   };

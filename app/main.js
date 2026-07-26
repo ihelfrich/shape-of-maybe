@@ -7,6 +7,7 @@ import { start, view, register, go } from './core/router.js';
 import { home } from './views/home.js';
 import { map } from './views/map.js';
 import { about } from './views/about.js';
+import { UNITS } from './curriculum.js';
 
 /* The lesson context is assembled lazily. A lesson gets the whole toolkit, plus the
    world number, so no lesson ever reaches for a global. */
@@ -66,11 +67,15 @@ async function boot() {
      reader a broken screen. The site is never allowed to overstate what works. */
   const coreReady = !!(toolkit.rng && toolkit.stats && toolkit.viz && toolkit.ui && toolkit.engine);
 
+  /* Every unit the curriculum calls ready is fetched here. A unit that fails to load stays
+     unregistered, which the map then reports as unfinished. Adding a lesson is a one-line
+     change in curriculum.js and nothing else. */
   if (coreReady) {
-    const lessonModules = await Promise.all([
-      import('./lessons/01-noticing/index.js').catch(() => null),
-    ]);
-    lessonModules.forEach(m => { if (m && m.default) register(m.default); });
+    const wanted = UNITS.filter(u => u.status === 'ready');
+    const mods = await Promise.all(
+      wanted.map(u => import(`./lessons/${u.id}/index.js`).catch(() => null))
+    );
+    mods.forEach(m => { if (m && m.default) register(m.default); });
   }
 
   start({

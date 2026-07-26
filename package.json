@@ -1,0 +1,12 @@
+{
+  "name": "shape-of-maybe",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A free course in statistics and mathematics, from the ground up.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node tools/selftest.mjs",
+    "serve": "python3 tools/serve.py 8000"
+  }
+}

@@ -11,6 +11,15 @@
    ctx.makeRng; this import is the guarantee the lesson still works if it ever stops. */
 import { makeRng as coreMakeRng } from '../../core/rng.js';
 
+/* Marks name their color with one of these constants rather than with the name of the
+   role, and the reason is inside viz.paint(): it resolves a color through a table that
+   runs from palette constant to role, so a constant comes back as the themed version of
+   its role while an unrecognised string comes back unchanged, at which point the canvas
+   quietly ignores it. The roles themselves mean what they mean everywhere else on the
+   site: data for the journeys, truth for the average both routes share, result for
+   something the arithmetic produced, ink for something the reader placed. */
+import { COLORS as HUE } from '../../core/viz.js';
+
 /* ---------------------------------------------------------------------------
    The scenario. Two invented bus routes running from the same stop to the same
    hospital, timed from boarding to stepping off. Minutes, one decimal.
@@ -83,8 +92,8 @@ const RECIPE_SPAN = 56;   // minutes across the frame
 const SLOT_X0 = 1.5;
 const SLOT_GAP = 1.2;
 const AVG_X0 = 45.4;      // where the average square stands
-const LADDER_TOP = 0.94;  // the five journeys hang here, one under another
-const LADDER_STEP = 0.05;
+const LADDER_TOP = 0.95;  // the five journeys hang here, one under another
+const LADDER_STEP = 0.082;
 const Y_FLOOR = -0.14;    // room under the baseline for a bracket and its label
 
 const min1 = (v) => (Math.round(v * 10) / 10).toFixed(1);
@@ -119,7 +128,7 @@ function quiet(text) { return el('p', 'small muted', text); }
 function heading(text) { return el('h2', null, text); }
 
 /* The naming move gets one treatment across the whole site: a rule down the left in the
-   result colour, past tense, no praise. */
+   result color, past tense, no praise. */
 function named(kicker, ...paras) {
   const n = el('div', 'named');
   n.append(el('p', 'named__kicker', kicker));
@@ -252,7 +261,7 @@ const points = (set, row, spread) => set.values.map((v, i) => [v, row + set.jitt
 function stripFrame(st) {
   st.domain(0, STRIP_MAX, 0, 1).pad(12, 14, 18, 28);
   st.axisX(6);
-  st.note('minutes on the bus', st.W - 8, 14, { align: 'right', size: 11, color: 'ink2', weight: 600 });
+  st.note('minutes on the bus', st.W - 8, 14, { align: 'right', size: 11, color: HUE.ink2, weight: 600 });
   return st;
 }
 
@@ -329,7 +338,7 @@ function sectionSameMiddle(kit, data) {
   wrap.append(para(
     'The 6 and the 41 both run from the stop at the end of your road to the hospital. Somebody '
     + 'timed forty journeys on each of them last month, from boarding to stepping off. Both routes '
-    + `came out at ${min1(MIDDLE)} minutes on average. A timetable would stop there.`));
+    + `came out at ${min1(MIDDLE)} minutes on average. A schedule would stop there.`));
 
   const six = data.six;
   const f1 = data.f1;
@@ -354,17 +363,17 @@ function sectionSameMiddle(kit, data) {
       + `minutes, from ${min1(f1Lo)} to ${min1(f1Hi)}, with a thin scatter out to the right.`,
     draw: (st) => {
       stripFrame(st);
-      st.label(SIX, 0.4, LABEL_TOP_Y, { align: 'left', size: 12, weight: 700, color: 'ink2' });
-      st.label(F1, 0.4, LABEL_BOT_Y, { align: 'left', size: 12, weight: 700, color: 'ink2' });
+      st.label(SIX, 0.4, LABEL_TOP_Y, { align: 'left', size: 12, weight: 700, color: HUE.ink2 });
+      st.label(F1, 0.4, LABEL_BOT_Y, { align: 'left', size: 12, weight: 700, color: HUE.ink2 });
       /* One line, not two. Both routes share this average, and a full-height rule is the
          honest mark for a number that belongs to the whole frame. */
-      st.vline(MIDDLE, { color: 'truth', width: 1.5, dash: 4, alpha: 0.35 });
-      st.dots(points(six, ROW_TOP, JITTER), { r: 4.5, fill: 'data', alpha: 0.8 });
-      st.dots(points(f1, ROW_BOT, JITTER), { r: 4.5, fill: 'data', alpha: 0.8 });
-      rowMark(st, MIDDLE, ROW_TOP, TICK_HALF, { color: 'truth', width: 3 });
-      rowMark(st, MIDDLE, ROW_BOT, TICK_HALF, { color: 'truth', width: 3 });
+      st.vline(MIDDLE, { color: HUE.truth, width: 1.5, dash: 4, alpha: 0.35 });
+      st.dots(points(six, ROW_TOP, JITTER), { r: 4.5, fill: HUE.data, alpha: 0.8 });
+      st.dots(points(f1, ROW_BOT, JITTER), { r: 4.5, fill: HUE.data, alpha: 0.8 });
+      rowMark(st, MIDDLE, ROW_TOP, TICK_HALF, { color: HUE.truth, width: 3 });
+      rowMark(st, MIDDLE, ROW_BOT, TICK_HALF, { color: HUE.truth, width: 3 });
       st.label(`${min1(MIDDLE)} min`, MIDDLE, LABEL_TOP_Y, {
-        align: 'center', size: 12, weight: 700, color: 'truth',
+        align: 'center', size: 12, weight: 700, color: HUE.truth,
       });
     },
   });
@@ -473,25 +482,25 @@ function sectionBracket(kit, data, state) {
       stripFrame(st);
       const s = set();
       const pts = points(s, ROW_ONE, 0.16);
-      st.label(label(), 0.4, LABEL_TOP_Y, { align: 'left', size: 12, weight: 700, color: 'ink2' });
-      st.dots(pts.filter((p, i) => !inside(s.values[i])), { r: 5, fill: 'data', alpha: 0.22 });
-      st.dots(pts.filter((p, i) => inside(s.values[i])), { r: 5, fill: 'data', alpha: 0.85 });
-      rowMark(st, MIDDLE, ROW_ONE, 0.26, { color: 'truth', width: 3 });
+      st.label(label(), 0.4, LABEL_TOP_Y, { align: 'left', size: 12, weight: 700, color: HUE.ink2 });
+      st.dots(pts.filter((p, i) => !inside(s.values[i])), { r: 5, fill: HUE.data, alpha: 0.22 });
+      st.dots(pts.filter((p, i) => inside(s.values[i])), { r: 5, fill: HUE.data, alpha: 0.85 });
+      rowMark(st, MIDDLE, ROW_ONE, 0.26, { color: HUE.truth, width: 3 });
       st.label(`${min1(MIDDLE)} min`, MIDDLE, 0.71, {
-        align: 'center', size: 12, weight: 700, color: 'truth',
+        align: 'center', size: 12, weight: 700, color: HUE.truth,
       });
       /* The reader's own edges stay inside the row, and two faint guides carry them up
          to the measuring bar, so the bar is visibly a measurement of this row. */
       [MIDDLE - half, MIDDLE + half].forEach((x) => {
-        st.vline(x, { color: 'ink2', width: 1, dash: 3, alpha: 0.28 });
-        rowMark(st, x, ROW_ONE, 0.3, { color: 'ink', width: 2.5 });
+        st.vline(x, { color: HUE.ink2, width: 1, dash: 3, alpha: 0.28 });
+        rowMark(st, x, ROW_ONE, 0.3, { color: HUE.ink, width: 2.5 });
       });
       st.bracket(MIDDLE - half, MIDDLE + half, BRACKET_Y, {
-        color: 'ink', label: `your bracket, ${min1(half)} min each side`,
+        color: HUE.ink, label: `your bracket, ${min1(half)} min each side`,
       });
       if (bothIn()) {
         st.bracket(MIDDLE - sd(), MIDDLE + sd(), NAMED_Y, {
-          color: 'result', label: `${min1(sd())} min each side`,
+          color: HUE.result, label: `${min1(sd())} min each side`,
         });
       }
     },
@@ -547,7 +556,7 @@ function sectionBracket(kit, data, state) {
         'You have measured a spread with your hands',
         'You reached out from the middle until the bracket had caught most of the journeys, and '
         + 'then read the width off. That is the whole idea of a spread: a distance, out from the '
-        + 'middle, in the same units as the thing you measured. Minutes here, and pounds or '
+        + 'middle, in the same units as the thing you measured. Minutes here, and dollars or '
         + 'degrees or kilograms somewhere else.',
         'A second bar has appeared under yours, and it is the width the arithmetic settles on: '
         + `${min1(SD_SIX)} minutes each side on the 6, ${min1(SD_F1)} minutes each side on the 41. `
@@ -672,66 +681,71 @@ function sectionRecipe(kit, state) {
           + `on top of it and has an area of ${whole(areaOf())} square minutes.`;
       }
       return `${head} ${squares} ${avg} Its side measures ${min1(WEEK_SD)} minutes, marked by a `
-        + 'bracket under it and by a matching bracket reaching that far out from the middle at the '
-        + 'top of the frame.';
+        + 'bracket underneath it and by a second bracket of the same length reaching that far out '
+        + 'from the middle of the week.';
     },
     draw: (st) => {
       st.domain(0, RECIPE_SPAN, Y_FLOOR, 1).pad(14, 14, 16, 20);
       /* The five journeys, one under another, each on its own line so that a distance
-         can be drawn beside it without landing on top of its neighbour. */
+         can be drawn beside it without landing on top of its neighbor. */
       const ys = WEEK.map((v, i) => LADDER_TOP - i * LADDER_STEP);
-      st.line([[MIDDLE, ys[4] - 0.035], [MIDDLE, LADDER_TOP + 0.035]], {
-        color: 'truth', width: 2.5,
+      st.line([[MIDDLE, ys[4] - 0.03], [MIDDLE, LADDER_TOP + 0.025]], {
+        color: HUE.truth, width: 2.5,
       });
-      st.label(`${min1(MIDDLE)} min`, MIDDLE, LADDER_TOP + 0.05, {
-        align: 'center', size: 11.5, weight: 700, color: 'truth',
+      st.label(`${min1(MIDDLE)} min`, MIDDLE, LADDER_TOP + 0.04, {
+        align: 'center', size: 11.5, weight: 700, color: HUE.truth,
       });
       WEEK.forEach((v, i) => {
         const y = ys[i];
+        const early = v < MIDDLE;
         if (step >= 1) {
-          st.line([[MIDDLE, y], [v, y]], { color: 'data', width: 2, alpha: 0.75 });
-          st.label(`${signed(WEEK_DEV[i])}`, (MIDDLE + v) / 2, y + 0.012, {
-            align: 'center', size: 11, weight: 700, color: 'data',
+          st.line([[MIDDLE, y], [v, y]], { color: HUE.data, width: 2, alpha: 0.75 });
+          st.label(`${signed(WEEK_DEV[i])}`, (MIDDLE + v) / 2, y + 0.014, {
+            align: 'center', size: 11, weight: 700, color: HUE.data,
           });
         }
-        st.dots([[v, y]], { r: 4.5, fill: 'data', alpha: 0.9 });
-        st.label(`${WEEK_DAYS[i]} ${v}`, v + 0.6, y + 0.012, {
-          align: 'left', size: 11, weight: 600, color: 'ink2',
+        st.dots([[v, y]], { r: 4.5, fill: HUE.data, alpha: 0.9 });
+        /* The day sits on the far side of its dot from the middle, so the distance
+           drawn between the two has the space between them to itself. */
+        st.label(`${WEEK_DAYS[i]} ${v}`, v + (early ? -0.7 : 0.7), y + 0.014, {
+          align: early ? 'right' : 'left', size: 11, weight: 600, color: HUE.ink2,
         });
       });
 
       if (step >= 2) {
         st.bars(slots.map((s, i) => ({ x0: s.x0, x1: s.x1, h: sideToY(st, s.w) })), {
-          color: 'data', gap: 0, alpha: step >= 3 ? 0.35 : 0.7,
+          color: HUE.data, gap: 0, alpha: step >= 3 ? 0.35 : 0.7,
         });
         const big = slots[4];
         st.label(`${Math.abs(WEEK_DEV[4])} × ${Math.abs(WEEK_DEV[4])}`,
           (big.x0 + big.x1) / 2, sideToY(st, big.w) / 2, {
-            align: 'center', size: 11.5, weight: 700, color: 'ink',
+            align: 'center', size: 11.5, weight: 700, color: HUE.ink,
           });
       }
 
       if (step >= 3) {
         const h = sideToY(st, WEEK_SD);
-        st.bars([{ x0: AVG_X0, x1: AVG_X0 + WEEK_SD, h }], { color: 'result', gap: 0, alpha: 0.55 });
-        st.line(squareOutline(st, AVG_X0, WEEK_SD), { color: 'result', width: 2 });
+        st.bars([{ x0: AVG_X0, x1: AVG_X0 + WEEK_SD, h }], { color: HUE.result, gap: 0, alpha: 0.55 });
+        st.line(squareOutline(st, AVG_X0, WEEK_SD), { color: HUE.result, width: 2 });
         st.label(`${whole(WEEK_VAR)}`, AVG_X0 + WEEK_SD / 2, h / 2, {
-          align: 'center', size: 12, weight: 700, color: 'result',
+          align: 'center', size: 12, weight: 700, color: HUE.ink,
         });
       }
 
       /* The reader's own square stands in the same corner as the average square, so the
          two can be compared by watching one grow into the other. */
       if (sided && step < 4) {
-        st.line(squareOutline(st, AVG_X0, side), { color: 'ink', width: 2, dash: 4 });
+        st.line(squareOutline(st, AVG_X0, side), { color: HUE.ink, width: 2, dash: 4 });
       }
 
       if (step >= 4) {
         st.bracket(AVG_X0, AVG_X0 + WEEK_SD, -0.03, {
-          color: 'result', down: true, label: `${min1(WEEK_SD)} min`,
+          color: HUE.result, down: true, label: `${min1(WEEK_SD)} min`,
         });
-        st.bracket(MIDDLE, MIDDLE + WEEK_SD, LADDER_TOP + 0.045, {
-          color: 'result', label: `${min1(WEEK_SD)} min`,
+        /* The same width, carried back to the middle of the week. Two brackets of equal
+           length in one frame is the whole point of the last instruction. */
+        st.bracket(MIDDLE, MIDDLE + WEEK_SD, ys[4] - 0.055, {
+          color: HUE.result, down: true, label: `${min1(WEEK_SD)} min from the middle`,
         });
       }
     },
@@ -952,24 +966,26 @@ function sectionOutlier(kit, data) {
       st.domain(0, YEAR_MAX, 0, top).pad(46, 16, 22, 28);
       st.axisY(4);
       st.axisX(6);
-      st.note('journeys', 10, 12, { align: 'left', size: 11, color: 'ink2', weight: 600 });
-      st.note('minutes on the bus', st.W - 8, 12, { align: 'right', size: 11, color: 'ink2', weight: 600 });
+      st.note('journeys', 10, 12, { align: 'left', size: 11, color: HUE.ink2, weight: 600 });
+      st.note('minutes on the bus', st.W - 8, 12, { align: 'right', size: 11, color: HUE.ink2, weight: 600 });
       const bins = counts.map((c, i) => ({ x0: i, x1: i + 1, h: c })).filter((b) => b.h > 0);
       if (added) bins.push({ x0: FREAK, x1: FREAK + 1, h: 1 });
-      st.bars(bins, { color: 'data', gap: 0.5, alpha: 0.9 });
+      st.bars(bins, { color: HUE.data, gap: 0.5, alpha: 0.9 });
       if (added) {
-        st.vline(FREAK + 0.5, { color: 'data', width: 1.5, dash: 4, alpha: 0.5 });
+        st.vline(FREAK + 0.5, { color: HUE.data, width: 1.5, dash: 4, alpha: 0.5 });
         st.label('one journey', FREAK + 0.5, top * 0.16, {
-          align: 'center', size: 11, weight: 600, color: 'data',
+          align: 'center', size: 11, weight: 600, color: HUE.data,
         });
       }
-      st.bracket(lo(), hi(), top * 0.93, {
-        color: 'data', label: `range ${min1(rangeNow())} min`,
+      /* Both bars sit above the tallest column: the pile reaches 1/1.4 of the way up the
+         frame by construction, so 0.95 and 0.82 are clear of it at every width. */
+      st.bracket(lo(), hi(), top * 0.95, {
+        color: HUE.data, label: `range ${min1(rangeNow())} min`,
       });
       const m = meanNow();
       const s = sdNow();
-      st.bracket(m - s, m + s, top * 0.66, {
-        color: 'result', label: `s, ${min1(s)} min each side`,
+      st.bracket(m - s, m + s, top * 0.82, {
+        color: HUE.result, label: `s, ${min1(s)} min each side`,
       });
     },
   });
@@ -1197,7 +1213,7 @@ function sectionEcho(kit) {
           + 'sentence goes wrong by dropping the eighth of patients waiting past eight hours, '
           + 'which is the group every argument about emergency care is actually about. Describing '
           + 'the majority and leaving out the tail is the same move as quoting a middle with no '
-          + 'spread, one storey up.',
+          + 'spread, one story up.',
       },
       {
         label: 'One average is coming out of two different nights. Ask each hospital how long the '
@@ -1415,7 +1431,7 @@ function render(root, ctx) {
   const repaint = () => { kit.redraws.forEach((draw) => draw()); };
   repaint();
 
-  /* viz.js holds the colours it read out of the stylesheet for a fraction of a second,
+  /* viz.js holds the colors it read out of the stylesheet for a fraction of a second,
      so a redraw fired the instant the scheme changes can still be painting in the old
      palette. Paint now, and again once that cache has certainly expired, because most
      of these figures never redraw on their own. */

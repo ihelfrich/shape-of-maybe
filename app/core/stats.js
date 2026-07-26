@@ -372,7 +372,7 @@ export function lgamma(x) {
 // away: what survives is right to nine digits instead of sixteen, and that error rides straight
 // through exp() into every p-value at large degrees of freedom.
 // So we do the subtraction on paper first. Writing L(x) = (x-0.5)log(x+6.5) - (x+6.5) + log A(x)
-// and cancelling by hand, the three big -(x+6.5) terms collapse to a single -6.5 and the three
+// and canceling by hand, the three big -(x+6.5) terms collapse to a single -6.5 and the three
 // big logs collapse into two log1p calls of a small ratio. Nothing large is ever subtracted.
 function lbeta(a, b) {
   // The Lanczos form above needs its argument at or above 0.5. B(a,b) = B(a+1,b)*(a+b)/a walks

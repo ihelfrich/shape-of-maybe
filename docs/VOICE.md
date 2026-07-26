@@ -139,7 +139,7 @@ These are checkable. A reviewer can search for them.
 | we will now, in this section, let us turn to | Narrates the document instead of teaching | Start the content |
 | let's dive in, welcome to, buckle up, get ready | Enthusiasm standing in for interest | Delete |
 | don't worry, don't be scared, no need to panic | Installs the fear it disclaims | Delete |
-| colour words for data roles: the blue line, the orange dots | Excludes colour-blind and screen-reader users | Name the role: the true value, the sample |
+| color words for data roles: the blue line, the orange dots | Excludes color-blind and screen-reader users | Name the role: the true value, the sample |
 
 **The ban attaches to the job the word is doing, not to the string.** A grep is where review
 starts, not where it ends. Running the list over `app/`, `index.html` and `README.md` today
@@ -311,8 +311,8 @@ plus the caption no longer make the point, the prose is leaning on the picture a
 reader gets nothing. Rewrite until the words stand on their own, then put the figure back,
 because for everyone else it is still the fastest route.
 
-This is why colour words are banned. Say **the true value**, not *the blue line*. The figure
-carries the colour and the prose carries the meaning, so a reader who cannot separate blue
+This is why color words are banned. Say **the true value**, not *the blue line*. The figure
+carries the color and the prose carries the meaning, so a reader who cannot separate blue
 from orange loses nothing. The four data roles in `app/styles/tokens.css` have names for
 exactly this reason: truth, data, result, test.
 
@@ -399,7 +399,7 @@ The `lies` field for `08-wobble` is the house style: "A number quoted without it
 guess wearing a suit."
 
 **It is never at the reader's expense, or at the expense of a category the reader might be
-in.** No jokes about people who are bad at maths, who failed statistics, who believed a
+in.** No jokes about people who are bad at math, who failed statistics, who believed a
 headline, or who thought the mean was the median. The premise of the whole site is that those
 people were rushed rather than deficient, and one joke can retract it.
 
@@ -454,9 +454,18 @@ now differentiate", never "we can see that".
 **Tense.** Present for what is true and for what the reader is doing. Past for what they did
 a moment ago, which is where the naming move lives.
 
-**Spelling.** British. *Maths* in prose, *mathematics* in headings and titles, *randomised*,
-*summarise*, *centred*, *colour*, *licence* for the noun. Data examples keep their own
-currencies and units.
+**Spelling and idiom.** American, throughout, including in code comments. *Math* in prose,
+*mathematics* in headings and titles. *Color*, *center*, *randomized*, *summarize*, *labeled*,
+*modeling*, *toward*, *license* for both the noun and the verb.
+
+Vocabulary matters more than spelling, because it is what gives a scene away. Write
+*apartment* rather than flat, *line* rather than queue, *county* or *city* rather than council,
+*highway* rather than motorway, *schedule* rather than timetable, *airplane* rather than
+aeroplane, *gas* rather than petrol, *sidewalk* rather than pavement, *zip code* rather than
+postcode, *cents* and *dollars* rather than pence and pounds.
+
+Money is in dollars unless a unit is built on real data that came in another currency, in which
+case it keeps its own and says so in the caption. A unit must not mix currencies.
 
 **Numerals.** Spell out counts inside a sentence about what the reader did or could do:
 "sixty-eight numbers", "four seconds". Use digits for data values, sample sizes, parameters,
@@ -476,7 +485,7 @@ same way" and "Sometimes the other way" rather than a pair of letters.
 what a sighted reader would take from the picture, not a description of the drawing. Unit
 `01-noticing` sets the standard, and its labels are rebuilt whenever the picture changes:
 "The same two bars, 5.0 and 5.4 minutes, on an axis starting at 4.9 minutes. Birch's bar is
-now 5.0 times taller than Ash's, from the same 8% difference." A canvas labelled "A canvas
+now 5.0 times taller than Ash's, from the same 8% difference." A canvas labeled "A canvas
 showing a bar chart" fails.
 
 **Error messages.** The screen is at fault, never the reader. `router.js` sets the tone:

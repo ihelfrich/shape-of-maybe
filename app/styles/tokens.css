@@ -1,6 +1,6 @@
 /* tokens.css
-   The whole visual language in one file: colour, type, space, motion.
-   Change a value here and it changes everywhere. Nothing else defines a raw colour. */
+   The whole visual language in one file: color, type, space, motion.
+   Change a value here and it changes everywhere. Nothing else defines a raw color. */
 
 :root {
   /* --- surfaces --------------------------------------------------------- */
@@ -16,7 +16,7 @@
   --ink-3:        #8B8D99;   /* faint labels */
 
   /* --- the four roles ---------------------------------------------------
-     Colour carries meaning here, never decoration. A reader who learns these
+     Color carries meaning here, never decoration. A reader who learns these
      four in unit one can read every figure in the book without a legend. */
   --truth:        #4C6EF5;   /* the population, the parameter, what is actually true */
   --truth-soft:   #EDF2FF;

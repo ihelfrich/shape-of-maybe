@@ -2,7 +2,7 @@
 
 **Data, Chance, and Cause — a free course in statistics and mathematics, from the ground up.**
 
-Most people were not bad at maths. They were rushed. Miss one week and the notation stops
+Most people were not bad at math. They were rushed. Miss one week and the notation stops
 meaning anything, and from there it is a short walk to deciding you are not a numbers person.
 Almost nobody who says that is right about themselves.
 
@@ -104,7 +104,7 @@ intuition it compresses.
 Corrections to the mathematics are the most valuable contribution there is. If an explanation is
 wrong, or a screen makes you feel stupid, both are bugs and both get fixed.
 
-## Licence
+## License
 
 Prose and lesson content: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 Code: MIT. Use it, translate it, print it, teach from it.

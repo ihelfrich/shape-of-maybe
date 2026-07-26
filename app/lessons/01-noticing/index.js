@@ -10,7 +10,7 @@
 import { makeRng as coreMakeRng } from '../../core/rng.js';
 
 /* ---------------------------------------------------------------------------
-   The scenario. Two cafes on the same street, timed from joining the queue to
+   The scenario. Two cafes on the same street, timed from joining the line to
    holding the cup. Minutes, one decimal, a unit everybody owns.
    Birch really is slower than Ash. That fact never changes on this screen;
    only the pictures of it do. */
@@ -38,7 +38,7 @@ const PCT = Math.round(((YEAR_BIRCH - YEAR_ASH) / YEAR_ASH) * 100);   // 8
    down once so beat 2 and beat 3 line up when a reader scrolls between them. */
 const ROW_TOP = 0.72;
 const ROW_BOT = 0.28;
-const JITTER = 0.15;      // how far a dot may sit from its row's centre line
+const JITTER = 0.15;      // how far a dot may sit from its row's center line
 const TICK_HALF = 0.19;   // half-height of a mark that belongs to one row
 const LABEL_TOP_Y = 0.94;
 const LABEL_BOT_Y = 0.50;
@@ -72,7 +72,7 @@ function quiet(text) { return el('p', 'small muted', text); }
 function heading(text) { return el('h2', null, text); }
 
 /* The naming move gets one treatment across the whole site, so a reader learns to
-   recognise it on sight: a rule down the left in the result colour, past tense, no praise. */
+   recognize it on sight: a rule down the left in the result color, past tense, no praise. */
 function named(kicker, ...paras) {
   const n = el('div', 'named');
   n.append(el('p', 'named__kicker', kicker));
@@ -245,7 +245,7 @@ function sectionMiddle(kit) {
   wrap.append(heading('Where does this crowd sit?'));
   wrap.append(para(
     `Thirty people walked into ${ASH} one Tuesday and somebody timed every one of them, from `
-    + 'joining the queue to holding the cup. Each dot below is one of those waits. Slide the '
+    + 'joining the line to holding the cup. Each dot below is one of those waits. Slide the '
     + 'marker to the spot you would point at if a friend asked how long the wait at this cafe is.'));
 
   const people = customers(kit.makeRng(`01-noticing/ash/${kit.seed}`), N_BUSY);
@@ -400,7 +400,7 @@ function sectionOverlap(kit, state) {
       + 'customers themselves stay put, so the crowd slides rather than being replaced. Once you '
       + "draw your line, each cafe's true average is marked on its own row, a faint guide carries "
       + 'that mark the height of the frame, and the bracket across the top measures the gap.',
-    describe: () => `Two rows of thirty dots each, in minutes waited. ${BIRCH} is centred `
+    describe: () => `Two rows of thirty dots each, in minutes waited. ${BIRCH} is centerd `
       + `${min1(gap)} minutes to the right of ${ASH}, and ${crossers()} of the thirty customers `
       + `at ${ASH} waited longer than the average customer at ${BIRCH}.`,
     draw: (st) => {
@@ -533,7 +533,7 @@ function sectionWorlds(kit) {
 
   const lerp = (a, b, t) => a + (b - a) * t;
 
-  /* Dots are matched by position in the queue, so the crowd rearranges itself rather
+  /* Dots are matched by position in the line, so the crowd rearranges itself rather
      than blinking. The motion carries no information a still frame lacks, which is why
      jumping straight to the end for a reduced-motion reader costs nothing. */
   function rowPoints(xKey, yKey) {
@@ -604,7 +604,7 @@ function sectionWorlds(kit) {
       'That wobble has a name',
       `Same two cafes, same true difference of ${min1(WORLD_GAP)} minutes, and the picture came `
       + 'out different every afternoon. Nothing broke. Twelve customers is a small sample of a '
-      + 'busy year, and a small sample carries the mood of whoever happened to be in the queue. '
+      + 'busy year, and a small sample carries the mood of whoever happened to be in the line. '
       + 'The movement in those solid ticks is called sampling variation.',
       'It is the reason a single study is a single afternoon. Run it again with different people '
       + 'and you get a different number, and the interesting question stops being what did we get '
@@ -1021,7 +1021,7 @@ function render(root, ctx) {
   const repaint = () => { kit.redraws.forEach((draw) => draw()); };
   repaint();
 
-  /* viz.js holds the colours it read out of the stylesheet for a fraction of a second, so
+  /* viz.js holds the colors it read out of the stylesheet for a fraction of a second, so
      a redraw fired the instant the scheme changes can still be painting in the old
      palette. Paint now for the figures that are about to move anyway, and again once that
      cache has certainly expired for the three that never redraw on their own. */

@@ -230,14 +230,14 @@ three draw functions drift within a week.
 
 **A mark that belongs to one row stays inside that row.** Two crowds share a frame, so a
 full-height rule at one crowd's average reads as a claim about both. Draw a short tick inside
-the row it summarises, and where a distance between the two rows has to be measured, put a
+the row it summarizes, and where a distance between the two rows has to be measured, put a
 `bracket` across the top of the frame and carry each average up to it on a faint dashed guide.
 The bracket is how a gap stops being an impression and becomes a quantity.
 
-**One role, one colour.** `data` for observations, `truth` for the parameter that never moves,
+**One role, one color.** `data` for observations, `truth` for the parameter that never moves,
 `result` for an estimate, `ink` for something the reader placed themselves. Pass the role name
 rather than a hex: `viz.paint()` swaps in the themed version, so the figure follows the reader
-into dark mode. Never pick a colour because two rows needed telling apart: two rows are told
+into dark mode. Never pick a color because two rows needed telling apart: two rows are told
 apart by being two rows.
 
 **Numbers live in readouts, shapes live on the canvas.** `ui.readout` gives a number a label, a
@@ -283,7 +283,7 @@ changes nothing still costs a frame on the sort of phone this course is built fo
 
 **Repaint twice on a theme change.** `viz.js` reads the palette out of the stylesheet and holds
 it for a fraction of a second, so a redraw fired the instant `prefers-color-scheme` flips can
-still be painting in the old colours. Paint immediately, then again once that cache has
+still be painting in the old colors. Paint immediately, then again once that cache has
 certainly expired, and put the timer in `kit.bin`. Without the second pass the figures that
 never redraw on their own sit in the previous palette until something resizes them.
 

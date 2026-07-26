@@ -223,10 +223,10 @@ export function toggle(opts) {
   };
 }
 
-/* readout — a labelled number that changes as the reader plays.
+/* readout — a labeled number that changes as the reader plays.
    opts {label, value, tone:'truth'|'data'|'result'|'wrong'|'right'|'plain', live}
    -> {el, set}
-   The tone is the colour code used everywhere: blue is the truth we are chasing,
+   The tone is the color code used everywhere: blue is the truth we are chasing,
    orange is the data we actually saw, green is the conclusion.
    live defaults to off. A readout driven by an animation changes sixty times a
    second, and a polite live region would read all sixty of them aloud. Turn it

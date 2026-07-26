@@ -64,7 +64,7 @@ point rather than to reward the reader who does not.
 
 A reader who leaves after unit 4 has the founding idea of the whole subject, which is that a
 process can be unpredictable one draw at a time and lawful in bulk. A reader who leaves after
-unit 5 knows that a centre without a spread is half a claim, and will never again read
+unit 5 knows that a center without a spread is half a claim, and will never again read
 "average" as "typical" without checking. A reader who leaves after unit 7 has the single most
 valuable transferable idea in statistics: an estimate has a wobble, the wobble is calculable,
 and it shrinks like the square root of the sample size. A reader who leaves after unit 11 can
@@ -115,9 +115,9 @@ see what holds" becomes the course's core verb, available in every single unit, 
 one move an interactive textbook can make that a printed one cannot.
 
 The counter-argument at full strength. Randomness with nothing to be random about is empty, and
-a reader who meets a probability distribution before they have ever summarised data has no
+a reader who meets a probability distribution before they have ever summarized data has no
 handle on it. This is a real objection and it is exactly why unit 4 is fourth rather than first.
-The reader needs one thing before the generator, and one thing only: a shape they can recognise
+The reader needs one thing before the generator, and one thing only: a shape they can recognize
 on sight. Unit 3 gives them that and nothing more. There is no summary statistic in unit 3, no
 mean, no spread, and that is deliberate, because the reroll lands hardest when the only thing
 the reader owns is the picture. Then in unit 5 they compress the pile to a number, reroll, and
@@ -175,7 +175,7 @@ randomisation buys, and that gap is the single most common hole in an educated a
 statistical equipment.
 
 Unit 6 therefore ends with a ghost. The reader draws a sample of 20 from a visible population of
-1,000, and the sample they got is drawn in the data colour while the 980 units they did not get
+1,000, and the sample they got is drawn in the data color while the 980 units they did not get
 sit faded behind it. The screen names that faded set: the draw you did not make. Unit 15 opens
 on the same picture with one word changed, and the counterfactual arrives as a thing the reader
 has seen before rather than a philosophical import.
@@ -189,7 +189,7 @@ can be skipped without asking for trust.
 **Unit 13 sits before regression, and that ordering is not negotiable.** A slope is the most
 efficient vehicle in the world for an unearned causal claim. It has units, it has a sign, and it
 reads aloud as a sentence about the world: each extra year of schooling is worth eight hundred
-pounds. A reader who meets least squares before they meet the third thing will hear that as a
+dollars. A reader who meets least squares before they meet the third thing will hear that as a
 mechanism, because nothing they own says otherwise. Confounding first means the first line the
 reader ever fits arrives already carrying its own interrogation. The shipped `app/curriculum.js`
 already puts `13-third` ahead of `14-line`, so this is one of the few places where the code and
@@ -211,7 +211,7 @@ each value's distance from the middle, square them, average, take the root. Four
 English sentences, and the reader can execute it on eight numbers with a pencil. Sigma-notation
 makes that shorter. Shorter is not the same as necessary. Introducing a symbol on the grounds
 that it saves words teaches the reader that notation is a convenience for people who write a lot
-of maths, and that is a small false thing to believe.
+of math, and that is a small false thing to believe.
 
 The standard error is not a procedure. It is a relationship among three quantities that vary
 together, and the whole content of the idea is how it behaves when you turn the knobs. Wobble
@@ -352,7 +352,7 @@ a number. That feeling is data about the evidence, not a weakness in you.
 **Notation earned.** Tally marks, grouping into fives, then digits and place value, framed as
 the original compression technology rather than as arithmetic. No letters standing for numbers.
 
-**Misconception killed.** "Maths starts when the symbols appear, and that is where I got off."
+**Misconception killed.** "Math starts when the symbols appear, and that is where I got off."
 By the end of this unit the reader has made three mathematical moves, comparing and estimating
 and hedging, with no symbol on the screen, and the text says so in the past tense.
 
@@ -424,7 +424,7 @@ and one per person. The reader performs the flip themselves, then writes the hea
 
 **The one question.** What does a whole group of numbers look like at once?
 
-**Installs.** You cannot hold 500 numbers in your head, so you either draw them or summarise
+**Installs.** You cannot hold 500 numbers in your head, so you either draw them or summarize
 them, and drawing first is the better habit because a summary computed before the picture is a
 summary of something nobody looked at. A distribution is a picture of a crowd. Shape words come
 before any arithmetic: peak, tail, gap, floor, ceiling, two humps.
@@ -498,7 +498,7 @@ before the reader has ever heard of a p-value, and unit 11 calls back to it by n
 
 **The one question.** How much of a crowd can I carry in my pocket?
 
-**Installs.** Summarising is compression, compression discards, and the discarded part is where
+**Installs.** Summarizing is compression, compression discards, and the discarded part is where
 every later argument happens. The mean as the balance point of the beam. The median as the
 middle one, and the choice between them as a question about what you are asking rather than
 about which is better. The typical miss, first as the mean absolute distance from the middle and
@@ -532,7 +532,7 @@ the disagreement is the finding.
   back and what stays lost is the unit's whole argument, and the box plot from unit 3 gets its
   numbers here.
 
-**Truths and lies.** A centre quoted with no spread is a half-truth with a clean face. The
+**Truths and lies.** A center quoted with no spread is a half-truth with a clean face. The
 reader publishes "average wait: 4 minutes" for two cafes with identical means, one of which
 never exceeds 5 minutes and one of which hits 25 twice a day. Then they write the sentence that
 would have been fair to both.
@@ -543,8 +543,8 @@ would have been fair to both.
 and 25 minutes and budgets 16 to 26 minutes a unit. So 26 is the top of the range rather than an
 overrun, and this unit has about a minute of slack. The pressure it is actually under is the
 instrument count: four is the maximum PEDAGOGY allows, and a fifth would make it two units by
-that rule. It is one unit rather than two on principle. Teaching the centre in one session and
-the spread in the next tells the reader, by the shape of the course, that a centre can stand
+that rule. It is one unit rather than two on principle. Teaching the center in one session and
+the spread in the next tells the reader, by the shape of the course, that a center can stand
 alone, and that belief is the most common statistical error in public life. If a build agent
 finds it will not fit inside 1,560 words of main-lane prose, the split is at the rebuild, and
 unit 5b takes quantiles, the five numbers and the box plot at about 10 minutes.
@@ -576,7 +576,7 @@ worlds against a known truth, with the big one wrong in the same direction every
 - *The two samplers.* The Literary Digest against Gallup, rebuilt live and rerun across worlds.
 - *The frame gap.* A population with a slice the frame cannot reach, mobile-only households or
   people who do not answer unknown numbers, with a dial for how different that slice is.
-- *The other draw.* The 20 units the reader got, drawn in the data colour, with the 980 they did
+- *The other draw.* The 20 units the reader got, drawn in the data color, with the 980 they did
   not get faded behind them. The screen names the faded set. Section (b) explains why this
   picture is here and not in unit 15.
 
@@ -729,7 +729,7 @@ case: at a prevalence of 1 in 200 the share of positives that are real is about 
   reader argues both sides.
 
 **Truths and lies.** The prosecutor's fallacy, performed twice by the reader, once as prosecutor
-and once as defence, with the same table on screen both times.
+and once as defense, with the same table on screen both times.
 
 **Time.** 20 min. **Depends on.** 4, 6.
 
@@ -780,7 +780,7 @@ p-hacking performed by the reader with no dishonesty at any step.
 **The one question.** When one thing moves, does the other?
 
 **Installs.** Read the scatter before computing anything, for the same reason you drew the pile
-before summarising it. Correlation as a number with a narrow job and no units. The difference
+before summarizing it. Correlation as a number with a narrow job and no units. The difference
 between r and a slope, which is the difference between how tightly and how steeply. Non-linearity
 and range restriction as the two ways r lies without anybody touching the data.
 
@@ -836,7 +836,7 @@ how the phrase is mostly used in public.
   this either adds one or the lesson module renders a plain `<table>`; either way it needs
   `ui.steps`.
 - *The splitter.* A single cloud with a hidden third variable. The reader drags a control that
-  colours by the hidden variable, the cloud separates into groups, and the within-group slopes
+  colors by the hidden variable, the cloud separates into groups, and the within-group slopes
   point the other way. Needs one `stage.dots` call per group.
 - *The collider.* Two independent traits, and a selection filter. Condition on the filter and
   the traits become correlated inside the selected set. The example is admissions or dating, and
@@ -869,7 +869,7 @@ because neither means anything alone.
 
 **Misconception killed.** "A slope is an effect." Unit 13 pre-loaded the antibody and this is
 where it gets used. A second one, and it is the more interesting: regression to the mean read as
-a causal story, which is how a remedial programme takes credit for arithmetic.
+a causal story, which is how a remedial program takes credit for arithmetic.
 
 **Instruments.**
 - *The hand fit.* Drag a line through a cloud with a running total of squared misses displayed,
@@ -884,7 +884,7 @@ a causal story, which is how a remedial programme takes credit for arithmetic.
   reroll the world, keep the fitted curves, and watch the wiggle fail badly while the line
   barely moves. This is unit 4's reroll doing the heaviest work it does anywhere in the course.
 - *The tall fathers.* Galton's data. Predict the sons' heights, find the pull toward the middle,
-  and then be shown the same arithmetic applied to a school improvement programme.
+  and then be shown the same arithmetic applied to a school improvement program.
 
 **Truths and lies.** Extrapolation past the edge of the data, performed with a slider that runs
 the fitted line out to absurdity while staying mathematically correct. And the press-office
@@ -920,9 +920,9 @@ experiment, so it settles the matter."
 
 **Instruments.**
 - *The balancer.* A population with a hidden variable that affects the outcome. Assign at
-  random, and a readout shows the imbalance in that hidden variable across many worlds, centred
+  random, and a readout shows the imbalance in that hidden variable across many worlds, centerd
   on zero and shrinking with group size. Then let the reader assign by judgement instead, and
-  watch the imbalance stop being centred on zero. Needs `rng.shuffle`, `stats.twoGroup`,
+  watch the imbalance stop being centerd on zero. Needs `rng.shuffle`, `stats.twoGroup`,
   `ui.seedBox`.
 - *The 2x2.* Card and Krueger's fast-food table. The reader fills in three of the four observed
   means, then predicts the fourth: where New Jersey employment would have ended up if it had
@@ -1061,8 +1061,8 @@ its 20 minutes, so no shipped lesson module breaks under this renumbering.
 | `01-noticing` (20) | `01-noticing` (20) | Unchanged. Gains three unbuilt instruments and the causal ledger |
 | `02-numbers` (18) | `02-numbers` (20) | Retitled from "What a number leaves out" to "Putting a number on it". Two minutes for the resolution dial |
 | `03-pile` (18) | `03-pile` (18) | Unchanged, and it was already shape-only, which is what makes the reroll land |
-| `04-middle` (16), `05-spread` (20) | `05-pocket` (26) | **Merged, and ten minutes come out.** A centre taught apart from a spread teaches that a centre can stand alone. The unit entry argues it |
-| `06-chance` (22) | `04-reroll` (20) and `10-evidence` (20) | **Split in two and pulled six positions apart.** The generative half moves ahead of all summarising, the conditional half moves next to testing, because the prosecutor's fallacy and the p-value error are one error. Its `lies` field, the prosecutor's fallacy, follows the conditional half. Section (a) |
+| `04-middle` (16), `05-spread` (20) | `05-pocket` (26) | **Merged, and ten minutes come out.** A center taught apart from a spread teaches that a center can stand alone. The unit entry argues it |
+| `06-chance` (22) | `04-reroll` (20) and `10-evidence` (20) | **Split in two and pulled six positions apart.** The generative half moves ahead of all summarizing, the conditional half moves next to testing, because the prosecutor's fallacy and the p-value error are one error. Its `lies` field, the prosecutor's fallacy, follows the conditional half. Section (a) |
 | `07-sampling` (20) | `06-sampling` (20) | Up one. Now carries the counterfactual. Section (b) |
 | `08-wobble` (24) | `07-wobble` (24) | Up one. This is the notation gate. Section (c) |
 | `09-bell` (22) | `08-ruler` (22) | Up one, and rebuilt. No longer a shape-of-data unit; it is the device that turns a distance into a probability, and it explains unit 7 rather than preceding it |

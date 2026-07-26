@@ -80,7 +80,7 @@ export function makeRng(seed) {
   // That keeps the world reproducible: the same calls in the same order give the same numbers.
   let spare = null;
 
-  // A draw from a bell curve centred at mu, typical distance sd from the middle.
+  // A draw from a bell curve centerd at mu, typical distance sd from the middle.
   // Worth knowing before you teach with it: u() has 32 bits of resolution, so the smallest
   // value it can return is about 2.3e-10, and that caps a draw at roughly 6.7 sd from the
   // middle. This world can show you a one-in-a-billion event but not a one-in-a-trillion one.

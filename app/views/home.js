@@ -138,7 +138,7 @@ export function home(root) {
   const canvas = el('canvas', 'ec-canvas');
   canvas.setAttribute('role', 'img');
   canvas.setAttribute('aria-label',
-    'Two rows of scattered dots. The top row is centred to the left of the bottom row.');
+    'Two rows of scattered dots. The top row is centerd to the left of the bottom row.');
   fig.append(canvas);
   body.append(fig);
 
@@ -177,7 +177,7 @@ export function home(root) {
         'found the middle of each crowd, and you compared them. That move has a name: comparing ' +
         'two means.'
       : 'The bottom row sits further right. The trick is to stop looking at any single dot and ' +
-        'let your eye settle on where each crowd is centred. That is the move, and it is the ' +
+        'let your eye settle on where each crowd is centerd. That is the move, and it is the ' +
         'one everything else is built from: comparing two means.';
     named.append(p1);
 

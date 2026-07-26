@@ -17,11 +17,11 @@ export function about(root) {
 
   wrap.append(el('p', 'kicker', 'Why this exists'));
   const h1 = el('h1');
-  h1.textContent = 'Most people were not bad at maths. They were rushed.';
+  h1.textContent = 'Most people were not bad at math. They were rushed.';
   wrap.append(h1);
 
   wrap.append(el('p', 'lede',
-    'A standard maths education moves at the speed of the syllabus rather than the speed of ' +
+    'A standard math education moves at the speed of the syllabus rather than the speed of ' +
     'understanding. Miss one week and the notation stops meaning anything, and from there it is ' +
     'a short walk to deciding you are not a numbers person. Almost nobody who says that is right ' +
     'about themselves.'));

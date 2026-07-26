@@ -1,6 +1,6 @@
 /* app.css
    Component styles for the shell, the reading surface, and the instrument kit.
-   Reads only the variables in tokens.css — no raw colours below this line. */
+   Reads only the variables in tokens.css — no raw colors below this line. */
 
 *, *::before, *::after { box-sizing: border-box; }
 * { margin: 0; }

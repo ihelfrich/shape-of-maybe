@@ -51,7 +51,7 @@ export const UNITS = [
     title: 'The spread',
     question: 'Is this crowd tight or loose, and why does that matter more than the middle?',
     installs: 'You find the standard deviation by dragging a bracket out from the middle, and only then write it down as four instructions.',
-    lies: 'A centre quoted with no spread is a half-truth with a clean face.',
+    lies: 'A center quoted with no spread is a half-truth with a clean face.',
   },
   {
     id: '06-chance', no: 6, part: 'III', status: 'soon', minutes: 22,

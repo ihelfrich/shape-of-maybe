@@ -1,30 +1,30 @@
 /* 02-numbers/index.js
-   Unit 2. The reader counts two councils' road deaths in tally strokes, divides those
+   Unit 2. The reader counts two counties' road deaths in tally strokes, divides those
    counts by three different things and watches the ranking turn over, moves the cutoff
    that decides who counts as a road death at all, and then writes two true headlines
    that blame opposite places. The only notation here is the word "per". */
 
 /* ---------------------------------------------------------------------------
-   The scenario. Two invented council areas and one year of road deaths, with the
+   The scenario. Two invented counties and one year of road deaths, with the
    figures chosen so that every rate comes out exact to one decimal place and the
    arithmetic can be done in the head.
 
-   Harbourside is 43 square kilometres of terraced streets behind a container port:
-   600,000 residents, short trips, most of them on foot or by bus. Kestrel Vale is
-   2,400 square kilometres of farmland with a motorway across it, so most of the
+   Harborside is 43 square kilometres of terraced streets behind a container port:
+   600,000 residents, short trips, most of them on foot or by bus. Kestrel Valley is
+   2,400 square kilometres of farmland with a highway across it, so most of the
    miles driven inside it are driven by people who live somewhere else.
 
    Nothing on this screen is simulated. The numbers are fixed, which is why this
    lesson never touches ctx.rng and never rolls a world. */
-const HARBOUR = 'Harbourside';
-const VALE = 'Kestrel Vale';
+const HARBOUR = 'Harborside';
+const VALLEY = 'Kestrel Valley';
 
 const PLACES = [
   { name: HARBOUR, residents: 600000, miles: 1.5 },   // miles: billions of vehicle-miles in the year
-  { name: VALE, residents: 270000, miles: 3.6 },
+  { name: VALLEY, residents: 270000, miles: 3.6 },
 ];
 
-/* Three rules for who counts as a road death, and the two councils' figures under
+/* Three rules for who counts as a road death, and the two counties' figures under
    each. The middle one is the international standard and the one the published
    figures use, so the 18 and the 27 the reader meets first come from it. */
 const RULES = [
@@ -83,7 +83,7 @@ const DENOMS = [
 const denomBy = (key) => DENOMS.find((d) => d.key === key) || DENOMS[0];
 const ruleBy = (key) => RULES.find((r) => r.key === key) || STANDARD;
 
-/* Days between the crash and the death, one entry per person, for Harbourside's
+/* Days between the crash and the death, one entry per person, for Harborside's
    twenty-one. Counting the entries at or below a cutoff gives 13 at one day, 18 at
    thirty and 20 at a year, which is where the three rules above come from. The last
    person is 402 days out and lands inside no rule anybody publishes. */
@@ -106,8 +106,8 @@ const countedBy = (cut) => ON_AXIS.filter((d) => d <= cut).length;
 /* Tally geometry, in the figure's own 0-to-1 vertical space. Three groups of five to a
    line, so 27 strokes fit two lines and stay legible on a phone. */
 const PER_LINE = 3;
-const TALLY_LINES = { [HARBOUR]: [0.84, 0.66], [VALE]: [0.32, 0.14] };
-const TALLY_LABEL = { [HARBOUR]: 0.97, [VALE]: 0.45 };
+const TALLY_LINES = { [HARBOUR]: [0.84, 0.66], [VALLEY]: [0.32, 0.14] };
+const TALLY_LABEL = { [HARBOUR]: 0.97, [VALLEY]: 0.45 };
 const STROKE_H = 0.055;   // half the height of one stroke
 
 /* ---------------------------------------------------------------------------
@@ -131,7 +131,7 @@ function para(text) { return el('p', null, text); }
 function quiet(text) { return el('p', 'small muted', text); }
 function heading(text) { return el('h2', null, text); }
 
-/* The naming move: a rule down the left in the result colour, past tense, no praise. */
+/* The naming move: a rule down the left in the result color, past tense, no praise. */
 function named(kicker, ...paras) {
   const n = el('div', 'named');
   n.append(el('p', 'named__kicker', kicker));
@@ -200,28 +200,28 @@ function ratioOf(hi, lo, dp) {
   return b > 0 ? one(a / b) : null;
 }
 
-/* Which council comes out worse under one pairing of denominator and rule, and by how
+/* Which county comes out worse under one pairing of denominator and rule, and by how
    much. Every sentence about the flip is built from this, so the flip can never be
    asserted in prose and contradicted by a bar. */
 function compare(denom, rule) {
   const a = { name: HARBOUR, v: denom.of(PLACES[0], rule.deaths[0]) };
-  const b = { name: VALE, v: denom.of(PLACES[1], rule.deaths[1]) };
+  const b = { name: VALLEY, v: denom.of(PLACES[1], rule.deaths[1]) };
   const hi = a.v >= b.v ? a : b;
   const lo = a.v >= b.v ? b : a;
   return { a, b, hi, lo, times: ratioOf(hi.v, lo.v, denom.dp) };
 }
 
 /* ---------------------------------------------------------------------------
-   Colour.
+   Color.
 
    viz.js themes a figure from --viz-truth, --viz-data and their friends. tokens.css
    publishes the same four roles as --truth, --data and friends, and nothing defines
    the --viz- spelling, so a stage falls back to its frozen light-mode palette and a
-   mark asked for by role name arrives as an invalid colour that the canvas ignores.
+   mark asked for by role name arrives as an invalid color that the canvas ignores.
    On the dark paper that lands as black on near-black. Until one commit reconciles
    the two spellings, this reads the tokens the stylesheet really has and hands viz a
    hex. Passing a hex is the path viz.js documents anyway: its reverse lookup turns a
-   palette colour back into a role, so these calls will theme themselves through viz
+   palette color back into a role, so these calls will theme themselves through viz
    the day the --viz- names appear.
 
    Read on every draw rather than once, because a reader can change scheme mid-session. */
@@ -246,7 +246,7 @@ function palette() {
    Drawing. Three figures, three grammars: strokes for a count, bars for a rate, and a
    pile of dots for the people behind one of the counts. */
 
-function tally(st, n, lines, colour) {
+function tally(st, n, lines, color) {
   const groups = Math.ceil(n / 5);
   for (let g = 0; g < groups; g++) {
     const inGroup = Math.min(5, n - g * 5);
@@ -255,12 +255,12 @@ function tally(st, n, lines, colour) {
     if (row == null) continue;
     for (let i = 0; i < Math.min(4, inGroup); i++) {
       const px = x + 0.12 + i * 0.18;
-      st.line([[px, row - STROKE_H], [px, row + STROKE_H]], { color: colour, width: 2.5 });
+      st.line([[px, row - STROKE_H], [px, row + STROKE_H]], { color: color, width: 2.5 });
     }
     // The fifth of a group is the stroke laid across the other four.
     if (inGroup === 5) {
       st.line([[x + 0.04, row - STROKE_H * 1.1], [x + 0.74, row + STROKE_H * 1.1]],
-        { color: colour, width: 2.5 });
+        { color: color, width: 2.5 });
     }
   }
 }
@@ -270,7 +270,7 @@ function barFrame(st, denom) {
   /* Padding is set wide enough that neither axis has to grow it, and the y axis goes
      first because it is the one that moves the left edge. */
   st.axisY(denom.ticks, (v) => whole(v));
-  st.axisX([1, 2], (v) => (v === 1 ? HARBOUR : VALE));
+  st.axisX([1, 2], (v) => (v === 1 ? HARBOUR : VALLEY));
   return st;
 }
 
@@ -353,7 +353,7 @@ function sectionCount(kit, state) {
   const wrap = block();
   wrap.append(heading('Which of these two places is more dangerous?'));
   wrap.append(para(
-    `${HARBOUR} recorded ${DEATHS_H} road deaths last year. ${VALE} recorded ${DEATHS_V}. Every `
+    `${HARBOUR} recorded ${DEATHS_H} road deaths last year. ${VALLEY} recorded ${DEATHS_V}. Every `
     + 'stroke below is one person, grouped in fives the way people counted things long before '
     + 'anybody wrote a number down. Nothing has been divided by anything yet.'));
   wrap.append(para('Say which of the two you would call the more dangerous place.'));
@@ -361,26 +361,26 @@ function sectionCount(kit, state) {
   const fig = mountFigure(kit, {
     height: 230,
     caption:
-      `Road deaths recorded in one year in two invented council areas, one stroke each: `
-      + `${DEATHS_H} in ${HARBOUR} and ${DEATHS_V} in ${VALE}. The strokes are grouped in fives `
+      `Road deaths recorded in one year in two invented counties, one stroke each: `
+      + `${DEATHS_H} in ${HARBOUR} and ${DEATHS_V} in ${VALLEY}. The strokes are grouped in fives `
       + 'so that the two blocks can be compared without counting every one. A count drawn this '
       + 'way carries nothing about how many people live in either place, how big either place '
       + 'is, or how much traffic either one has.',
     describe: () => `Two blocks of tally strokes, one stroke for each road death recorded in the `
-      + `year: ${DEATHS_H} strokes for ${HARBOUR} and ${DEATHS_V} for ${VALE}.`,
+      + `year: ${DEATHS_H} strokes for ${HARBOUR} and ${DEATHS_V} for ${VALLEY}.`,
     draw: (st) => {
       const pal = palette();
       st.domain(-0.05, 3.05, 0, 1).pad(12, 14, 14, 12);
       const name = { align: 'left', size: 12, weight: 700, color: pal.ink2 };
       st.label(HARBOUR, 0, TALLY_LABEL[HARBOUR], name);
-      st.label(VALE, 0, TALLY_LABEL[VALE], name);
+      st.label(VALLEY, 0, TALLY_LABEL[VALLEY], name);
       tally(st, DEATHS_H, TALLY_LINES[HARBOUR], pal.data);
-      tally(st, DEATHS_V, TALLY_LINES[VALE], pal.data);
+      tally(st, DEATHS_V, TALLY_LINES[VALLEY], pal.data);
     },
   });
 
   const countH = kit.ui.readout({ label: `${HARBOUR}, deaths in the year`, value: whole(DEATHS_H), tone: 'data' });
-  const countV = kit.ui.readout({ label: `${VALE}, deaths in the year`, value: whole(DEATHS_V), tone: 'data' });
+  const countV = kit.ui.readout({ label: `${VALLEY}, deaths in the year`, value: whole(DEATHS_V), tone: 'data' });
 
   const answer = liveBox();
   const facts = el('div');
@@ -397,7 +397,7 @@ function sectionCount(kit, state) {
     const chosen = name === HARBOUR ? btnH : btnV;
     state.setPick(name);
     [btnH, btnV].forEach((b) => { if (b) b.setAttribute('aria-pressed', String(b === chosen)); });
-    answer.replaceChildren(para(name === VALE
+    answer.replaceChildren(para(name === VALLEY
       ? 'That is the answer the counts support, and the reasoning under it is sound: '
         + `${DEATHS_V} families lost somebody rather than ${DEATHS_H}. Hold on to it while you `
         + 'read what the counts left out.'
@@ -408,8 +408,8 @@ function sectionCount(kit, state) {
     facts.append(para(
       `${HARBOUR} is 43 square kilometres of terraced streets behind a container port. It has `
       + '600,000 residents, and vehicles covered 1.5 billion miles inside it last year. '
-      + `${VALE} is 2,400 square kilometres of farmland with 270,000 residents, and vehicles `
-      + 'covered 3.6 billion miles inside it, most of them on the motorway that crosses it '
+      + `${VALLEY} is 2,400 square kilometres of farmland with 270,000 residents, and vehicles `
+      + 'covered 3.6 billion miles inside it, most of them on the highway that crosses it '
       + 'carrying traffic between two cities that are nowhere near it.'));
     facts.append(para(
       'The two counts used none of that. Counting is not at fault: a count answers how many, and '
@@ -418,7 +418,7 @@ function sectionCount(kit, state) {
   }
 
   const first = kit.ui.button({ label: HARBOUR, kind: 'ghost', onClick: () => pick(HARBOUR) });
-  const second = kit.ui.button({ label: VALE, kind: 'ghost', onClick: () => pick(VALE) });
+  const second = kit.ui.button({ label: VALLEY, kind: 'ghost', onClick: () => pick(VALLEY) });
   btnH = asButton(first.el);
   btnV = asButton(second.el);
   [btnH, btnV].forEach((b) => { if (b) b.setAttribute('aria-pressed', 'false'); });
@@ -450,9 +450,9 @@ function sectionPerWhat(kit) {
   const seen = new Set([denom.key]);
 
   const valueH = kit.ui.readout({ label: HARBOUR, value: denom.show(DEATHS_H), tone: 'data', live: true });
-  const valueV = kit.ui.readout({ label: VALE, value: denom.show(DEATHS_V), tone: 'data', live: true });
+  const valueV = kit.ui.readout({ label: VALLEY, value: denom.show(DEATHS_V), tone: 'data', live: true });
   const worst = kit.ui.readout({
-    label: 'The higher of the two', value: VALE, tone: 'result', live: true,
+    label: 'The higher of the two', value: VALLEY, tone: 'result', live: true,
   });
 
   const reveal = liveBox();
@@ -463,13 +463,13 @@ function sectionPerWhat(kit) {
     height: 250,
     caption:
       `The same ${DEATHS_H} and ${DEATHS_V} deaths, divided by three different things. Left to `
-      + `right the bars are ${HARBOUR} and ${VALE}. On the raw count and per 100,000 residents `
-      + `${VALE} stands taller. Per billion vehicle-miles ${HARBOUR} does, because most of the `
-      + `miles driven inside ${VALE} are driven along one motorway by people passing through. `
+      + `right the bars are ${HARBOUR} and ${VALLEY}. On the raw count and per 100,000 residents `
+      + `${VALLEY} stands taller. Per billion vehicle-miles ${HARBOUR} does, because most of the `
+      + `miles driven inside ${VALLEY} are driven along one highway by people passing through. `
       + 'The axis starts at zero in all three, and no number changes between them.',
     describe: () => {
       const c = compare(denom, STANDARD);
-      return `Two bars, ${HARBOUR} at ${denom.show(c.a.v)} and ${VALE} at ${denom.show(c.b.v)}, `
+      return `Two bars, ${HARBOUR} at ${denom.show(c.a.v)} and ${VALLEY} at ${denom.show(c.b.v)}, `
         + `measured in ${denom.words}. ${c.hi.name}'s bar is ${c.times} times the height of `
         + `${c.lo.name}'s.`;
     },
@@ -513,12 +513,12 @@ function sectionPerWhat(kit) {
       + 'belongs to. The "per year" says how long the counting went on, because a rate with no '
       + `window on it is not a rate. The third setting reads the same way: ${HARBOUR} at `
       + `${one(DENOMS[2].of(PLACES[0], DEATHS_H))} per billion vehicle-miles per year against `
-      + `${VALE} at ${one(DENOMS[2].of(PLACES[1], DEATHS_V))}.`));
+      + `${VALLEY} at ${one(DENOMS[2].of(PLACES[1], DEATHS_V))}.`));
     more.append(deeper(
       'Why there is a 100,000 bolted on',
       'The division on its own gives 0.00003 deaths per resident per year, which is correct, '
       + 'unsayable and impossible to compare by eye. Multiplying by 100,000 moves it to 3.0 and '
-      + 'changes nothing else, the way quoting a price in pence rather than pounds changes no '
+      + 'changes nothing else, the way quoting a price in cents rather than dollars changes no '
       + 'prices. The multiplier goes with the subject: deaths per 100,000 people, infant deaths '
       + 'per 1,000 live births, road deaths per billion vehicle-miles. Each was picked to put the '
       + 'usual answer between about 1 and 100. The consequence worth carrying is that two rates '
@@ -533,8 +533,8 @@ function sectionPerWhat(kit) {
       + 'by, so the rate files them as a hazard of driving rather than as people who were '
       + 'standing there. Person-miles would include them and are nowhere near as well measured, '
       + 'which is a fact about what is easy to count.',
-      `The trouble runs the other way in ${VALE}, whose denominator is swollen by a motorway its `
-      + 'residents mostly do not use, and motorway miles are the safest miles anybody drives. '
+      `The trouble runs the other way in ${VALLEY}, whose denominator is swollen by a highway its `
+      + 'residents mostly do not use, and highway miles are the safest miles anybody drives. '
       + 'Neither rate is wrong. Both answer a question about a group that is not quite the group '
       + 'anyone has in mind.'));
   }
@@ -701,14 +701,14 @@ function sectionRule(kit, state) {
 }
 
 /* ---------------------------------------------------------------------------
-   Beat 4: the same argument, a long way from any council. */
+   Beat 4: the same argument, a long way from any county. */
 
 function sectionApply(kit) {
   const wrap = block();
-  wrap.append(heading('The same argument, about aeroplanes'));
+  wrap.append(heading('The same argument, about airplanes'));
   wrap.append(para(
     'Flying gets compared with driving constantly, and the comparison turns on a denominator '
-    + 'nobody prints. Per mile travelled, flying comes out far safer, because an aeroplane covers '
+    + 'nobody prints. Per mile traveled, flying comes out far safer, because an airplane covers '
     + 'a great many miles in one trip. Per journey the gap narrows sharply, because a journey is '
     + 'a journey whether it runs 300 miles or 3. Michael Blastland and David Spiegelhalter work '
     + 'this through in The Norm Chronicles, by the mile, by the journey and by the hour, and the '
@@ -719,7 +719,7 @@ function sectionApply(kit) {
       + 'sentence is it entitled to print?',
     options: [
       {
-        label: 'Flying is safer. The deaths per mile travelled are far lower.',
+        label: 'Flying is safer. The deaths per mile traveled are far lower.',
         correct: false,
         why: 'Per mile is the denominator most safety statistics use, the gap on that measure is '
           + 'enormous, and this is the sentence most papers run. What it hides is that nobody '
@@ -737,7 +737,7 @@ function sectionApply(kit) {
           + 'which is that the answer depends on what is being chosen between.',
       },
       {
-        label: 'Flying is safer per mile travelled. Whether it is safer for the trip you are '
+        label: 'Flying is safer per mile traveled. Whether it is safer for the trip you are '
           + 'about to take depends on how long the drive would be.',
         correct: true,
         why: 'It carries its denominator, and it turns the rate back into the decision the '
@@ -757,7 +757,7 @@ function sectionHeadline(kit) {
   const wrap = block();
   wrap.append(heading('Two headlines, both true'));
   wrap.append(para(
-    'The same two councils and the same year, with two switches. One picks what the deaths get '
+    'The same two counties and the same year, with two switches. One picks what the deaths get '
     + 'divided by. The other picks the rule for who counts as a road death at all. Every '
     + 'combination writes a sentence that is arithmetically correct, and the sentences disagree '
     + 'about who the story is about.'));
@@ -766,7 +766,7 @@ function sectionHeadline(kit) {
   let rule = STANDARD;
 
   const valueH = kit.ui.readout({ label: HARBOUR, value: '', tone: 'data', live: true });
-  const valueV = kit.ui.readout({ label: VALE, value: '', tone: 'data', live: true });
+  const valueV = kit.ui.readout({ label: VALLEY, value: '', tone: 'data', live: true });
 
   const card = liveBox();
   const chose = liveBox();
@@ -813,9 +813,9 @@ function sectionHeadline(kit) {
     label: 'Print the residents one',
     kind: 'ghost',
     onClick: () => chose.replaceChildren(para(
-      'That one is about the people who live there. It is the figure a council leader answers '
+      'That one is about the people who live there. It is the figure a county leader answers '
       + 'for at an election and the figure that sends a road safety budget somewhere. It also '
-      + `holds ${VALE}'s 270,000 residents to account for a motorway they mostly do not drive on.`)),
+      + `holds ${VALLEY}'s 270,000 residents to account for a highway they mostly do not drive on.`)),
   });
 
   const printMiles = kit.ui.button({
@@ -833,7 +833,7 @@ function sectionHeadline(kit) {
     controls(pickDenom.el, pickRule.el),
     readoutRow(valueH.el, valueV.el),
     card,
-    para('Two of those headlines point at opposite councils. If you had one front page, which '
+    para('Two of those headlines point at opposite counties. If you had one front page, which '
       + 'would you run?'),
     controls(printPeople.el, printMiles.el),
     chose,
@@ -958,18 +958,18 @@ function head() {
   h.append(el('h1', null, 'What a number leaves out'));
   h.append(el('p', 'lesson__q', 'How do I put a number on something real, and what does the number cost?'));
   h.append(el('p', 'lede',
-    `Two council areas published their road deaths for the year: ${DEATHS_H} in one, `
+    `Two counties published their road deaths for the year: ${DEATHS_H} in one, `
     + `${DEATHS_V} in the other. Both figures are correct and both are about to change places. `
     + 'Neither one, on its own, tells you which of the two you would rather cross the road in, '
     + 'and getting from a published figure to that question is the work of this unit.'));
   h.append(quiet(
-    'Both councils are invented and so is every figure below. Nothing here is simulated and '
+    'Both counties are invented and so is every figure below. Nothing here is simulated and '
     + 'there is no world number to roll: everybody reading this page sees the same figures, and '
     + 'all the arithmetic can be checked by hand.'));
   return h;
 }
 
-/* The two things that cross a section boundary: which council the reader called more
+/* The two things that cross a section boundary: which county the reader called more
    dangerous before they knew anything, and the cutoff they set for who counts as a road
    death. The close reads back whichever of them exists. */
 function makeState() {
@@ -1024,7 +1024,7 @@ function render(root, ctx) {
   const repaint = () => { kit.redraws.forEach((draw) => draw()); };
   repaint();
 
-  /* viz.js holds the colours it read out of the stylesheet for a fraction of a second, so
+  /* viz.js holds the colors it read out of the stylesheet for a fraction of a second, so
      a redraw fired the instant the scheme changes can still be painting in the old
      palette. Paint now, and again once that cache has certainly expired, because two of
      these three figures never redraw on their own. */

@@ -10,7 +10,7 @@
 // test = a test statistic, wrong / right = an answer being marked,
 // ink / ink2 = text, grid = hairlines.
 // Frozen because a lesson that quietly repainted the palette would break the
-// colour code for every other lesson on the page.
+// color code for every other lesson on the page.
 export const COLORS = Object.freeze({
   truth: '#4C6EF5', data: '#E8590C', result: '#099268', test: '#7048E8',
   wrong: '#E03131', right: '#2B8A3E', ink: '#1F2024', ink2: '#5F6270', grid: '#E8E4DA'
@@ -20,11 +20,11 @@ const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sa
 const TAU = Math.PI * 2;
 
 // Reverse lookup, so a lesson that passes COLORS.truth as a literal still gets
-// the themed colour when CSS has overridden --viz-truth for dark mode.
+// the themed color when CSS has overridden --viz-truth for dark mode.
 const ROLE_OF = {};
 for (const role of Object.keys(COLORS)) ROLE_OF[COLORS[role].toLowerCase()] = role;
 
-// Bumped when the OS colour scheme flips, so every stage re-reads its palette on
+// Bumped when the OS color scheme flips, so every stage re-reads its palette on
 // the next fit() instead of waiting out its cache.
 let themeEpoch = 0;
 const schemeQuery = typeof matchMedia === 'function'
@@ -116,7 +116,7 @@ export function stage(canvas) {
   let themeSeen = -1;
 
   // The page may recolour the palette for dark mode by defining --viz-truth,
-  // --viz-ink and friends, plus --paper for the colour behind text haloes and
+  // --viz-ink and friends, plus --paper for the color behind text haloes and
   // dot rings. Reading computed style costs a style recalculation, so we cache.
   function readTheme(force) {
     const t = Date.now();
@@ -142,7 +142,7 @@ export function stage(canvas) {
     if (!paper || paper === 'transparent' || /rgba\(0,\s*0,\s*0,\s*0\)/.test(paper)) paper = '#FFFFFF';
   }
 
-  // Resolve a colour the caller gave us, falling back to the role's palette entry.
+  // Resolve a color the caller gave us, falling back to the role's palette entry.
   function paint(c, role) {
     if (typeof c === 'string' && c) {
       const mapped = ROLE_OF[c.toLowerCase()];
@@ -181,7 +181,7 @@ export function stage(canvas) {
     ctx.textAlign = opt.align || 'center';
     ctx.textBaseline = opt.baseline || 'bottom';
     if (opt.halo !== false) {
-      // A ring of background colour, so a label can sit on top of a dense cloud
+      // A ring of background color, so a label can sit on top of a dense cloud
       // of dots and still be read.
       ctx.lineWidth = 3.5;
       ctx.lineJoin = 'round';
@@ -350,7 +350,7 @@ export function stage(canvas) {
       return S;
     },
 
-    /* Points. Each dot gets a hairline ring in the background colour, which is
+    /* Points. Each dot gets a hairline ring in the background color, which is
        what keeps a pile of overlapping dots readable as a pile. */
     dots(points, opts) {
       const o = opts || {};
@@ -603,7 +603,7 @@ export function stage(canvas) {
     },
 
     /* Text placed in pixel coordinates, for legends and corner notes.
-       opts {swatch} draws a colour dot first, which is how a legend earns its keep. */
+       opts {swatch} draws a color dot first, which is how a legend earns its keep. */
     note(text, px, py, opts) {
       const o = opts || {};
       let x = px;

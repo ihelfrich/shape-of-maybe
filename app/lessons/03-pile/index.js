@@ -11,33 +11,33 @@
 import { makeRng as coreMakeRng } from '../../core/rng.js';
 
 /* ---------------------------------------------------------------------------
-   The scenario. Two hundred and forty flats advertised to let in one town in one
-   month, priced in pounds a month.
+   The scenario. Two hundred and forty apartments advertised to let in one town in one
+   month, priced in dollars a month.
 
    The town is invented, and it is invented with a shape: an older housing stock
-   around £700, a new development around £1,250, and a short tail of expensive
-   flats above that. The group sizes are fixed rather than drawn, so the two
+   around $700, a new development around $1,250, and a short tail of expensive
+   apartments above that. The group sizes are fixed rather than drawn, so the two
    crowds are there in every world and no sentence on this screen depends on a
    lucky roll. The rents inside each group do change with the world. */
-const N_OLD = 144;       // flats in the older stock
-const N_NEW = 82;        // flats in the new development
+const N_OLD = 144;       // apartments in the older stock
+const N_NEW = 82;        // apartments in the new development
 const N_TOP = 14;        // the expensive tail
-const N_FLATS = N_OLD + N_NEW + N_TOP;   // 240
+const N_APARTMENTS = N_OLD + N_NEW + N_TOP;   // 240
 
-const OLD_MU = 700;      // £ a month, centre of the older stock
+const OLD_MU = 700;      // $ a month, center of the older stock
 const OLD_SD = 92;
-const NEW_MU = 1250;     // £ a month, centre of the new development
+const NEW_MU = 1250;     // $ a month, center of the new development
 const NEW_SD = 110;
-const TOP_FROM = 1450;   // £ a month, where the tail starts
+const TOP_FROM = 1450;   // $ a month, where the tail starts
 const TOP_SPAN = 560;
 
-const RENT_LO = 400;     // £ a month; the axis never moves in this unit
+const RENT_LO = 400;     // $ a month; the axis never moves in this unit
 const RENT_HI = 2100;
-const GAP_AT = 1000;     // £ a month, the thin patch between the two crowds
-const NEAR_MEAN = 50;    // £ a month; how near the average counts as near, in the closing line
+const GAP_AT = 1000;     // $ a month, the thin patch between the two crowds
+const NEAR_MEAN = 50;    // $ a month; how near the average counts as near, in the closing line
 
-const FALL_BIN = 60;     // £; the bin width the first figure stacks into
-const BIN_MIN = 15;      // £; the dial's ends
+const FALL_BIN = 60;     // $; the bin width the first figure stacks into
+const BIN_MIN = 15;      // $; the dial's ends
 const BIN_MAX = 500;
 const BIN_STEP = 5;
 
@@ -45,7 +45,7 @@ const BIN_STEP = 5;
    this share of the tallest column before climbing again. The share is a choice, it
    is written on the screen beside the count, and it was set by counting: across 600
    worlds at the dial's opening width, 595 of them come out at two humps, and every
-   world comes out at one by the time the bins are £450 wide. */
+   world comes out at one by the time the bins are $450 wide. */
 const HUMP_SHARE = 0.25;
 
 const READ_SECONDS = 5;  // how long the whole list takes to go past
@@ -53,8 +53,8 @@ const READ_WORD = 'five';   // the same number in prose, where the charter wants
 const FALL_MS = 950;
 const FALL_STAGGER = 0.34;   // share of the fall the top of a column waits out
 
-/* £1,234, with no dependence on the reader's locale. */
-const money = (v) => '£' + String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+/* $1,234, with no dependence on the reader's locale. */
+const money = (v) => '$' + String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -83,7 +83,7 @@ function quiet(text) { return el('p', 'small muted', text); }
 function heading(text) { return el('h2', null, text); }
 
 /* The naming move gets one treatment across the whole site: a rule down the left in
-   the result colour, past tense, no praise. */
+   the result color, past tense, no praise. */
 function named(kicker, ...paras) {
   const n = el('div', 'named');
   n.append(el('p', 'named__kicker', kicker));
@@ -143,7 +143,7 @@ function deeper(summaryText, ...paras) {
 
 /* Clamped to the axis that will draw them: viz.js does not clip a stray value, it
    draws it off the side where nobody can count it. The clamps bite on well under one
-   flat in a thousand, which is cheaper than a caption that says 240 above a picture
+   apartment in a thousand, which is cheaper than a caption that says 240 above a picture
    holding 239. */
 const clipRent = (v) => Math.round(Math.min(RENT_HI - 40, Math.max(RENT_LO + 20, v)));
 
@@ -316,14 +316,14 @@ function sectionArrive(kit, town) {
   const wrap = block();
   wrap.append(heading('Here come 240 rents, one at a time'));
   wrap.append(para(
-    'They arrive in the order the agent listed them, one dot for each flat, sitting at its own '
+    'They arrive in the order the agent listed them, one dot for each apartment, sitting at its own '
     + `rent on an axis running from ${money(RENT_LO)} to ${money(RENT_HI)} a month. The whole list `
     + `takes about ${READ_WORD} seconds. Watch it go past rather than trying to keep up with it.`));
 
   const values = town.values;
   const bins = binCountOf(FALL_BIN);
   const filled = new Array(bins).fill(0);
-  /* Where each flat ends up: which column, and how far up that column. Fixed now, so
+  /* Where each apartment ends up: which column, and how far up that column. Fixed now, so
      the fall lands in the same place every time it is replayed. */
   const slots = values.map((v) => {
     const b = binIndex(v, FALL_BIN, bins);
@@ -361,22 +361,22 @@ function sectionArrive(kit, town) {
   }
 
   const spokenStrip = () => `Two hundred and forty rents strewn along an axis from ${money(RENT_LO)} `
-    + `to ${money(RENT_HI)} a month, one dot for each flat, at a height that means nothing. Below `
-    + '£900 they overlap so heavily that the dots run into one dark band.';
+    + `to ${money(RENT_HI)} a month, one dot for each apartment, at a height that means nothing. Below `
+    + '$900 they overlap so heavily that the dots run into one dark band.';
   const spokenPile = () => `${bins} columns of dots, one column for every ${money(FALL_BIN)} of rent. `
     + `The columns rise to a tall mass around ${money(OLD_MU)} a month, drop to almost nothing near `
     + `${money(GAP_AT)}, rise again to a smaller mass around ${money(NEW_MU)}, and trail off to a `
-    + `few flats above £1,500. ${town.underGap} of the ${town.n} rents are under ${money(GAP_AT)} a `
+    + `few apartments above $1,500. ${town.underGap} of the ${town.n} rents are under ${money(GAP_AT)} a `
     + `month and ${town.n - town.underGap} are above it.`;
 
   const fig = mountFigure(kit, {
     height: 300,
     caption:
-      `The ${N_FLATS} monthly rents, in pounds a month, invented for this unit and drawn in world `
-      + `${kit.seed}. One dot is one flat. Along the top each dot sits at its own rent and its `
+      `The ${N_APARTMENTS} monthly rents, in dollars a month, invented for this unit and drawn in world `
+      + `${kit.seed}. One dot is one apartment. Along the top each dot sits at its own rent and its `
       + 'height means nothing, which is why the crowded stretch cannot be counted by eye. Stacking '
       + `drops every dot into a column ${money(FALL_BIN)} wide, and a column's height is then the `
-      + 'number of flats renting for somewhere inside it.',
+      + 'number of apartments renting for somewhere inside it.',
     describe: () => {
       if (mode === 'waiting') return `An empty axis running from ${money(RENT_LO)} to ${money(RENT_HI)} a month, waiting for the list.`;
       if (mode === 'reading') return 'Rents landing one at a time, too fast to follow individually.';
@@ -398,12 +398,12 @@ function sectionArrive(kit, town) {
       const shown = mode === 'reading' ? arrived : (mode === 'waiting' ? 0 : values.length);
       for (let i = 0; i < shown; i++) pts.push(dotAt(i));
       st.dots(pts, { r, fill: 'data', alpha: 0.78 });
-      if (mix > 0.6) st.note('number of flats', 8, 12, { align: 'left', size: 11, color: 'ink2', weight: 600 });
-      st.note('rent, £ a month', st.W - 8, 12, { align: 'right', size: 11, color: 'ink2', weight: 600 });
+      if (mix > 0.6) st.note('number of apartments', 8, 12, { align: 'left', size: 11, color: 'ink2', weight: 600 });
+      st.note('rent, $ a month', st.W - 8, 12, { align: 'right', size: 11, color: 'ink2', weight: 600 });
     },
   });
 
-  const read = kit.ui.readout({ label: 'Rents read', value: `0 of ${N_FLATS}`, tone: 'plain' });
+  const read = kit.ui.readout({ label: 'Rents read', value: `0 of ${N_APARTMENTS}`, tone: 'plain' });
   /* Not spoken. Both of these change forty times a second while the list is running,
      and a polite live region would try to read every one of them out. */
   const latest = kit.ui.readout({ label: 'The one just read', value: 'none yet', tone: 'data' });
@@ -423,13 +423,13 @@ function sectionArrive(kit, town) {
         ? `Two hundred and forty numbers went past in ${READ_WORD} seconds and you kept almost none `
           + 'of them. Nobody keeps them, which is the whole reason data gets drawn rather than '
           + 'read. '
-        : `There are ${N_FLATS} numbers on that axis now and no holding them, which is the whole `
+        : `There are ${N_APARTMENTS} numbers on that axis now and no holding them, which is the whole `
           + 'reason data gets drawn rather than read. ')
-      + `A list hands you one number at a time. A picture hands you all ${N_FLATS} at once and asks `
+      + `A list hands you one number at a time. A picture hands you all ${N_APARTMENTS} at once and asks `
       + 'about the shape they make together.'));
     afterRead.append(para(
       'Every dot is still on the screen, and the screen is still not much use. Down in the crowded '
-      + 'stretch the dots are sitting on top of each other, so a thick patch might be forty flats '
+      + 'stretch the dots are sitting on top of each other, so a thick patch might be forty apartments '
       + 'or a hundred and forty, and there is no way to tell which by looking.'));
   }
 
@@ -448,7 +448,7 @@ function sectionArrive(kit, town) {
       /* No animation: the whole list lands at once. Nothing is taught by the motion
          that the strewn picture and the paragraph underneath do not also say. */
       arrived = values.length;
-      read.set(`${N_FLATS} of ${N_FLATS}`);
+      read.set(`${N_APARTMENTS} of ${N_APARTMENTS}`);
       latest.set(`${money(values[values.length - 1])} a month`);
       finishRead(false);
       return;
@@ -458,7 +458,7 @@ function sectionArrive(kit, town) {
       const next = Math.min(values.length, Math.floor((elapsed / READ_SECONDS) * values.length));
       if (next !== arrived) {
         arrived = next;
-        read.set(`${arrived} of ${N_FLATS}`);
+        read.set(`${arrived} of ${N_APARTMENTS}`);
         if (arrived > 0) latest.set(`${money(values[arrived - 1])} a month`);
       }
       fig.draw();
@@ -478,7 +478,7 @@ function sectionArrive(kit, town) {
       label: 'One clump',
       why: 'That is the commonest reading of a strip like this one, and the strip earns it: the '
         + 'left-hand mass is dense enough to read as one solid block. What the columns add is how '
-        + 'many flats are in each part of that block.',
+        + 'many apartments are in each part of that block.',
     },
     {
       label: 'Two clumps',
@@ -527,7 +527,7 @@ function sectionArrive(kit, town) {
       /* Somebody pressed here without watching the list, or during it. The dots they
          have not seen are still theirs, so they all arrive and then all fall. */
       arrived = values.length;
-      read.set(`${N_FLATS} of ${N_FLATS}`);
+      read.set(`${N_APARTMENTS} of ${N_APARTMENTS}`);
       latest.set(`${money(values[values.length - 1])} a month`);
       finishRead(false);
     }
@@ -556,13 +556,13 @@ function sectionArrive(kit, town) {
     if (reveal.childElementCount) return;
     reveal.append(named(
       'You have just built a distribution',
-      `The dots stopped being ${N_FLATS} separate facts and became one object with a shape. Each `
+      `The dots stopped being ${N_APARTMENTS} separate facts and became one object with a shape. Each `
       + `column stands on a bin: a stretch of rent ${money(FALL_BIN)} wide. The height of the column `
-      + 'is the number of flats whose rent falls inside that stretch. A picture built this way is a '
+      + 'is the number of apartments whose rent falls inside that stretch. A picture built this way is a '
       + 'histogram, and the shape it draws is the distribution of the rents.',
-      `This town has two crowds in it. ${town.underGap} of the ${town.n} flats sit in a mass around `
+      `This town has two crowds in it. ${town.underGap} of the ${town.n} apartments sit in a mass around `
       + `${money(OLD_MU)} a month, a second and smaller mass sits around ${money(NEW_MU)}, the ground `
-      + `between them near ${money(GAP_AT)} is nearly bare, and a few expensive flats trail off to `
+      + `between them near ${money(GAP_AT)} is nearly bare, and a few expensive apartments trail off to `
       + 'the right. Nothing has been calculated to get that sentence. It was read off a picture, '
       + 'which is the order this unit is arguing for.',
       `One symbol comes with the pile and it is the only one in this unit. The number of things in `
@@ -584,7 +584,7 @@ function sectionArrive(kit, town) {
     readoutRow(read.el, latest.el),
     afterRead,
     para('Before those dots go anywhere, commit to something. What do you think this town looks '
-      + 'like once the flats are counted rather than scattered?'),
+      + 'like once the apartments are counted rather than scattered?'),
     controls(...GUESSES.map((g) => g.node)),
     guessSay,
     controls(stackBtn.el),
@@ -690,7 +690,7 @@ function sectionShapes(kit, town) {
       + 'answer needs a scale. Committing to a set of matches writes the word for each shape under '
       + 'its pile.',
     describe: () => {
-      const parts = piles.map((p, i) => `Pile ${LETTERS[i]}: ${p.spoken}${told ? `, labelled ${p.word}` : ''}.`);
+      const parts = piles.map((p, i) => `Pile ${LETTERS[i]}: ${p.spoken}${told ? `, labeled ${p.word}` : ''}.`);
       return `Four piles of columns, side by side. ${parts.join(' ')}`;
     },
     draw: (st) => {
@@ -745,7 +745,7 @@ function sectionShapes(kit, town) {
         `Pile ${letterOf('two')} has two tops with a dip between them, which is bimodal. Two humps `
         + 'usually means two different things were measured and written into the same column. The '
         + `rents at the top of this screen are bimodal, and the reason is that ${N_OLD} of those `
-        + `flats are old and ${N_NEW} of them were built at once.`,
+        + `apartments are old and ${N_NEW} of them were built at once.`,
         `Pile ${letterOf('flat')} has no middle worth the name: any value is about as common as any `
         + 'other. That one is flat, or uniform in a textbook. A lottery draw looks like this, and '
         + 'so does a number generator that is working properly.',
@@ -759,10 +759,10 @@ function sectionShapes(kit, town) {
         'Everybody gets this backwards once. A pile of incomes with most people low and a few very '
         + 'high earners is called skewed right, even though the crowd is on the left, because the '
         + 'name points at the tail.',
-        'The convention earns its keep because the tail is the side the mean gets dragged towards. '
+        'The convention earns its keep because the tail is the side the mean gets dragged toward. '
         + `On the rents in this unit the mean is ${money(town.mean)} a month and the median is `
         + `${money(town.median)}, a gap of ${money(Math.round(town.mean) - Math.round(town.median))} `
-        + 'opened up by the flats at the top of the axis and the second crowd. Unit 04-middle is '
+        + 'opened up by the apartments at the top of the axis and the second crowd. Unit 04-middle is '
         + 'where that gap does its damage.'));
     },
   });
@@ -805,7 +805,7 @@ function sectionApply(kit) {
         why: 'The spread is real, and this is closer to the picture than the first option, which is '
           + 'what makes it the more expensive mistake. It still describes one crowd that happens to '
           + 'be wide. Two crowds with a gap is a different claim about the world, and a spread '
-          + 'quoted around a single centre cannot tell the two apart. Unit 05-spread is where that '
+          + 'quoted around a single center cannot tell the two apart. Unit 05-spread is where that '
           + 'number arrives, and it arrives with this warning attached.',
       },
       {
@@ -830,8 +830,8 @@ function sectionDial(kit, town, state) {
   wrap.append(para(
     `The columns in that first picture were ${money(FALL_BIN)} wide. Nothing in the data asked for `
     + `${money(FALL_BIN)}. Whoever builds the screen picks a width, and on that screen it was us. `
-    + 'The dial below hands the choice to you instead. Nothing about the flats changes as you turn '
-    + 'it: every rent stays where it was, and every column stays a true count of the flats inside '
+    + 'The dial below hands the choice to you instead. Nothing about the apartments changes as you turn '
+    + 'it: every rent stays where it was, and every column stays a true count of the apartments inside '
     + 'it.'));
 
   let width = FALL_BIN;
@@ -844,7 +844,7 @@ function sectionDial(kit, town, state) {
   const rugJit = town.values.map(() => rugRng.u() * 2 - 1);
 
   const shown = kit.ui.readout({ label: 'Columns on the chart', value: String(counts.length), tone: 'plain' });
-  const peak = kit.ui.readout({ label: 'Flats in the tallest column', value: String(tallest), tone: 'data' });
+  const peak = kit.ui.readout({ label: 'Apartments in the tallest column', value: String(tallest), tone: 'data' });
   /* Spoken, and set only when the number actually moves. The count changes perhaps a
      dozen times across the whole dial, so a live region here announces a finding rather
      than narrating a drag. */
@@ -857,13 +857,13 @@ function sectionDial(kit, town, state) {
   const fig = mountFigure(kit, {
     height: 280,
     caption:
-      `The same ${N_FLATS} rents as the figure above, in pounds a month, counted into bins of `
-      + 'whatever width the dial is set to. Every column is the true number of flats renting for '
+      `The same ${N_APARTMENTS} rents as the figure above, in dollars a month, counted into bins of `
+      + 'whatever width the dial is set to. Every column is the true number of apartments renting for '
       + 'somewhere inside its bin, at every setting. The hump count beside the figure applies one '
       + 'stated rule: a hump is a top the columns climb to and then fall away from by at least a '
       + 'quarter of the tallest column before climbing again.',
     describe: () => `Two hundred and forty rents in ${counts.length} columns, each ${money(width)} `
-      + `wide. The tallest column holds ${tallest} flats. Under the rule in the caption the picture `
+      + `wide. The tallest column holds ${tallest} apartments. Under the rule in the caption the picture `
       + `shows ${humpPhrase(humps)}.`
       + (rug ? ' Every individual rent is drawn as a small dot in a band below the columns.' : ''),
     draw: (st) => {
@@ -880,8 +880,8 @@ function sectionDial(kit, town, state) {
           { r: 2, fill: 'data', alpha: 0.55 },
         );
       }
-      st.note('number of flats', 8, 12, { align: 'left', size: 11, color: 'ink2', weight: 600 });
-      st.note('rent, £ a month', st.W - 8, 12, { align: 'right', size: 11, color: 'ink2', weight: 600 });
+      st.note('number of apartments', 8, 12, { align: 'left', size: 11, color: 'ink2', weight: 600 });
+      st.note('rent, $ a month', st.W - 8, 12, { align: 'right', size: 11, color: 'ink2', weight: 600 });
     },
   });
 
@@ -898,7 +898,7 @@ function sectionDial(kit, town, state) {
       state.setFlat(width);
       if (!flatSay.childElementCount) {
         flatSay.append(para(
-          `At ${money(width)} a bin this is a town with one kind of flat and a few expensive ones. `
+          `At ${money(width)} a bin this is a town with one kind of apartment and a few expensive ones. `
           + 'The second crowd has not moved out. It has been counted into the same boxes as the '
           + 'first one.'));
       }
@@ -933,18 +933,18 @@ function sectionDial(kit, town, state) {
     fig.el,
     controls(dial.el, rugSwitch.el),
     readoutRow(shown.el, peak.el, humpBox.el),
-    quiet(`Two things to do with the dial. Make this town look like it has one kind of flat, by `
+    quiet(`Two things to do with the dial. Make this town look like it has one kind of apartment, by `
       + `widening the bins until the hump count says one. Then take it down to ${money(BIN_MIN)} and `
-      + `look at what ${binCountOf(BIN_MIN)} columns are telling you about ${town.n} flats.`),
+      + `look at what ${binCountOf(BIN_MIN)} columns are telling you about ${town.n} apartments.`),
     flatSay,
     warned(
       'Three pictures, one set of counts',
-      `Every column in every one of those pictures is a true count of the flats in that list. At `
+      `Every column in every one of those pictures is a true count of the apartments in that list. At `
       + `${money(BIN_MAX)} a bin, wide enough to swallow both crowds at once, the picture shows `
       + `${humpPhrase(wideHumps)}. At ${money(FALL_BIN)} the same 240 rents show `
       + `${humpPhrase(midHumps)}. At ${money(BIN_MIN)} they show ${humpPhrase(fineHumps)} and no `
       + `story at all, because n = ${town.n} spread over ${binCountOf(BIN_MIN)} bins leaves about `
-      + 'two flats to a column, and the bumps are the luck of which flats happened to be advertised '
+      + 'two apartments to a column, and the bumps are the luck of which apartments happened to be advertised '
       + 'that month. Not one number was faked to produce any of the three.',
       'The reason this is worth watching for rather than being angry about: most of the time the '
       + 'default is doing the choosing. Charting software picks a bin width the moment it is handed '
@@ -1044,7 +1044,7 @@ function sectionRecap(kit, town, state) {
 
   const steps = kit.ui.steps([
     {
-      title: `You met ${N_FLATS} numbers as a list, and then as a shape`,
+      title: `You met ${N_APARTMENTS} numbers as a list, and then as a shape`,
       body: 'A list hands over one number at a time and leaves nothing behind, which is what lists '
         + 'do. That is the case for drawing data rather than reading it, and it is not that '
         + 'pictures are friendlier: a column of numbers cannot be seen all at once, and a shape '
@@ -1054,7 +1054,7 @@ function sectionRecap(kit, town, state) {
       title: 'You built a distribution and read it before computing anything',
       body: `The dots fell into bins, the bins became columns, and the columns had a shape you `
         + `could describe in a sentence. The picture is a histogram, the shape is a distribution, `
-        + `the stretch under one column is a bin, and n = ${town.n} is how many flats went into it.`,
+        + `the stretch under one column is a bin, and n = ${town.n} is how many apartments went into it.`,
     },
     {
       title: 'You sorted four crowds by shape alone',
@@ -1064,7 +1064,7 @@ function sectionRecap(kit, town, state) {
     },
     {
       title: 'You made a two-crowd town look like a one-crowd town',
-      body: 'Widening the bins merges the old flats and the new development into one innocent hill, '
+      body: 'Widening the bins merges the old apartments and the new development into one innocent hill, '
         + 'using nothing but true counts. Bin width is the name of that dial. Unit 16-rhetoric is '
         + 'this whole toolkit turned around: reading the claims other people make with it, and '
         + 'writing ones that survive being checked.',
@@ -1090,7 +1090,7 @@ function sectionRecap(kit, town, state) {
   wrap.append(para(
     `Unit 04-middle asks where a pile like this sits, which is the obvious next question and the `
     + `dangerous one. The mean rent in this town is ${money(town.mean)} a month, and `
-    + `${town.nearMean} of the ${town.n} flats rent for within ${money(50)} of that. A single middle `
+    + `${town.nearMean} of the ${town.n} apartments rent for within ${money(50)} of that. A single middle `
     + 'would hide precisely what you spent this unit learning to see, so it arrives next with the '
     + 'picture already drawn.'));
 
@@ -1111,13 +1111,13 @@ function head(kit) {
   h.append(el('h1', null, 'The pile'));
   h.append(el('p', 'lesson__q', 'What does a whole group of numbers look like at once?'));
   h.append(el('p', 'lede',
-    'Two hundred and forty flats were advertised to let in one town last month, each with a rent on '
-    + 'it in pounds a month. Nobody can hold 240 numbers in their head, and nothing here asks you '
+    'Two hundred and forty apartments were advertised to let in one town last month, each with a rent on '
+    + 'it in dollars a month. Nobody can hold 240 numbers in their head, and nothing here asks you '
     + 'to. This unit is about what happens when you draw them instead, and about the one setting '
     + 'that decides which true picture you get.'));
   h.append(quiet(
     `Every rent on this screen is invented, drawn in world ${kit.seed}. Type the same world number `
-    + 'on another phone and the same 240 flats come back.'));
+    + 'on another phone and the same 240 apartments come back.'));
   return h;
 }
 
@@ -1143,7 +1143,7 @@ function render(root, ctx) {
   /* The contract puts a bound stage on ctx and main.js also passes the viz module, so
      either spelling is accepted. The world factory is taken from ctx when it is offered
      and from core/rng.js otherwise, because a lesson that quietly stopped rebuilding a
-     town from its number would go on printing "the same 240 flats come back" while that
+     town from its number would go on printing "the same 240 apartments come back" while that
      had stopped being true. */
   const makeRng = typeof ctx.makeRng === 'function'
     ? ctx.makeRng
@@ -1187,7 +1187,7 @@ function render(root, ctx) {
   const repaint = () => { kit.redraws.forEach((draw) => draw()); };
   repaint();
 
-  /* viz.js holds the colours it read out of the stylesheet for a fraction of a second,
+  /* viz.js holds the colors it read out of the stylesheet for a fraction of a second,
      so a redraw fired the instant the scheme changes can still be painting in the old
      palette. Paint now, and again once that cache has certainly expired, because two of
      these three figures never redraw on their own. */

@@ -27,7 +27,7 @@ at commit `191d9ef`:
 - `.github/workflows/` is an empty directory. Nothing runs automatically on a pull request.
 - `docs/CURRICULUM.md` and `app/curriculum.js` have drifted. See section 4.
 
-Proposals that depend on absent code are proposals, not descriptions, and are labelled.
+Proposals that depend on absent code are proposals, not descriptions, and are labeled.
 
 ---
 
@@ -79,7 +79,7 @@ categories is a bad answer.
 ### Beat 3: Name
 
 The site's signature move, and it has its own visual treatment in `app/styles/app.css`: the
-`.named` block, a left rule and a tinted panel in the `result` role colour. It appears
+`.named` block, a left rule and a tinted panel in the `result` role color. It appears
 **after** the reader has acted, and it describes what they did, in the past tense.
 
 One `.named` block per idea. A unit with four of them is teaching four things and should be
@@ -113,7 +113,7 @@ reasoning that made it attractive before it corrects anything.
 
 ### Beat 6: Question the claim
 
-The `.warn` block, a left rule and a tinted panel in the `data` role colour. Section 4 has the
+The `.warn` block, a left rule and a tinted panel in the `data` role color. Section 4 has the
 detail.
 
 ---
@@ -222,7 +222,7 @@ The same assertion that checks the `lies` fields should diff the two files.
 
 **The distortion must be operable.** The reader performs it. `01-noticing` gives them a toggle
 that moves the axis floor from zero to 4.9 minutes, at which point two true bars of 5.0 and
-5.4 minutes, a real difference of 8%, become one bar five times taller than its neighbour.
+5.4 minutes, a real difference of 8%, become one bar five times taller than its neighbor.
 Describing a distortion in prose teaches recognition of that one example. Performing it
 teaches the move.
 
@@ -331,7 +331,7 @@ deep block has to walk that back, the plain lane taught something the reader wil
 to unlearn, and unlearning is expensive and demoralising. Where a plain statement is genuinely
 approximate, the plain lane says so in the plain lane.
 
-**Depth blocks are labelled by content, never by the reader's supposed ability.** "Where the
+**Depth blocks are labeled by content, never by the reader's supposed ability.** "Where the
 n − 1 comes from" is a good summary. "For the mathematically inclined" is a bad one, because
 it tells the reader which tier they belong to before they have opened the door. Never
 "Advanced", never "Optional", never "Extra credit".
@@ -367,13 +367,13 @@ them works for the other three.
 
 Principle 3 is not decoration policy. It has operational content.
 
-**Colour means one thing.** Four roles, defined in `tokens.css` with light and dark values for
+**Color means one thing.** Four roles, defined in `tokens.css` with light and dark values for
 each: truth, data, result, test. A reader who learns them in unit 1 can read every figure in
-the course without a legend. Nothing is ever coloured because it looked better that way. This
+the course without a legend. Nothing is ever colored because it looked better that way. This
 is aesthetics doing work, because consistency is what makes a figure legible at a glance in
 `14-line`.
 
-Colour is never the only channel. VOICE.md bans colour words in prose for the same reason, and
+Color is never the only channel. VOICE.md bans color words in prose for the same reason, and
 every canvas carries an `aria-label` that states the finding. `01-noticing` rebuilds those
 labels whenever the picture changes, which is the standard: a static label on a canvas that
 moves is a lie to a screen-reader user.
@@ -389,7 +389,7 @@ whitespace, and one honest animation per unit, and spending it anywhere else mea
 twice.
 
 **Motion respects the reader.** `tokens.css` collapses its three duration tokens to 1ms under
-`prefers-reduced-motion: reduce`, so a component that animates through those tokens honours
+`prefers-reduced-motion: reduce`, so a component that animates through those tokens honors
 the setting without knowing about it. `engine.js` exports `reducedMotion` and also
 `prefersReducedMotion()`, which re-reads the media query at call time, because a reader can
 change the setting mid-session and a `const` read at page load cannot follow them. `tween`
@@ -474,7 +474,7 @@ because they would report having enjoyed it.
 ### The other half of the literature
 
 Presenting only the critique would be its own kind of dishonesty, and the counter-evidence
-points at a specific moderator rather than at a general defence.
+points at a specific moderator rather than at a general defense.
 
 - **Alfieri, Brooks, Aldrich and Tenenbaum (2011), a meta-analysis of discovery-based
   instruction, *Journal of Educational Psychology*.** Unassisted discovery loses. Assisted

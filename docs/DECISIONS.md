@@ -36,7 +36,7 @@ Invented data names the world, so a reader can reproduce it:
 
 Real data names the source, the date and the unit:
 
-> Median monthly rent for two-bedroom flats, 2024, from the English Housing Survey.
+> Median monthly rent for two-bedroom apartments, 2024, from the English Housing Survey.
 
 The rule is that provenance lives in exactly one slot per figure and is never mixed into the
 interpretation. When the X-ray is built, that slot becomes the thing you press.
@@ -50,7 +50,7 @@ interpretation. When the X-ray is built, that slot becomes the thing you press.
 `app/curriculum.js` is the single source of truth for what the course contains. The map screen
 is generated from it, and `main.js` imports whichever units are marked ready.
 
-A unit only appears as ready if its module actually loaded. When the maths core was missing for
+A unit only appears as ready if its module actually loaded. When the math core was missing for
 part of a day, unit 1 correctly showed as unfinished rather than handing a reader a broken
 screen. The curriculum says what is intended; the router says what exists; a reader is always
 shown the second one.
@@ -74,7 +74,7 @@ lesson that changes its world must call `ctx.setSeed`.
 
 **Decided 2026-07-25, after two independent proposals converged on it.**
 
-People already understand variation in buses, rents, prices and queues. Probability is then a
+People already understand variation in buses, rents, prices and lines. Probability is then a
 tool invented to model variation they have already seen and felt. Teaching probability first
 tends to leave people believing statistics is applied coin flipping.
 
@@ -103,7 +103,7 @@ sampling variation, and operated an axis crop.
 **Decided 2026-07-25.**
 
 The working name was Everyone Counts. It was warm and the double meaning was exact, and it was
-dropped because Oxfam already ships a free maths resource for 8 to 12 year olds under that name,
+dropped because Oxfam already ships a free math resource for 8 to 12 year olds under that name,
 built on real-world statistics about inequality. Same name, adjacent niche. The US Census has
 also used the phrase, and there is a children's counting book with the title.
 

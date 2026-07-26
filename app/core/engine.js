@@ -116,18 +116,18 @@ export function tween(opts) {
   }
 
   let handle = null;
-  let cancelled = false;
+  let canceled = false;
   let start = null;
 
   function frame(stamp) {
-    if (cancelled) return;
+    if (canceled) return;
     if (start === null) start = stamp;
     // Progress comes from the clock, not from a frame counter, so a dropped
     // frame costs smoothness and never duration.
     const p = Math.min(1, Math.max(0, (stamp - start) / ms));
     if (onStep) onStep(from + (to - from) * curve(p), p);
     // onStep is allowed to cancel us, so check again before booking more work.
-    if (cancelled) return;
+    if (canceled) return;
     if (p < 1) handle = raf(frame);
     else if (onDone) onDone(to);
   }
@@ -135,8 +135,8 @@ export function tween(opts) {
   handle = raf(frame);
 
   return function cancel() {
-    if (cancelled) return;
-    cancelled = true;
+    if (canceled) return;
+    canceled = true;
     caf(handle);
     handle = null;
   };

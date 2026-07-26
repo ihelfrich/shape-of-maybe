@@ -59,6 +59,10 @@ docs/
   VOICE.md               the binding writing charter
   PEDAGOGY.md            how the four principles become screen mechanics
   LESSON-TEMPLATE.md     how to build a new lesson
+  DECISIONS.md           choices that shaped the project, and why
+tools/
+  selftest.mjs           checks every taught number against table values
+  serve.py               dev server that refuses to cache
 ```
 
 ### Worlds

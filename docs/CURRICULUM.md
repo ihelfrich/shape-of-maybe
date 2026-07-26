@@ -11,6 +11,12 @@ misconception it kills, the instruments it needs, and its truths-and-lies thread
 decisions are argued at length first, because those four are where this spine leaves the
 standard one.
 
+A note on numbering before anything else. VOICE.md section 10 says to cite units by id rather
+than by number, because `docs/CURRICULUM.md` and `app/curriculum.js` currently disagree from
+position four onward. Inside this file a bare "unit 7" means the seventh row of the table
+below, `07-wobble`, and the table is right there to check against. Anywhere else, including
+lesson prose, screens and the other charters, write the id.
+
 Two companion documents govern the rest. [PEDAGOGY.md](PEDAGOGY.md) sets the screen loop and
 the depth mechanism, [VOICE.md](VOICE.md) sets the prose. `app/curriculum.js` is this file as
 data, and if the two disagree the fix is a single commit that changes both.
@@ -25,8 +31,8 @@ data, and if the two disagree the fix is a single commit that changes both.
 | 2 | `02-numbers` | Putting a number on it | How do I turn something real into a number, and what does the number cost? | 20 | 1 |
 | 3 | `03-pile` | The pile | What does a whole group of numbers look like at once? | 18 | 2 |
 | 4 | `04-reroll` | Reroll the world | If I ran the same thing again, what would change and what would stay? | 20 | 3 |
-| 5 | `05-pocket` | How few numbers can I get away with | How much of a crowd can I carry in my pocket? | 26 | 3, 4 |
-| 6 | `06-sampling` | A few, for many | How can a thousand people tell you about three hundred million? | 20 | 4, 5 |
+| 5 | `05-pocket` | The pocket version | How much of a crowd can I carry in my pocket? | 26 | 3, 4 |
+| 6 | `06-sampling` | A few, for many | How can a thousand people tell you about three hundred million, and when can they not? | 20 | 4, 5 |
 | 7 | `07-wobble` | The wobble | If I did this study again, how different would the answer be? | 24 | 6 |
 | 8 | `08-ruler` | The ruler that keeps turning up | How do I turn a distance into a probability? | 22 | 7 |
 | 9 | `09-range` | The honest range | What is the widest claim I am entitled to make? | 20 | 7, 8 |
@@ -38,8 +44,10 @@ data, and if the two disagree the fix is a single commit that changes both.
 | 15 | `15-designed` | Comparisons built on purpose | How do you build a study that can settle a causal question? | 24 | 13, 11, 14 |
 | 16 | `16-rhetoric` | Telling the truth with numbers | How do I say something true, clearly, without misleading anyone, including myself? | 20 | all |
 
-Six parts. Each lesson module passes its part through as the `unit` field on its default
-export, and the map screen groups on it.
+Six parts, carried as the `part` field on each entry in `app/curriculum.js`. That is the field
+`app/views/map.js` groups on when it prints its section headings. Each lesson module carries the
+same string again as the `unit` field on its default export, which is in the router contract.
+Nothing reads that copy today. It is there for a lesson that wants to print its own part label.
 
 - **I. Before the symbols** (1, 2)
 - **II. What a crowd looks like** (3, 4, 5)
@@ -63,10 +71,11 @@ and it shrinks like the square root of the sample size. A reader who leaves afte
 evaluate most of the numbers in a newspaper.
 
 That last sentence is the reason the wobble is seventh. A conventional syllabus reaches the
-sampling distribution in about week nine of thirteen, which puts the payoff behind a wall of
-descriptive machinery. If half this course has to be cut, it gets cut after unit 8 and the rest
-ships as a sequel. That is a survivable outcome. Cutting a conventional syllabus in half leaves
-a reader who can compute a standard deviation and cannot do anything with it.
+sampling distribution around two thirds of the way through the term, which puts the payoff
+behind a wall of descriptive machinery. If half this course has to be cut, it gets cut after
+unit 8, which is 170 of the 344 minutes, and the rest ships as a sequel. That is a survivable
+outcome. Cutting a conventional syllabus in half leaves a reader who can compute a standard
+deviation and cannot do anything with it.
 
 ---
 
@@ -89,10 +98,10 @@ happen. None of that means anything to somebody who thinks of a dataset as a fix
 arrived from nowhere. A reader who spends units 4, 5 and 6 computing summaries of a fixed list
 is being trained into exactly that belief, right before we need them to abandon it.
 
-So unit 4 hands the reader the generator. They press a button, the world number changes, and
-440 new dots fall. Every dot is somewhere else. The shape is the same. That single experience
-does more work than any definition of a random variable, because it gives the reader the
-distinction the course runs on: **a shape is what survives a reroll, and a dot is what does
+So unit 4 hands the reader the generator. They press a button, the world number changes, and the
+same 400 dots fall somewhere else. Every dot moves. The shape is the same. That single
+experience does more work than any definition of a random variable, because it gives the reader
+the distinction the course runs on: **a shape is what survives a reroll, and a dot is what does
 not.** Signal and noise, before either word is used, with no notation at all.
 
 The medium forces this too, and this is the part a paper syllabus would never notice. The
@@ -113,7 +122,7 @@ on sight. Unit 3 gives them that and nothing more. There is no summary statistic
 mean, no spread, and that is deliberate, because the reroll lands hardest when the only thing
 the reader owns is the picture. Then in unit 5 they compress the pile to a number, reroll, and
 find that the number moves a little while the shape holds. The standard error is planted there,
-three units before it is named, as a thing the reader has already watched happen.
+two units before it is named, as a thing the reader has already watched happen.
 
 Now the second half. Conditional probability, base rates and natural frequencies sit at unit 10,
 next to hypothesis testing, and this is not filler placement.
@@ -165,23 +174,26 @@ separate months can recite "randomised controlled trial" without being able to s
 randomisation buys, and that gap is the single most common hole in an educated adult's
 statistical equipment.
 
-Unit 6 therefore ends with a ghost. The reader draws a sample from a visible population, and
-the sample they got is drawn in the data colour while the 990 units they did not get sit faded
-behind it. The screen names that faded set: the draw you did not make. Unit 15 opens on the same
-picture with one word changed, and the counterfactual arrives as a thing the reader has seen
-before rather than a philosophical import.
+Unit 6 therefore ends with a ghost. The reader draws a sample of 20 from a visible population of
+1,000, and the sample they got is drawn in the data colour while the 980 units they did not get
+sit faded behind it. The screen names that faded set: the draw you did not make. Unit 15 opens
+on the same picture with one word changed, and the counterfactual arrives as a thing the reader
+has seen before rather than a philosophical import.
 
 Diagnosis waits until 13 for a structural reason rather than a stylistic one. Confounding cannot
-be shown without the ability to compare groups inside a cloud, which is unit 12, and the
-counterfactual is inert until the reader can hold a distribution of possible outcomes, which is
-unit 7. There is no shortcut through that chain that does not ask for trust.
+be shown without the ability to compare groups inside a cloud, which is unit 12. The
+counterfactual is a picture in unit 6 and becomes a quantity in unit 7, once the reader can hold
+a distribution of possible outcomes and say how far apart two of them are. Nothing in that chain
+can be skipped without asking for trust.
 
 **Unit 13 sits before regression, and that ordering is not negotiable.** A slope is the most
 efficient vehicle in the world for an unearned causal claim. It has units, it has a sign, and it
 reads aloud as a sentence about the world: each extra year of schooling is worth eight hundred
 pounds. A reader who meets least squares before they meet the third thing will hear that as a
 mechanism, because nothing they own says otherwise. Confounding first means the first line the
-reader ever fits arrives already carrying its own interrogation.
+reader ever fits arrives already carrying its own interrogation. The shipped `app/curriculum.js`
+already puts `13-third` ahead of `14-line`, so this is one of the few places where the code and
+this document have never disagreed.
 
 The cost is a real constraint on unit 13's instruments, which have to demonstrate confounding
 without a fitted line. Group clouds and a contingency table carry it. The Berkeley admissions
@@ -232,9 +244,10 @@ most likely wrong" takes it seriously.
 reason. There are now two different objects in the room, the truth you do not have and the
 measurement you do, and one word was covering both. Introducing μ back in unit 5 alongside x̄,
 which is what most textbooks do, spends the one moment where a change of alphabet would have
-taught something, and leaves the reader believing Greek letters are a house style. Unit 6 is the
-screen where the same population has produced three different sample means. That is when the
-names have to divide, and the sentence that does it is "there are two things here now."
+taught something, and leaves the reader believing Greek letters are a house style. The urn in
+unit 6 is the screen where one visible population, with one true mean, produces a different
+sample mean every time the reader draws from it. That is when the names have to divide, and the
+sentence that does it is "there are two things here now."
 
 **6. The gate: Σ, xᵢ, and se = s/√n (unit 7).** Sigma and the subscript arrive here,
 retroactively, to write down the s the reader has been operating since unit 5, because s now has
@@ -245,12 +258,12 @@ aloud as "add up all the", which fixes more confusion than any diagram of it.
 
 There is a second payoff at this gate that most courses forfeit. Unit 5 introduces the typical
 miss as the mean absolute distance from the middle, because that is what an honest person means
-by "typical miss". The standard deviation then arrives beside it, as a near-identical number
-computed a stranger way. Unit 5 does not explain the squaring. It says outright that the reason
-is real and is two units away. Unit 7 pays: variances add and mean absolute deviations do
-not, so when two wobbles combine, only the squared version composes. The usual textbook line,
-that we square to get rid of the minus signs, is false, since absolute value also gets rid of
-them, and readers who are paying attention know they have been fobbed off.
+by "typical miss". The standard deviation then arrives beside it, as a number about a quarter
+larger computed a stranger way. Unit 5 does not explain the squaring. It says outright that the
+reason is real and is two units away. Unit 7 pays: variances add and mean absolute deviations do
+not, so when two independent wobbles combine, only the squared version composes. The usual
+textbook line, that we square to get rid of the minus signs, is false, since absolute value also
+gets rid of them, and readers who are paying attention know they have been fobbed off.
 
 **7. x̄ ± t*·se (unit 9).** The first formula the reader operates rather than reads.
 
@@ -267,8 +280,8 @@ hurdle they cleared, not a tool they now own.
 
 ### (d) The first beautiful moment is unit 4, and it is every dot moving while the shape stays still
 
-The instrument. The screen holds 440 dots in a histogram the reader built in unit 3. Below it,
-one control: a world number, and a die-roll button. The reader presses it. Every dot leaves its
+The instrument. The screen holds the 400 dots the reader binned in unit 3. Below it, one
+control: a world number, and a die-roll button. The reader presses it. Every dot leaves its
 place, falls, and lands somewhere else. The outline does not move. They press it again. And
 again, because everyone presses it again.
 
@@ -276,15 +289,15 @@ Why this one, and why fourth.
 
 Beauty needs a violated expectation, and this is the first place in the course where the reader
 has one to violate. They expect new random data to look different. It does not. The gap between
-what they expected and what happened is the entire content of the course's central idea. So the
-aesthetic moment and the load-bearing moment are the same moment, which is the condition
-PEDAGOGY section 6 sets for spending a beauty budget at all.
+what they expected and what happened is the entire content of the course's central idea. The
+aesthetic moment and the load-bearing moment are therefore the same moment, which is what
+PEDAGOGY section 6 is asking for when it bans any animation that does not carry information.
 
 It is also the reader's own hand, repeatedly, on a control they can carry into every later unit.
 That matters more than it sounds. Principle 1 says name the thinking the reader already does,
 and an animation the reader watches is a thing done to them. The reroll is a thing they do, and
 the finding accumulates across presses rather than arriving in a single tween. Nobody has to be
-told the shape held. They watched it hold eleven times.
+told the shape held. They watched it hold, as many times as they chose to.
 
 The alternatives, and why they lose.
 
@@ -304,8 +317,10 @@ from the mean sum to exactly zero, and the reader finds the point by tipping a b
 stops tipping. It loses because it is a fact about a definition rather than a fact about the
 world.
 
-The full ladder, since the schedule matters more than any single choice on it. One per unit at
-most, each paid for by an idea, none decorative.
+The ladder below names the moment each of these units is built around. PEDAGOGY section 6 asks
+for at least one thing per unit that exists to be looked at, so the units missing from this
+table still have their small ones. What is listed here is the one per unit that an idea pays
+for, and none of them are decorative.
 
 | Unit | The moment | What makes it beautiful |
 |---|---|---|
@@ -313,10 +328,10 @@ most, each paid for by an idea, none decorative.
 | 4 | The reroll | Every dot moves and the shape does not |
 | 5 | The beam | The distances balance exactly, and you find the point by feel |
 | 7 | The stack | The estimate turns out to have a distribution of its own |
-| 8 | The board | Any nudge with a finite spread, added often enough, gives the same curve |
-| 9 | The hundred | Five of the hundred intervals miss, and you cannot tell which |
-| 11 | The shuffle | Breaking the link by hand, a thousand times, builds the null world |
-| 14 | The squares | The hand-dragged line and the algebra land on the same place |
+| 8 | The board | Independent nudges with a finite spread, added often enough, give the same curve |
+| 9 | The hundred | About five of the hundred intervals miss, and you cannot tell which |
+| 11 | The shuffle | Breaking the link by hand, ten thousand times, builds the null world |
+| 14 | The squares | The algebra lands near enough to the hand-dragged line to argue about the gap |
 | 15 | The balancer | Randomising balances a variable nobody measured |
 
 ---
@@ -341,31 +356,39 @@ the original compression technology rather than as arithmetic. No letters standi
 By the end of this unit the reader has made three mathematical moves, comparing and estimating
 and hedging, with no symbol on the screen, and the text says so in the past tense.
 
-**Instruments.**
+**Instruments.** This is the one unit with a shipped lesson. `app/lessons/01-noticing/` today
+contains the two rows and the axis-floor toggle; the other two instruments and the ledger are
+specified here and unbuilt.
+
 - *The two rows.* Two rows of scattered dots on one axis. The reader says which row sits further
   right, commits a confidence on a three-way control, then sees the truth. Overlap is tuned
   across rounds so that they are right when confident and wrong when not. Needs `rng`, `stage`
-  (`dots`, `axisX`), `ui.segmented`, `ui.readout`.
+  (`dots`, `axisX`), `ui.segmented`, `ui.readout`. Built.
 - *The glance.* Dots flash for 400 ms and vanish. At four, everybody is exact. At seven, nobody
   is. The failure is the punchline, and the reader is told it is universal. Needs `engine.tween`,
   `stage.dots`.
 - *The tally bench.* Count 63 objects three ways, one at a time, in fives, in tens, against a
   clock. Place value falls out as the answer to "how do I stop losing my place".
-- *The floor slider.* The distortion, below.
+- *The axis floor.* The distortion, below. Built, and built as a `ui.toggle` rather than a
+  slider: the shipped lesson holds `CROP_FLOOR` at 4.9 minutes and flips between that and zero,
+  because two fixed states make the before and after comparable and a slider does not.
 
-**Truths and lies.** The reader is handed a true 8% difference between two cafes' wait times and
-asked to make it look like a scandal. They drag the axis floor from 0 up to 4.9 minutes and the
-bar becomes five times its neighbour. No number changes at any point. Then they drag it back and
-are asked whether a temperature chart should start at zero, which it should not, so the tell
-cannot be the crop. The question the unit leaves them with is whether the size of the change on
-the screen matches the size of the change in the world.
+**Truths and lies.** The reader is handed a true 8% difference between two cafes' wait times,
+5.0 minutes against 5.4, and asked to make it look like a scandal. Flipping the axis floor from
+0 to 4.9 minutes leaves bars of 0.1 and 0.5 minutes, so one is five times the other. No number
+changes at any point. Then they flip it back and are asked whether a temperature chart should
+start at zero, which it should not, so the tell cannot be the crop. The question the unit leaves
+them with is whether the size of the change on the screen matches the size of the change in the
+world.
 
 **Time.** 20 min. **Depends on.** Nothing. This is the door.
 
 **The causal ledger.** After the reader picks a row, a second prompt asks why they think that
 row is higher, with four plausible options and a text box. It is read back at the end of this
-unit, and stored for unit 13. Storage is `localStorage` and it will often be gone by then, so
-unit 13 has a generic fallback that is weaker but works.
+unit, and stored for unit 13. Storage would be `localStorage`, which puts two constraints on
+whoever builds it. Every read and write goes inside a `try`, because a browser in private mode
+can throw on either. And the unit has to be complete for a reader whose storage never persists,
+so unit 13 gets a generic fallback that is weaker but works.
 
 ### 2. Putting a number on it
 
@@ -413,15 +436,16 @@ outlier is a mistake. Some are errors and some are the finding, and telling them
 question about the world rather than about the numbers.
 
 **Instruments.**
-- *The fall.* A column of raw values scrolls past, deliberately unpleasant, the way a file
+- *The fall.* A column of 400 raw values scrolls past, deliberately unpleasant, the way a file
   actually looks the first time you open it. One button. The numbers fall, stack by value and
   settle into a shape with a peak, a right tail and a hard floor at zero. Needs `stage.dots`,
   `stage.bars`, one `engine.tween`.
-- *The bin dial.* Same 400 numbers, bin width on a slider, running from a comb to a single
+- *The bin dial.* The same 400 numbers, bin width on a slider, running from a comb to a single
   block.
 - *Three drawings.* Strip plot, histogram and box plot of one dataset side by side, with a
-  toggle. The box plot is introduced here as a picture, not as a calculation, and its numbers
-  are earned in unit 5.
+  toggle. `viz.js` is a set of primitives rather than a chart library and has no box plot in it,
+  so this one is drawn from `line`, `bars` and `bracket`. The box plot arrives here as a picture
+  rather than as a calculation, and its numbers are earned in unit 5.
 - *The shape zoo.* Six real distributions the reader names by eye: heights, income, city sizes,
   reaction times, exam marks, days between earthquakes.
 
@@ -448,9 +472,9 @@ can be said about it" and "that run of six reds means something." The first refu
 second over-reads. Both are cured by the same instrument.
 
 **Instruments.**
-- *The reroll.* The unit 3 histogram with a `seedBox` under it. Press the die, get a new world,
-  watch every dot move and the outline hold. A ghost outline of the previous world can be
-  toggled on. Needs `rng`, `ui.seedBox`, `stage.bars`, `engine.tween`.
+- *The reroll.* The unit 3 histogram, all 400 of its values, with a `seedBox` under it. Press
+  the die, get a new world, watch every dot move and the outline hold. A ghost outline of the
+  previous world can be toggled on. Needs `rng`, `ui.seedBox`, `stage.bars`, `engine.tween`.
 - *The long run.* A running proportion of heads plotted against the number of flips, next to the
   raw count of heads minus tails. The proportion settles toward a half while the raw gap wanders
   further from zero, and both are true at once. This is the single most useful picture in the
@@ -463,13 +487,14 @@ second over-reads. Both are cured by the same instrument.
 
 **Truths and lies.** Reroll until it looks like what you wanted to say, then screenshot. The
 reader is given a genuine null effect, a reroll button and a target headline, and told to keep
-pressing until the chart supports the headline. It takes about eleven presses. The screen then
+pressing until the chart supports the headline. The instrument is tuned so that about one world
+in ten clears the bar, which puts most readers there inside a dozen presses. The screen then
 shows the world numbers they discarded. This is p-hacking in its purest visible form, performed
 before the reader has ever heard of a p-value, and unit 11 calls back to it by name.
 
 **Time.** 20 min. **Depends on.** 3.
 
-### 5. How few numbers can I get away with
+### 5. The pocket version
 
 **The one question.** How much of a crowd can I carry in my pocket?
 
@@ -496,29 +521,33 @@ the disagreement is the finding.
 - *The beam.* Values as weights on a plank. Drag the fulcrum until it stops tipping. The reader
   has computed a mean with their hand, and the signed distances on each side are shown summing
   to zero at the balance point. Drop one value at 100 million and watch the fulcrum leave the
-  crowd entirely while the middle one does not move. Needs `stage.dots`, `stage.vline`,
+  crowd entirely while the middle one barely moves. Needs `stage.dots`, `stage.vline`,
   `stage.bracket`.
 - *The bracket.* Drag a bracket out from the middle until it feels like it covers a typical
   distance. The reader's guess is then shown against the computed mean absolute deviation and
-  the standard deviation, which are close, and the reader is told the second one is computed a
-  strange way for a reason that arrives in unit 7.
+  the standard deviation. On a bell-shaped pile the first is about four fifths of the second,
+  near enough that the reader can see the two are measuring the same thing. The reader is told
+  the second one is computed a strange way for a reason that arrives in unit 7.
 - *The rebuild.* Reconstruct the original pile from 1 number, then 2, then 5, then 9. What comes
   back and what stays lost is the unit's whole argument, and the box plot from unit 3 gets its
   numbers here.
 
 **Truths and lies.** A centre quoted with no spread is a half-truth with a clean face. The
 reader publishes "average wait: 4 minutes" for two cafes with identical means, one of which
-never exceeds 5 minutes and one of which hits 25 twice a day. Then they write the sentence that would
-have been fair to both.
+never exceeds 5 minutes and one of which hits 25 twice a day. Then they write the sentence that
+would have been fair to both.
 
 **Time.** 26 min. **Depends on.** 3, 4.
 
-**Over budget, and where it splits.** PEDAGOGY budgets the loop at 17 to 25 minutes, so this
-unit is one minute over the ceiling with four instruments. It is one unit rather than two on
-principle. Teaching the centre in one session and the spread in the next tells the reader, by
-the shape of the course, that a centre can stand alone. That belief is the most common
-statistical error in public life. If a build agent finds it does not fit, the split is at the
-rebuild, and unit 5b takes quantiles, the five numbers and the box plot at about 10 minutes.
+**At the ceiling, and where it splits.** PEDAGOGY section 1 adds the six beats to between 16.5
+and 25 minutes and budgets 16 to 26 minutes a unit. So 26 is the top of the range rather than an
+overrun, and this unit has about a minute of slack. The pressure it is actually under is the
+instrument count: four is the maximum PEDAGOGY allows, and a fifth would make it two units by
+that rule. It is one unit rather than two on principle. Teaching the centre in one session and
+the spread in the next tells the reader, by the shape of the course, that a centre can stand
+alone, and that belief is the most common statistical error in public life. If a build agent
+finds it will not fit inside 1,560 words of main-lane prose, the split is at the rebuild, and
+unit 5b takes quantiles, the five numbers and the box plot at about 10 minutes.
 
 ### 6. A few, for many
 
@@ -534,20 +563,21 @@ problem. And the counterfactual, introduced as the draw you did not make.
 objects, the truth you do not have and the measurement you do.
 
 **Misconception killed.** "A bigger sample is a better sample." Killed by construction: a
-self-selected sample of 2,400,000 against a random sample of 50,000, run across many worlds
-against a known truth, with the big one wrong every single time.
+self-selected sample of about 2,400,000 against a random sample of 50,000, run across many
+worlds against a known truth, with the big one wrong in the same direction every time.
 
 **Instruments.**
 - *The urn.* A visible population of 1,000 units with a known mean. The reader picks 20 by hand,
   by clicking, then compares their hand-picked mean with the truth. People pick spread-out
   interesting-looking units and their mean is fine while their spread is badly wrong, which is a
-  better lesson than the usual one. Then they draw 20 at random. Needs `rng.sample`,
+  better lesson than the usual one. Then they draw 20 at random, and again, and the sample mean
+  lands somewhere new every time while the population mean sits still. Needs `rng.sample`,
   `stage.dots`.
 - *The two samplers.* The Literary Digest against Gallup, rebuilt live and rerun across worlds.
 - *The frame gap.* A population with a slice the frame cannot reach, mobile-only households or
   people who do not answer unknown numbers, with a dial for how different that slice is.
-- *The other draw.* The sample the reader got, drawn in the data colour, with the 980 units they
-  did not get faded behind it. The screen names the faded set. Section (b) explains why this
+- *The other draw.* The 20 units the reader got, drawn in the data colour, with the 980 they did
+  not get faded behind them. The screen names the faded set. Section (b) explains why this
   picture is here and not in unit 15.
 
 **Truths and lies.** A huge biased sample beats a small fair one on every surface cue a reader
@@ -577,8 +607,9 @@ It shrinks and never reaches zero, and it shrinks slowly.
   mean dropped as a single dot into an accumulating pile at the bottom. Draw again. Again. Watch
   a second distribution build itself out of answers. Manual first, then a run-1000 button. Needs
   `rng`, `stage` (`dots`, `bars`, `vline`), `engine.loop`.
-- *The n dial.* Sample size on a slider from 4 to 400, with the stack rebuilding and a √n
-  reference curve the reader can toggle over the width.
+- *The n dial.* Sample size on a slider from 4 to 400, with the stack rebuilding and a 1/√n
+  reference curve the reader can toggle over the width, since the width falls as the root of n
+  grows.
 - *The adding machine.* Two independent wobbles combined. Their variances add and their typical
   misses do not, and the reader checks both numerically. This is unit 5's unpaid debt being
   settled.
@@ -600,7 +631,8 @@ returning with a formula attached.
 Its job in this course is to convert "how far out is this" into "how often does that happen".
 The 68/95/99.7 landmarks as a ruler the reader can use from memory. z as distance measured in
 units of wobble. And the central limit theorem, arriving as the explanation of something the
-reader already watched: the stack in unit 7 was bell-shaped no matter what was feeding it.
+reader already watched. The stack in unit 7 came out bell-shaped from a population that was
+nothing of the kind, and it does that for almost every population you can feed it.
 
 **Notation earned.** z = (x − μ)/σ, and the density as a curve with two knobs.
 
@@ -611,11 +643,15 @@ Income, city sizes and word frequencies are shown failing a normal fit badly, an
 about averages far more often than it is a fact about data.
 
 **Instruments.**
-- *The board.* A Galton machine. Beads, pins, pure coin flips at every pin, and the same heap at
-  the bottom every time. Needs `rng`, `engine.loop`, `stage.bars`.
-- *The population picker.* Feed the unit 7 stack from a uniform source, a heavily skewed one, a
-  two-humped one, and a fat-tailed one. Three converge quickly and one does not, and the failure
-  is kept in rather than hidden. Needs `stats.normPdf`, `stage.curve`.
+- *The board.* A Galton machine. Beads, pins, an independent coin flip at every pin, and the
+  same heap at the bottom every time. Needs `rng`, `engine.loop`, `stage.bars`.
+- *The population picker.* Feed the unit 7 stack from four sources and watch how fast each one
+  turns into a bell. A uniform source and a two-humped one are there by n = 10. A heavily skewed
+  one still leans at n = 30 and wants a few hundred, and that is the case worth dwelling on,
+  because it is the one real data keeps handing you. A source with no finite variance, drawn
+  Cauchy, never gets there at all: its stack looks the same at n = 5 and at n = 5,000. That
+  failure is kept in rather than hidden, because it is what the theorem's fine print actually
+  says. Needs `stats.normPdf`, `stage.curve`.
 - *The two knobs.* μ slides the curve, σ scales it, and the shape is untouched by either. A
   family, not a curve.
 - *The z ruler.* Drag a value along the axis and read the tail area off a shaded region, with
@@ -640,13 +676,15 @@ design decision with a price in sample size.
 
 **Misconception killed.** "There is a 95% chance the true value is in my interval." Killed by
 construction rather than by assertion. Run 100 worlds, draw 100 intervals stacked vertically
-against the known truth, and watch about five of them miss. Any single interval is either right
-or wrong and you cannot tell which. The 95% describes the factory, not the item.
+against the known truth, and about five of them miss. Any single interval is either right or
+wrong and you cannot tell which. The 95% describes the factory, not the item.
 
 **Instruments.**
 - *The hundred intervals.* The canonical picture, seeded, so that a room of thirty screens misses
-  on the same five worlds and the teacher can point at one. Needs `rng`, `stats.meanCI`,
-  `stage.line`, `stage.hline`.
+  on the same worlds and the teacher can point at one. The default world is chosen so that the
+  number of misses sits at or near the nominal five. Then the reader is sent to another world to
+  find that the count itself moves, which is the same lesson one level up. Needs `rng`,
+  `stats.meanCI`, `stage.line`, `stage.hline`.
 - *The confidence dial.* 50, 80, 95, 99. Width trades against capture rate in front of the
   reader, and the 95 is revealed as a convention rather than a law.
 - *The width budget.* The reader is given a target width and has to buy the sample size that
@@ -676,13 +714,17 @@ has already built.
 
 **Misconception killed.** "A 99% accurate test means 99% of positives are real." The reader sets
 prevalence and accuracy with two sliders and watches the share of true positives among positives
-collapse to a third, then a tenth, while the accuracy number never moves.
+collapse while the accuracy number never moves. Hold the test at 99% right on both kinds of
+case: at a prevalence of 1 in 200 the share of positives that are real is about a third, and at
+1 in 1,000 it is about a tenth.
 
 **Instruments.**
 - *The thousand people.* A natural-frequency tree drawn as 1,000 figures that split. No fractions
   appear until the counting is done. Needs `stage.dots`, `ui.slider`.
-- *The flip.* One table, both conditionals side by side, computed from the same four cells. Two
-  sentences that sound identical and differ by a factor of thirty.
+- *The flip.* One table, both conditionals side by side, computed from the same four cells. At a
+  prevalence of 1 in 1,000 and a 99% test, two sentences that sound interchangeable differ by a
+  factor of ten: 99 in every 100 people who have it test positive, and 9 in every 100 people who
+  test positive have it.
 - *The courtroom.* A match probability of one in a million in a city of ten million, and the
   reader argues both sides.
 
@@ -710,12 +752,17 @@ you made this mistake yesterday in a courtroom.
 
 **Instruments.**
 - *The shuffle.* Real group labels on real outcomes. The reader detaches the labels, shuffles
-  them by hand once, and records the gap. Then ten times. Then a thousand, and their actual
+  them by hand once, and records the gap. Then ten times. Then ten thousand, and their actual
   observed gap is shown landing somewhere in the resulting pile. Needs `rng.shuffle`,
   `stats.twoGroup`, `stage.bars`, `stage.vline`.
 - *The tail counter.* The same picture with the tail shaded and counted, and the count written
-  as a fraction. The t-test is then offered as a shortcut that agrees with the shuffle to two
-  decimal places, and it is introduced as a shortcut rather than as the real thing.
+  as a fraction. Then the t-test is offered as a shortcut and the two numbers are put side by
+  side. The shuffle count is why the instrument runs ten thousand rather than the thousand that
+  makes a good picture. Near p = 0.05, a thousand shuffles carries a wobble of about 0.007 all
+  by itself. The two numbers would part company in the second decimal for reasons that have
+  nothing to do with the t-test. At ten thousand they agree to about a hundredth, and what is
+  left over is the shuffle count rather than a flaw in either. The t-test is the shortcut and the
+  shuffle stays the real thing.
 - *The forking path.* One dataset, six defensible analysis choices, and an instruction to find a
   significant result. The reader will find one in under two minutes. This is unit 4's screenshot
   machine wearing a lab coat.
@@ -779,20 +826,30 @@ inside it. A reader who leaves with the slogan can dismiss any finding they disl
 how the phrase is mostly used in public.
 
 **Instruments.**
-- *The Berkeley table.* The aggregate favours men and every department favours women. The reader
-  works the arithmetic and it comes out both ways. Needs a table component and `ui.steps`.
+- *The Berkeley table.* Berkeley graduate admissions in 1973, from Bickel, Hammel and O'Connell.
+  In aggregate 44% of male applicants were admitted against 35% of women. Split the same people
+  by department and the gap mostly disappears or turns around. In four of the six largest
+  departments a higher share of women applicants were admitted than men, and the two that ran
+  the other way did so by a few points. What did the work is where people applied: women applied
+  in numbers to the departments that admitted almost nobody. The reader works the arithmetic and
+  it comes out both ways from one set of counts. `ui.js` has no table builder in it today, so
+  this either adds one or the lesson module renders a plain `<table>`; either way it needs
+  `ui.steps`.
 - *The splitter.* A single cloud with a hidden third variable. The reader drags a control that
   colours by the hidden variable, the cloud separates into groups, and the within-group slopes
-  point the other way. Needs `stage.dots` with grouped fills.
+  point the other way. Needs one `stage.dots` call per group.
 - *The collider.* Two independent traits, and a selection filter. Condition on the filter and
   the traits become correlated inside the selected set. The example is admissions or dating, and
   the reader creates the correlation out of two independent generators.
 - *The ledger.* Unit 1's stored answer comes back, with the reader's own sentence from ninety
-  seconds into the course, and the question is which of the four structures it assumed.
+  seconds into the course, and the question is which of the four structures it assumed. When
+  storage is empty, which will be the common case, a stock answer stands in.
 
 **Truths and lies.** The same tool used honestly and dishonestly. Doll and Hill checked
-confounding seriously and the tobacco industry's constitutional hypothesis was formally the same
-move. Telling them apart is not a matter of the statistics, and the unit says so.
+confounding seriously in 1950. Fisher's constitutional hypothesis, that some genetic factor
+caused both the smoking and the cancer, is formally the same move, and the tobacco industry
+funded that argument for decades. Telling the two apart is not a matter of the statistics, and
+the unit says so.
 
 **Time.** 22 min. **Depends on.** 12, 10.
 
@@ -817,14 +874,15 @@ a causal story, which is how a remedial programme takes credit for arithmetic.
 **Instruments.**
 - *The hand fit.* Drag a line through a cloud with a running total of squared misses displayed,
   and a shrinking square drawn on each residual. Get it as low as you can. Then the machine's
-  answer drops in and lands on top of yours. Needs `stats.ols`, `stage` (`dots`, `line`),
-  `ui.slider` for slope and intercept.
+  answer drops in, close enough to yours to be startling and far enough away that the remaining
+  gap is worth a sentence. Needs `stats.ols`, `stage` (`dots`, `line`), `ui.slider` for slope
+  and intercept.
 - *The residual strip.* A second panel under the scatter. Flat when the model fits, curved when
   it does not, and the reader learns to read the second panel before believing the first.
 - *The order dial.* Fit a straight line, a gentle curve and a wiggle through 12 points. The
-  wiggle wins on the points it saw. Then reroll the world, keep the fitted curves, and watch the
-  wiggle fail badly while the line barely moves. This is unit 4's reroll doing the heaviest work
-  it does anywhere in the course.
+  wiggle wins on the points it saw, and at high enough order it threads all twelve exactly. Then
+  reroll the world, keep the fitted curves, and watch the wiggle fail badly while the line
+  barely moves. This is unit 4's reroll doing the heaviest work it does anywhere in the course.
 - *The tall fathers.* Galton's data. Predict the sons' heights, find the pull toward the middle,
   and then be shown the same arithmetic applied to a school improvement programme.
 
@@ -835,10 +893,12 @@ they quietly assumed.
 
 **Time.** 26 min. **Depends on.** 13, 9.
 
-**Over budget, and where it splits.** Four instruments and 26 minutes against a 25-minute
-ceiling. The split is at the order dial: unit 14b takes overfitting, prediction against
-explanation, and what a model is, at about 12 minutes. If both this and unit 5 split, the course
-is eighteen units and about 350 minutes.
+**At the ceiling, and where it splits.** Four instruments and 26 minutes, which is the top of
+the `app/curriculum.js` budget and the top of the instrument count PEDAGOGY section 1 allows.
+The split is at the order dial: unit 14b takes overfitting, prediction against explanation, and
+what a model is, at about 12 minutes. Splitting moves minutes between units rather than adding
+them. If both this and unit 5 split, the course runs to eighteen units and about 350 minutes,
+the extra six being the openings and recaps that two new units have to pay for.
 
 ### 15. Comparisons built on purpose
 
@@ -864,8 +924,11 @@ experiment, so it settles the matter."
   on zero and shrinking with group size. Then let the reader assign by judgement instead, and
   watch the imbalance stop being centred on zero. Needs `rng.shuffle`, `stats.twoGroup`,
   `ui.seedBox`.
-- *The 2x2.* Card and Krueger's fast-food table. Four numbers, and the reader fills in the
-  fourth after computing the other three.
+- *The 2x2.* Card and Krueger's fast-food table. The reader fills in three of the four observed
+  means, then predicts the fourth: where New Jersey employment would have ended up if it had
+  moved the way Pennsylvania's did. The gap between that prediction and the number New Jersey
+  actually recorded is the estimate, which is difference-in-differences before anybody writes it
+  as two subtractions.
 - *The parallel-trends slider.* The whole assumption made visible. The reader tilts the
   counterfactual trend for the comparison group and watches the estimated effect slide from
   large to zero to negative, without any observed data changing. This is the instrument the unit
@@ -921,8 +984,7 @@ a seventeenth, and it would go directly after unit 9. The honest range is where 
 reading is at its least intuitive, and a posterior interval is exactly the object readers thought
 they were being handed. It is out because two inferential frameworks in one introductory course
 produce readers who can operate neither, and because the misconception unit 9 exists to kill is
-the one a Bayesian treatment then legitimises. This is the weakest call in
-the document.
+the one a Bayesian treatment then legitimises. This is the weakest call in the document.
 
 **Named tests as a catalogue.** No chi-square unit, no ANOVA unit, no non-parametric unit. Under
 a shuffle-first spine these are variations on unit 11, differing in what gets shuffled and what
@@ -939,8 +1001,9 @@ from that territory a general reader needs in order to read the news.
 
 **Calculus-based derivations.** Not because readers cannot handle them, but because every
 derivation this course would need can be replaced by a simulation that shows the same thing and
-convinces more people. The n − 1 correction is the test case: watching a biased estimator sit
-consistently low across 10,000 simulated samples persuades people that the algebra does not.
+convinces more people. The n − 1 correction is the test case: watching a version that divides by
+n sit consistently below the true variance across 10,000 simulated samples persuades people that
+the algebra does not.
 
 ---
 
@@ -951,8 +1014,8 @@ symbols is a genuine risk, and the specific danger is condescension rather than 
 reader who can already do algebra may read the English-only summaries as being handled with
 care, which is the one tone VOICE.md bans outright. The mitigation is the depth mechanism from
 PEDAGOGY section 5, and a depth block in unit 5 that gives the symbolic forms in full to whoever
-opens it. If reader feedback says the hold reads as coddling rather than as sequencing, the fix is to
-move the Σ gate back to unit 5 and let unit 7 carry only se, which costs the variance-adds
+opens it. If reader feedback says the hold reads as coddling rather than as sequencing, the fix
+is to move the Σ gate back to unit 5 and let unit 7 carry only se, which costs the variance-adds
 payoff and is survivable.
 
 **Unit 4 may be doing too much of the course's work.** Four instruments, the beauty moment, the
@@ -967,14 +1030,16 @@ in real data. Clustered samples, repeated measures and network effects all break
 spine has nowhere to put that. The honest patch is a depth block in unit 7 on what happens to
 the standard error when the draws are not independent, and it is a patch rather than a solution.
 
-**Unit 5 and unit 14 are both over the loop ceiling.** Split points are named in each entry. If
-a build agent reports that either does not fit, they are right and it should split.
+**Units 5 and 14 sit at the top of the budget with nothing spare.** Both run 26 minutes with
+four instruments, which is the ceiling on both counts rather than an overrun, so any growth in
+either one forces the split. The split points are named in each entry.
 
-**The causal ledger assumes continuity across sessions.** Unit 1 writes to `localStorage` and
-unit 13 reads it back, and most readers will not reach unit 13 in the same browser or the same
-month. Unit 1 mitigates this by reading the answer back within its own session, so the ledger's
-main payoff is collected immediately and unit 13's callback is a bonus rather than a load-bearing
-beam. Section (b) leans on the immediate payoff, not the deferred one.
+**The causal ledger assumes continuity across sessions.** Unit 1 would write to `localStorage`
+and unit 13 read it back, and most readers will not reach unit 13 in the same browser or the
+same month. Unit 1 mitigates this by reading the answer back within its own session, so the
+ledger's main payoff is collected immediately and unit 13's callback is a bonus rather than a
+load-bearing beam. Section (b) leans on the immediate payoff, not the deferred one. None of it
+is built yet, in either unit.
 
 **344 minutes is longer than anybody finishes.** The stopping-point section is a response and not
 a solution. If the delayed transfer tests in PEDAGOGY section 8 ever get run, the first thing to
@@ -985,44 +1050,55 @@ ordering put the right thing before that point.
 
 ## Reconciling with `app/curriculum.js`
 
-The shipped list has eighteen entries. This spine has sixteen, and five of the moves are
-substantive rather than editorial.
+The shipped data file has sixteen entries totalling 336 minutes. This spine has sixteen
+totalling 344, and the whole of the disagreement lives in positions 4 through 10. Positions 1,
+2, 3 and 11 through 16 keep their ids either way. That matters more than it sounds: only
+`01-noticing` carries `status: 'ready'` today, and it keeps its id, its title, its question and
+its 20 minutes, so no shipped lesson module breaks under this renumbering.
 
 | Shipped | Becomes | Why |
 |---|---|---|
-| `01-noticing`, `02-counting` | `01-noticing` | Merged. The eye failing at about four objects is the reason counting exists, so the two halves are one argument |
-| `03-measure` | `02-numbers` | Renumbered |
-| `04-piles` | `03-pile` | Renumbered. Summary statistics removed from it entirely, so the unit is shape only |
-| `07-chance` | `04-reroll` | **Moved up three, ahead of all summarising.** Rebuilt around the generator and the seeded world. Section (a) |
-| `05-middle`, `06-spread` | `05-pocket` | **Merged.** A centre taught apart from a spread teaches that a centre can stand alone. Section (c) and the unit entry |
-| `09-sampling` | `06-sampling` | Moved up. Now carries the counterfactual. Section (b) |
-| `10-wobble` | `07-wobble` | Moved up three. The notation gate |
-| `08-bell` | `08-ruler` | **Held in place numerically but rebuilt.** No longer a shape-of-data unit; it is the device that turns a distance into a probability, and it explains unit 7 rather than preceding it |
-| `11-range` | `09-range` | Renumbered |
-| (part of `07-chance`) | `10-evidence` | **Split out and moved down four.** Conditional probability now sits against testing, because the prosecutor's fallacy and the p-value error are one error. Section (a) |
-| `12-trial` | `11-trial` | Rebuilt around the shuffle, with t as a shortcut that agrees |
-| `13-together` | `12-together` | Renumbered |
-| `15-cause` | `13-third` | Moved ahead of regression. Section (b). Collider added |
-| `14-line`, `17-models` | `14-line` | Merged. A line is the reader's first model |
-| `16-designed` | `15-designed` | Renumbered. Now the final technical unit |
-| `18-rhetoric` | `16-rhetoric` | Unchanged in role |
+| `01-noticing` (20) | `01-noticing` (20) | Unchanged. Gains three unbuilt instruments and the causal ledger |
+| `02-numbers` (18) | `02-numbers` (20) | Retitled from "What a number leaves out" to "Putting a number on it". Two minutes for the resolution dial |
+| `03-pile` (18) | `03-pile` (18) | Unchanged, and it was already shape-only, which is what makes the reroll land |
+| `04-middle` (16), `05-spread` (20) | `05-pocket` (26) | **Merged, and ten minutes come out.** A centre taught apart from a spread teaches that a centre can stand alone. The unit entry argues it |
+| `06-chance` (22) | `04-reroll` (20) and `10-evidence` (20) | **Split in two and pulled six positions apart.** The generative half moves ahead of all summarising, the conditional half moves next to testing, because the prosecutor's fallacy and the p-value error are one error. Its `lies` field, the prosecutor's fallacy, follows the conditional half. Section (a) |
+| `07-sampling` (20) | `06-sampling` (20) | Up one. Now carries the counterfactual. Section (b) |
+| `08-wobble` (24) | `07-wobble` (24) | Up one. This is the notation gate. Section (c) |
+| `09-bell` (22) | `08-ruler` (22) | Up one, and rebuilt. No longer a shape-of-data unit; it is the device that turns a distance into a probability, and it explains unit 7 rather than preceding it |
+| `10-range` (20) | `09-range` (20) | Up one |
+| `11-trial` (24) | `11-trial` (24) | Position unchanged, rebuilt around the shuffle with t as the shortcut |
+| `12-together` (20) | `12-together` (18) | Two minutes out |
+| `13-third` (22) | `13-third` (22) | Unchanged, including its position ahead of `14-line`, which the shipped file already had right. The collider is added |
+| `14-line` (26) | `14-line` (26) | Retitled to "The line through the cloud". Modelling already lived here and stays |
+| `15-designed` (24) | `15-designed` (24) | Unchanged in role |
+| `16-rhetoric` (20) | `16-rhetoric` (20) | Unchanged in role |
+
+The minutes reconcile: 336, minus 10 on the merge, plus 18 on the split, plus 2 on `02-numbers`,
+minus 2 on `12-together`, is 344.
+
+Two part titles change and one unit changes part. Part II becomes "What a crowd looks like" from
+"The shape of a group", because chance now sits inside it. Part III becomes "From a few to the
+many" from "Chance, and the sample", because chance no longer does. Part III drops to three
+units and part IV rises to three, since `09-range` crosses the boundary between them.
 
 `app/curriculum.js` is not regenerated in this changeset, on purpose. Every field name here
 matches the shipped ones (`id`, `no`, `part`, `status`, `minutes`, `title`, `question`,
-`installs`, `lies`), so regeneration is mechanical once a spine is chosen, and `app/views/map.js`
-needs no edit either way. Taking the data file without the argument is the drift both files exist
-to prevent, so whoever picks a spine should write both in one commit.
-
-Two part titles change: part II becomes "What a crowd looks like" because chance now sits inside
-it, and part III becomes "From a few to the many" because chance no longer does.
+`installs`, `lies`), so regeneration is mechanical once a spine is chosen. `app/views/map.js`
+reads `id`, `no`, `part`, `status`, `title`, `question` and `minutes`, and needs no edit either
+way. Taking the data file without the argument is the drift both files exist to prevent, so
+whoever picks a spine should write both in one commit. PEDAGOGY section 4 describes the
+twenty-line assertion in `tools/selftest.mjs` that would stop this happening a second time.
 
 ---
 
 ## Sources this ordering leans on
 
-Named so a contributor can go and disagree with them. Nothing here has been re-derived, and any
-claim that reaches a reader's screen gets checked against the original first, which is the
-standard PEDAGOGY section 8 already sets.
+Named so a contributor can go and disagree with them. These were written from memory rather than
+pulled out of a reference manager, which is the standing rule PEDAGOGY section 8 sets for its
+own citations. Review caught one error of exactly that kind in this file's description of the
+Berkeley table. Before any of them reaches a reader's screen, somebody opens the paper, checks
+the authors, the year, the journal and the specific claim, and adds the entry to Zotero.
 
 - George Cobb, "The Introductory Statistics Course: A Ptolemaic Curriculum?", *Technology
   Innovations in Statistics Education*, 2007. The case for simulation-first inference, and the
@@ -1036,13 +1112,15 @@ standard PEDAGOGY section 8 already sets.
   internet gets wrong.
 - Frank Anscombe, "Graphs in Statistical Analysis", *The American Statistician*, 1973. Unit 12.
 - Peter Bickel, Eugene Hammel and J. William O'Connell, "Sex Bias in Graduate Admissions: Data
-  from Berkeley", *Science*, 1975. Unit 13.
+  from Berkeley", *Science*, 1975. Unit 13, and the source of the 44% against 35% aggregate and
+  the six-department table under it.
 - Francis Galton, "Regression Towards Mediocrity in Hereditary Stature", *Journal of the
   Anthropological Institute*, 1886. Unit 14, and the quincunx in unit 8.
 - David Card and Alan Krueger, "Minimum Wages and Employment: A Case Study of the Fast-Food
   Industry in New Jersey and Pennsylvania", *American Economic Review*, 1994. Unit 15.
 - John Snow, *On the Mode of Communication of Cholera*, second edition, 1855. Unit 15.
-- Ronald Fisher, *The Design of Experiments*, 1935. Unit 15.
+- Ronald Fisher, *The Design of Experiments*, 1935. Unit 15. His later letters on smoking are the
+  constitutional hypothesis in unit 13, which is worth knowing about the same man.
 - Joseph Simmons, Leif Nelson and Uri Simonsohn, "False-Positive Psychology", *Psychological
   Science*, 2011. Unit 11's forking path.
 - Andrew Gelman and Eric Loken, "The Statistical Crisis in Science", *American Scientist*, 2014.
@@ -1052,5 +1130,5 @@ standard PEDAGOGY section 8 already sets.
 - George Box, "Science and Statistics", *Journal of the American Statistical Association*, 1976.
   Unit 14.
 - Richard Doll and Austin Bradford Hill, "Smoking and Carcinoma of the Lung", *British Medical
-  Journal*, 1950. Unit 13, and the target of the tobacco industry's version of the same argument.
+  Journal*, 1950. Unit 13.
 - Abraham Wald's memoranda on aircraft survivability, Statistical Research Group, 1943. Unit 6.

@@ -11,18 +11,21 @@ the file. This one governs the screens.
 
 ### What exists, as of this writing
 
-Anything below that describes code says plainly whether that code exists. The snapshot:
+Anything below that describes code says plainly whether that code exists. The snapshot, taken
+at commit `191d9ef`:
 
-- `app/core/` contains `router.js`, `viz.js`, `ui.js` and `engine.js`. `rng.js` and `stats.js`
-  are specified in the module contract and are not written.
+- `app/core/` contains all six modules the contract names: `router.js`, `viz.js`, `ui.js`,
+  `engine.js`, `rng.js` and `stats.js`. The last two landed in `191d9ef`.
+- `tools/selftest.mjs` runs under plain `node` with no framework. It reports 59 passed, 0
+  failed, 0 skipped, checking `rng.js` reproducibility and `stats.js` against t-table values
+  a reader could look up.
 - `app/main.js` imports all five core modules with a `.catch(() => null)` on each, and
-  registers no lessons at all unless every one of them loaded. A reader therefore sees the
-  map marking units as unfinished rather than a lesson that half works.
+  registers no lessons at all unless every one of them loaded. A reader therefore sees the map
+  marking units as unfinished rather than a lesson that half works.
 - `app/lessons/` contains one lesson, `01-noticing`, and it is the worked example for
   everything here.
-- `tools/selftest.mjs` exists and runs under plain `node` with no framework. It skips modules
-  that are missing rather than failing on them.
-- `.github/workflows/` is empty. Nothing runs automatically on a pull request.
+- `.github/workflows/` is an empty directory. Nothing runs automatically on a pull request.
+- `docs/CURRICULUM.md` and `app/curriculum.js` have drifted. See section 4.
 
 Proposals that depend on absent code are proposals, not descriptions, and are labelled.
 
@@ -34,7 +37,7 @@ Every lesson runs the same six beats. Not because variety is bad, but because a 
 has done two units should be able to predict the shape of the third and spend their attention
 on the content rather than the interface.
 
-| Beat | What happens | Roughly, in a 20-minute unit |
+| Beat | What happens | In a 20-minute unit |
 |---|---|---|
 | **Manipulate** | The reader commits to a prediction, then moves one control | 4 to 6 min |
 | **Notice** | The instrument makes one thing visible that was not visible before | inside the above |
@@ -43,11 +46,14 @@ on the content rather than the interface.
 | **Apply** | The reader uses it on a second, unrelated case | 4 to 6 min |
 | **Question the claim** | The reader performs a distortion using only true numbers | 4 to 6 min |
 
-That totals 17 to 25 minutes, which covers the range in `app/curriculum.js`: the sixteen units
-run from 16 to 26 minutes and sum to 336. Budget about 60 words of main-lane prose per minute
-of unit time, so roughly 1,000 words for a 16-minute unit and 1,600 for a 26-minute one, plus
-two to four instruments, one mandatory distortion, and at most three depth blocks. A unit that
-needs five instruments is two units.
+Those beats add to between 16.5 and 25 minutes. `app/curriculum.js` budgets 16 to 26 minutes
+a unit, so the table is a shape rather than a schedule: `04-middle` at 16 minutes has to run
+every beat at its fastest, and `14-line` at 26 has a minute of slack. Where a unit will not
+fit, shorten the apply beat first and the distortion beat never.
+
+Word budget: about 60 words of main-lane prose per minute, so 960 words for a 16-minute unit
+and 1,560 for a 26-minute one, plus two to four instruments, one mandatory distortion, and at
+most three depth blocks. A unit that needs five instruments is two units.
 
 ### Beat 1: Manipulate
 
@@ -96,12 +102,14 @@ to rainfall or wages or reaction times. Transfer across contexts is the thing we
 trying to produce and it does not happen for free.
 
 The apply beat is where `ui.quiz` belongs. Quiz questions ask for a claim about the world,
-never for a definition. Unit 1 asks "Which sentence is the school entitled to put in its
-newsletter?", which is a question. "What is a confidence interval?" is a lookup.
+never for a definition. `01-noticing` asks "Which sentence is the school entitled to put in
+its newsletter?", which is a question. "What is a confidence interval?" is a lookup.
 
-Quizzes never gate progress and never keep score. The `why` field is written for every option,
-right and wrong, and the `why` on a wrong option explains the reasoning that made it
-attractive before it corrects anything.
+Quizzes never gate progress and never keep score, and `ui.quiz` is built that way: it holds
+no counter, and it marks answered options with `aria-disabled` rather than `disabled` so a
+keyboard reader is not thrown out of the tab order the moment they answer. The `why` field is
+written for every option, right and wrong, and the `why` on a wrong option explains the
+reasoning that made it attractive before it corrects anything.
 
 ### Beat 6: Question the claim
 
@@ -121,11 +129,12 @@ So every reveal on this site is gated behind a commitment. Before the reader see
 happens, they say what they think will happen: a button, a guess in a box, a marker dragged to
 where they think the answer sits. Then the instrument runs and they find out.
 
-This is the highest-value mechanic in the design. Unit 1 uses it four times: the reader places
-a marker for the middle of a crowd and presses a button before the arithmetic mean appears,
-answers "The same way" or "Sometimes the other way" before the worlds are re-run, and so on.
-`ui.button`, `ui.segmented`, `ui.steps` and `ui.quiz` all exist and all support this, so the
-mechanic is available to every new unit today.
+This is the highest-value mechanic in the design. `01-noticing` uses it four times: the reader
+puts a marker where they think the middle sits and presses "Mark it" before the arithmetic mean
+appears, drags the true gap down and presses "Draw the line here" before the null result is
+named, answers "The same way" or "Sometimes the other way" before the roll button will unlock,
+and then meets the quiz. `ui.button`, `ui.segmented`, `ui.steps` and `ui.quiz` all exist and
+all support this, so the mechanic is available to every new unit today.
 
 Why it matters: a prediction turns an **active** task, operating a widget, into a
 **constructive** one, generating something that was not handed to you. That gap is where the
@@ -167,7 +176,7 @@ A symbol may appear on a screen when all four of these are true:
 Two corollaries that come up constantly:
 
 **Greek letters carry a job rather than a decoration.** μ and σ appear only once the
-population and sample distinction is live, which is unit 7 in the current spine. That
+population and sample distinction is live, which in `app/curriculum.js` is `07-sampling`. That
 distinction is the only reason the alphabet changes. Introducing μ before the reader has felt
 the difference between the truth and what we measured spends the one moment where the notation
 would have taught something.
@@ -191,7 +200,7 @@ the honest version of that tool's abuse looks like.
 
 The word "enforced" in this heading is aspirational today and it is worth being blunt about
 that. Nothing in the code checks the field. `curriculum.js` is a plain data module with no
-validation and `.github/workflows/` is empty.
+validation and `.github/workflows/` is an empty directory.
 
 What would make it structural is now small, because `tools/selftest.mjs` landed and gave it a
 home. That file already imports modules by URL, already skips what is absent, and already has
@@ -202,31 +211,42 @@ five-line workflow running `node tools/selftest.mjs` on pull requests turns the 
 into a gate. Review habits decay; this is the highest-value small piece of tooling the
 repository is missing.
 
-**The distortion must be operable.** The reader performs it. Unit 1 gives them a toggle that
-moves the axis floor from zero to 4.9 minutes, at which point a true difference of 8% between
-two cafes becomes a bar five times taller than its neighbour. Describing a distortion in prose
-teaches recognition of that one example. Performing it teaches the move.
+**The spine has already drifted, which is the argument for that check.** `docs/CURRICULUM.md`
+lists sixteen units totalling 344 minutes, with `04-reroll`, `05-pocket`, `06-sampling`,
+`07-wobble`, `08-ruler` and `10-evidence` in it. `app/curriculum.js` lists sixteen units
+totalling 336 minutes, with `04-middle`, `05-spread`, `06-chance`, `07-sampling`, `08-wobble`
+and `10-range`. Only positions 1, 2, 3, 11, 12, 13, 14, 15 and 16 agree on an id. The code is
+what a reader actually sees, so the code wins until somebody reconciles the two in a single
+commit, and every citation in these documents uses an id rather than a number for that reason.
+The same assertion that checks the `lies` fields should diff the two files.
+
+**The distortion must be operable.** The reader performs it. `01-noticing` gives them a toggle
+that moves the axis floor from zero to 4.9 minutes, at which point two true bars of 5.0 and
+5.4 minutes, a real difference of 8%, become one bar five times taller than its neighbour.
+Describing a distortion in prose teaches recognition of that one example. Performing it
+teaches the move.
 
 **The distortion runs on true numbers.** This is the point that has to land, and it lands by
 construction rather than by assertion. The reader watches an accurate chart become a lie
 without a single false figure entering it.
 
-**The distortion comes from the unit's own content.** Unit 4 teaches mean and median, so its
-`lies` field is "Average income against typical income, both correct, thousands apart." Unit 7
-teaches sampling, so its distortion is the large self-selected sample that beats the small fair
-one and looks more convincing while doing it. Unit 12 teaches correlation, so its distortion is
-the chosen start year. Check `app/curriculum.js` when citing a unit here, because the two files
-drifting apart is exactly the failure this section exists to prevent.
+**The distortion comes from the unit's own content.** `04-middle` teaches mean and median, so
+its `lies` field is "Average income against typical income, both correct, thousands apart."
+`07-sampling` teaches sampling, so its distortion is the large self-selected sample that beats
+the small fair one and looks more convincing while doing it. `12-together` teaches
+correlation, so its distortion is the chosen start year. Check `app/curriculum.js` when citing
+a unit here, because the two files drifting apart is exactly the failure this section exists
+to prevent, and they have already done it once.
 
 **The reader is on both sides.** Not "here is how they mislead you" but "here is a thing you
-can do by accident, and here is what it does to your reader". Unit 1 says it in the shipped
-prose: charting software fits the axis to the numbers it was handed, somebody accepts the
-default, and you will do this yourself.
+can do by accident, and here is what it does to your reader". `01-noticing` says it in the
+shipped prose: charting software fits the axis to the numbers it was handed, somebody accepts
+the default, and you will do this yourself.
 
-**The distortion beat ends in a question, not a rule.** Unit 1 closes by pointing out that a
-temperature chart drawn from zero degrees upward is useless, so cropping an axis cannot be the
-tell. The question is whether the size of the change on the screen matches the size of the
-change in the world. A reader who leaves with a checklist of forbidden chart types has been
+**The distortion beat ends in a question, not a rule.** `01-noticing` closes by pointing out
+that a temperature chart drawn from zero degrees upward is useless, so cropping an axis cannot
+be the tell. The question is whether the size of the change on the screen matches the size of
+the change in the world. A reader who leaves with a checklist of forbidden chart types has been
 made easier to fool by anything not on the list.
 
 ---
@@ -263,7 +283,7 @@ terminology, the place where the simple statement stops being exactly right.
 Implementation, and where it currently stands:
 
 - A depth block is a real `<details class="deep">` element. Native, keyboard-accessible,
-  printable, findable by screen readers, and zero JavaScript to open one. Unit 1 already
+  printable, findable by screen readers, and zero JavaScript to open one. `01-noticing` already
   builds them this way and already reads `document.documentElement.dataset.depth` to set the
   default open state.
 - `app/styles/app.css` has no `.deep` rule. The markup ships unstyled today, which means a
@@ -271,32 +291,37 @@ Implementation, and where it currently stands:
   That is the first piece of work in this section, and it is CSS only.
 - A `segmented()` control in the lesson header sets the **default** open state. Two values:
   **Plain** and **Show the machinery**. `ui.segmented` exists, so this is buildable now.
-- Persist the choice in `localStorage` under `ec.depth`. The site uses no `localStorage` at
-  all today, so this would be its first key, and it stays inside the "nothing leaves the
-  device" promise on the about page. The `ec.` prefix matches the `ec-` class prefix already
-  in `app.css`, which is a leftover from an earlier working title and is not worth churning.
+- Persist the choice in `localStorage` under `sm.depth`. The site uses no `localStorage` at
+  all today, so this would be its first key, and it stays inside what the about page promises:
+  no account, no tracking, no analytics, everything running in your browser.
 - A reader in Plain mode who opens a single block does **not** change their global setting.
   The site never concludes anything about a reader from one click.
 
-**Two routing defects have to be fixed first, and one of them is already breaking the world
-number.** The intention was to mirror depth into the URL as `?d=deep` alongside `?w=42`.
-Neither works at present:
+**Three things about the URL have to be settled first, and the world number is already
+suffering from two of them.** The intention was to mirror depth into the URL as `?d=deep`
+alongside `?w=42`.
 
-1. `router.js currentId()` derives the route with `location.hash.replace(/^#\/?/, '').trim()`,
-   which does not strip a query string. A visitor arriving at `#/01-noticing?w=42` gets the id
-   `01-noticing?w=42`, matches no lesson, and lands on "That page has not been written yet".
-   `main.js writeSeed()` puts exactly that shape into the address bar, so the seed feature the
-   README advertises is broken for the one use it was built for, which is a shared link. The
-   fix is to split the hash on `?` in `currentId()`, and to have `go()` preserve the existing
-   query instead of overwriting the whole hash.
-2. `main.js writeSeed()` uses `history.replaceState`, which does not fire `hashchange`, so
-   nothing re-renders. That is correct for the seed, which is read at render time anyway, but
-   a depth toggle needs the screen to change immediately. The toggle must set `dataset.depth`,
-   write the stored value, rewrite the query, and then call the render directly. The router
-   rebuilds the mount from empty only on a route change, so it will not do that work for us.
+1. **Arriving works.** `router.js currentId()` splits the hash on `?` before matching, so a
+   visitor landing on `#/01-noticing?w=42` reaches unit 1 and `main.js readSeed()` picks the
+   world up. A hand-written shared link is fine today.
+2. **Leaving does not.** `go()` builds `'#/' + id` and discards the query, so every in-site
+   navigation, a map card, the "Start unit 1" button on the landing page, the about-page
+   button, silently resets the world to 42. Fix: have `go()` carry the current query forward
+   unless it is handed a new one.
+3. **Nothing ever writes the world back.** `ctx.setSeed` is never called: grep the tree and
+   `main.js writeSeed()` has no caller. `01-noticing` keeps its world in a local variable, so
+   the reader who rolls a surprising afternoon cannot copy the address bar and send it to
+   anyone. That is the one thing the README promises worlds for, and it is the highest-value
+   fix on this list. The lesson's `seedBox` and roll button should both call `ctx.setSeed`.
+4. When `setSeed` does start firing, `writeSeed` uses `history.replaceState`, which does not
+   fire `hashchange`, so nothing re-renders. That is right for the seed, which is read at
+   render time. A depth toggle needs the screen to change immediately, so the toggle must set
+   `dataset.depth`, write the stored value, rewrite the query, and then call the render
+   directly. The router rebuilds the mount from empty only on a route change.
 
-Until both are fixed, ship depth with `localStorage` alone and no URL parameter. A link that
-silently drops the reader's depth setting is a smaller defect than a link that lands on a 404.
+Until 2 and 3 are fixed, ship depth with `localStorage` alone and no URL parameter. A link that
+silently drops the reader's depth setting is a smaller defect than a link that silently drops
+their world.
 
 ### The two rules that make this work
 
@@ -328,9 +353,9 @@ technical term, used consistently from that point.
 the map, by the one-question-per-unit header that lets them skip accurately, by depth blocks
 that bridge to the terminology they already use, and above all by the instruments being
 directly linkable with a world number so they can put one on a projector without reading a
-word of our prose. That last one is the routing defect above, which makes fixing it a teaching
-feature rather than a chore. We are not building a professor mode. The professor is a user of
-the instruments more than a reader of the text.
+word of our prose. That last one is defect 3 above, which makes fixing it a teaching feature
+rather than a chore. We are not building a professor mode. The professor is a user of the
+instruments more than a reader of the text.
 
 **The returning adult** is the reader every decision is calibrated against, because they carry
 the most damage and the least tolerance for being condescended to. A screen that works for
@@ -346,12 +371,12 @@ Principle 3 is not decoration policy. It has operational content.
 each: truth, data, result, test. A reader who learns them in unit 1 can read every figure in
 the course without a legend. Nothing is ever coloured because it looked better that way. This
 is aesthetics doing work, because consistency is what makes a figure legible at a glance in
-unit 14.
+`14-line`.
 
 Colour is never the only channel. VOICE.md bans colour words in prose for the same reason, and
-every canvas carries an `aria-label` that states the finding. Unit 1 rebuilds those labels
-whenever the picture changes, which is the standard: a static label on a canvas that moves is
-a lie to a screen-reader user.
+every canvas carries an `aria-label` that states the finding. `01-noticing` rebuilds those
+labels whenever the picture changes, which is the standard: a static label on a canvas that
+moves is a lie to a screen-reader user.
 
 **At least one moment per unit exists to be looked at.** The Galton board filling. The
 sampling distribution assembling itself out of individual draws. The regression line pivoting
@@ -365,9 +390,11 @@ twice.
 
 **Motion respects the reader.** `tokens.css` collapses its three duration tokens to 1ms under
 `prefers-reduced-motion: reduce`, so a component that animates through those tokens honours
-the setting without knowing about it. `engine.js` exports `reducedMotion` and its `tween`
-jumps straight to the end value and calls `onDone` under the same query. No teaching point may
-live only in a transition.
+the setting without knowing about it. `engine.js` exports `reducedMotion` and also
+`prefersReducedMotion()`, which re-reads the media query at call time, because a reader can
+change the setting mid-session and a `const` read at page load cannot follow them. `tween`
+asks the live query and jumps to the end value, one frame later so a caller can still cancel
+it. No teaching point may live only in a transition.
 
 ---
 
@@ -378,8 +405,12 @@ per lesson.
 
 - **No timer, no score, no streak, no progress percentage.** Nothing on the screen tells a
   reader how they are doing relative to anyone, including themselves an hour ago.
-- **No locked content.** Every unit is reachable from the map at all times. Order is
-  recommended, never enforced.
+- **Nothing is locked by progress.** No unit ever requires another to be finished first; order
+  is recommended and never enforced. What the map does today is narrower than that principle
+  and worth stating exactly: `map.js` renders a disabled card for any unit whose lesson has not
+  been written, so fifteen of the sixteen cards are currently inert. That is honesty about what
+  exists rather than a gate, and the tag reads "Being built". If a card is ever disabled for
+  any other reason, that is the bug.
 - **No red X.** A wrong quiz answer gets the reasoning behind it, not a mark. `app.css` does
   not meet this bar today: `.ec-quiz__opt.is-wrong` and `.ec-quiz__why.is-wrong` both paint
   with `--wrong` and `--wrong-soft`, which is the red reserved for a false *claim about the
@@ -391,11 +422,18 @@ per lesson.
 - **Errors are ours.** `router.js` already says so, and every lesson-level failure message
   matches that tone.
 - **Nothing requires an account, a download, a fast connection or a large screen.** A reader
-  on a five-year-old phone on mobile data is a first-class user. Every instrument is tested at
-  **320 px** wide, which is the narrowest viewport we support and the width at which layouts
-  actually break, then again at 375 px. `app.css` has one mobile breakpoint at `40rem` and
-  44 px minimum touch targets on buttons, segmented controls, toggles, quiz options and slider
-  tracks, so the floor exists. The 320 px pass is what catches the instruments.
+  on a five-year-old phone on mobile data is a first-class user.
+
+That last one needs a status rather than a claim. `app.css` has one mobile breakpoint, at
+`40rem`, and sets a 44 px minimum height on buttons, segmented controls, toggles, quiz options
+and the slider track, so the floor exists for most controls. Two things are not done. The seed
+control is below the floor: `.ec-seed__die` and `.ec-seed__input` are 36 px, and the die is a
+round button a thumb has to hit. And **320 px is the width we support and the width nothing has
+been audited at.** There is no automated check and no record of a manual pass. The rendering
+side is at least defensive: `viz.js` `.fit()` falls back to 320 logical px when a hidden canvas
+reports a `clientWidth` of 0, and to a 16:9 shape when it has no laid-out height, so a figure
+inside a collapsed `<details>` draws something instead of dividing by zero. Getting from that to
+a real 320 px audit of every instrument is work nobody has done.
 
 ---
 
@@ -457,10 +495,11 @@ the mechanic in section 2 is the difference between a simulation that teaches an
 simulation that does not.
 
 **A standing rule on these citations.** They were written from memory rather than pulled from
-a reference manager. Before any of them appears in reader-facing prose, someone opens the
-paper and checks the authors, the year, the journal and the specific claim being attributed.
-Until then they are leads for a contributor who wants to go and disagree with us, not
-citations. We have not re-derived anybody's effect sizes.
+a reference manager, and the Zotero library was unreachable when this document was drafted.
+Before any of them appears in reader-facing prose, someone opens the paper and checks the
+authors, the year, the journal and the specific claim being attributed. Until then they are
+leads for a contributor who wants to go and disagree with us, not citations. We have not
+re-derived anybody's effect sizes.
 
 ### What the design does about it
 
@@ -493,12 +532,13 @@ more honest.
 
 **Transfer tests, held out and public.** Each unit gets a written test that never appears in
 the lesson, built from real published claims and scored against a rubric in the repository.
-The test asks the reader to critique a claim rather than define a term. A unit 8 item looks
-like this: here is a polling release reporting 47% support from 1,004 adults, described as up
-from 45% last month. What would you need to know before you would write the word "up", and is
-it here? The rubric credits an answer that notices each figure carries about three points of
-wobble, that a two-point move is well inside it, and that the honest sentence is that the poll
-cannot tell the two months apart. It gives no credit for reciting the formula.
+The test asks the reader to critique a claim rather than define a term. An `08-wobble` item
+looks like this: here is a polling release reporting 47% support from 1,004 adults, described
+as up from 45% last month. What would you need to know before you would write the word "up",
+and is it here? The rubric credits an answer that gets to the arithmetic: at 47% of 1,004 the
+margin of error is about 3.1 points, the difference between two such polls carries about 4.4,
+a 2-point move is well inside that, and the honest sentence is that the poll cannot tell the
+two months apart. It gives no credit for reciting the formula.
 
 **A delayed test at one week.** Immediate post-tests flatter interactive material, because
 they measure the fluency the interaction just produced. The one-week number is the one we
@@ -510,11 +550,10 @@ commitment gates. If the interactive version does not beat it on the delayed tra
 the instruments are decoration, and the honest response is to cut them and ship a book.
 
 Being specific about what that experiment could actually see: with forty readers per arm, a
-two-sided test at the conventional 5% detects a difference of about two thirds of a standard
-deviation with 80% power. Anything smaller looks like noise to us and gets reported as noise
-rather than as a trend. We have no way to recruit eighty readers today, which makes this a
-commitment rather than a plan, and pretending otherwise would be the exact failure the site is
-about.
+two-sided test at the conventional 5% has 80% power against a difference of about 0.63
+standard deviations. Anything smaller looks like noise to us and gets reported as noise rather
+than as a trend. We have no way to recruit eighty readers today, which makes this a commitment
+rather than a plan, and pretending otherwise would be the exact failure the site is about.
 
 **Think-aloud sessions, roughly six people per audience.** Watching for two failures. First:
 the reader operated every control and cannot state the unit's question in their own words.
@@ -554,10 +593,10 @@ yet, and saying so is part of the point.
 Three things this document does not resolve, listed because pretending otherwise would be the
 wrong kind of confidence.
 
-**Whether the six-beat loop survives the harder units.** Unit 13, "The third thing", may not
-have a single manipulable instrument that makes a confounder visible in under four minutes,
-and unit 15's designed comparisons may need two. If the loop does not fit, the loop bends
-rather than the unit being forced into it.
+**Whether the six-beat loop survives the harder units.** `13-third` may not have a single
+manipulable instrument that makes a confounder visible in under four minutes, and the designed
+comparisons in `15-designed` may need two. If the loop does not fit, the loop bends rather
+than the unit being forced into it.
 
 **Whether commitment gates start to feel like an obstacle course.** Six units in, being asked
 to predict before every reveal may read as an interrogation. There is no data on the right

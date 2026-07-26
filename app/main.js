@@ -35,9 +35,27 @@ function writeSeed(n) {
   history.replaceState(null, '', next);
 }
 
+/* One page, two readers. Everything essential lives in the main prose; the deep end
+   holds derivations, assumptions and edge cases in <details> blocks. This flips them
+   all at once and remembers the choice for lessons rendered later. */
+function wireDepth() {
+  const btn = document.getElementById('depth');
+  if (!btn) return;
+  const root = document.documentElement;
+  const apply = (deep) => {
+    root.dataset.depth = deep ? 'deep' : 'plain';
+    btn.setAttribute('aria-pressed', String(deep));
+    btn.textContent = deep ? 'Hide the deep end' : 'Show the deep end';
+    document.querySelectorAll('details.deep').forEach(d => { d.open = deep; });
+  };
+  apply(false);
+  btn.addEventListener('click', () => apply(root.dataset.depth !== 'deep'));
+}
+
 async function boot() {
   const mount = document.getElementById('view');
   const toolkit = await buildToolkit();
+  wireDepth();
 
   view('/', home);
   view('map', map);

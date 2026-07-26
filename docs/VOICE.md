@@ -2,7 +2,9 @@
 
 The writing charter for The Shape of Maybe. It binds every word a reader can see: lesson
 prose, captions, button labels, screen-reader descriptions, error messages, and the
-`title` / `question` / `installs` / `lies` fields in `app/curriculum.js`.
+`title` / `question` / `installs` / `lies` fields in `app/curriculum.js`. It also binds the
+code comments, because the repository is public and the comments in this project are written
+to be read by a learner rather than by a maintainer.
 
 A pull request can be rejected on voice alone. That is not pedantry. A screen can teach the
 standard error correctly and still make a reader feel small, and when it does, it has failed
@@ -77,16 +79,18 @@ description. If it needs an opinion about the reader, it is praise.
 **Good**
 
 > You did not add sixty-eight numbers or divide by thirty-four. You looked, your eye found
-> the middle of each crowd, and you compared the two. That move has a name: comparing two
-> means.
+> the middle of each crowd, and you compared them. That move has a name: comparing two means.
+
+That is the shipped text in `app/views/home.js`, and the arithmetic in it is real: the landing
+page draws two rows of 34 dots each.
 
 The line between a fact and a verdict is narrow enough to be worth drawing precisely. A
-statement about the **answer** is a fact and is allowed: "Correct", "The bottom row sits
-further right", "That is the one the data supports". A statement about the **reader** is a
-verdict and is not: "Great job", "Well done", "You're a natural", "See, that wasn't so bad".
-The landing page kicker in `app/views/home.js` reads "Correct — and look at what you
-skipped", which passes, because everything after the dash is about what happened on the
-screen.
+statement about the **answer** is a fact and is allowed. `ui.quiz` says "Right." or "Not that
+one." before it says why, and both pass, as do "The bottom row sits further right" and "That
+is the one the data supports". A statement about the **reader** is a verdict and is not:
+"Great job", "Well done", "You're a natural", "See, that wasn't so bad". The landing page
+kicker in `app/views/home.js` reads "Correct — and look at what you skipped", which passes,
+because everything after the dash is about what happened on the screen.
 
 **Bad**
 
@@ -138,20 +142,26 @@ These are checkable. A reviewer can search for them.
 | colour words for data roles: the blue line, the orange dots | Excludes colour-blind and screen-reader users | Name the role: the true value, the sample |
 
 **The ban attaches to the job the word is doing, not to the string.** A grep is where review
-starts, not where it ends. Three instances currently in the repository, all of which a naive
-search flags:
+starts, not where it ends. Running the list over `app/`, `index.html` and `README.md` today
+returns nine hits, and two of them are real violations:
 
-- `app/views/about.js` ends a sentence with "a subject they were simply never shown
-  properly". That is the minimising adverb doing exactly the banned thing. It is a real
-  violation, it is on the list to fix, and it is not an exception the charter grants itself.
-- `app/views/map.js` has "published when they are genuinely good rather than when they are
+- `app/views/about.js:56` ends a sentence with "a subject they were simply never shown
+  properly". That is the minimising adverb doing exactly the banned thing.
+- `app/core/engine.js:71` has "Anything else simply switches at the end" in a comment. Same
+  word, same job, and comments are in scope.
+
+Neither is an exception the charter grants itself. Both are on the list to fix. The other
+seven pass, and it is worth knowing why:
+
+- `app/views/map.js:73` has "published when they are genuinely good rather than when they are
   merely finished". Here *merely* modifies the state of a unit, not the reader's effort.
-  It passes.
-- `app/core/router.js` opens with "a link is just a link". That is the identity sense.
-  It passes.
+- `app/core/router.js:3` and `README.md:49` both say "a link is just a link". Identity sense.
+- `app/views/home.js:3`, `app/lessons/01-noticing/index.js:422` ("You just drew a null
+  result") and the same file at `:664` use the temporal *just*.
+- `app/curriculum.js:129` asks how to "say something true, clearly, without misleading
+  anyone". That is manner, not an appeal to the obvious.
 
-If you cannot say which of those three a flagged line resembles, the line needs rewriting
-either way.
+If you cannot say which group a flagged line belongs to, the line needs rewriting either way.
 
 ### Banned structures
 
@@ -188,8 +198,8 @@ either way.
 
 **Good**
 
-> Unit 9 picks up the shape you just built and asks why it keeps turning up in places that
-> have nothing to do with each other.
+> Unit 09-bell picks up the shape you just built and asks why it keeps turning up in places
+> that have nothing to do with each other.
 
 **Bad**
 
@@ -207,8 +217,8 @@ either way.
 **Good**
 
 > Put one person earning $100 million into a room with thirty teachers on $60,000. The mean
-> income in that room goes from $60,000 to about $3.3 million. The median does not move at
-> all. That difference is the entire reason both numbers exist.
+> income in that room goes from $60,000 to $3.28 million. The median does not move at all.
+> That difference is the entire reason both numbers exist.
 
 ---
 
@@ -361,17 +371,18 @@ into a story about villains, and villains are always other people.
 **Good**
 
 > Every figure on that chart is correct in both states. Starting the axis at 4.9 minutes
-> throws away the bottom of both bars, so eight percent of real difference fills the frame
-> and one bar ends up five times taller than the other. Nobody typed a false number. Put the
-> axis back on zero and watch the crisis turn into a wobble.
+> throws away the bottom of both bars, so 0.4 minutes of real difference fills the frame and
+> one bar ends up five times taller than the other. The honest sentence about the same
+> picture is still 8% longer. Nobody typed a false number. Put the axis back on zero and
+> watch the crisis turn into a wobble.
 
 The default framing is second person and it includes the reader on both sides. *You* can be
-fooled by this, and *you* could do this without meaning to. Unit 1 says so in the shipped
-prose: charting software fits the axis to the numbers it was handed, somebody accepts the
-default, and the most misleading chart most people ever make is one they did not notice
+fooled by this, and *you* could do this without meaning to. Unit 01-noticing says so in the
+shipped prose: charting software fits the axis to the numbers it was handed, somebody accepts
+the default, and the most misleading chart most people ever make is one they did not notice
 making.
 
-The counterweight matters as much as the technique. Unit 1 also says that cropping an axis is
+The counterweight matters as much as the technique. That unit also says cropping an axis is
 not automatically a lie, because a temperature chart drawn from zero degrees upward hides the
 one degree where the whole story lives. A distortion beat that leaves the reader with a rule
 of thumb rather than a question has made them easier to fool, not harder.
@@ -384,7 +395,7 @@ Humour is wanted here. It has three rules.
 
 **It comes from noticing, not from performing.** The joke is an accurate observation held
 half a beat longer than it needed to be. Dry delivery, no setup, no signposting, no winking.
-The `lies` field for unit 8 is the house style: "A number quoted without its wobble is a
+The `lies` field for `08-wobble` is the house style: "A number quoted without its wobble is a
 guess wearing a suit."
 
 **It is never at the reader's expense, or at the expense of a category the reader might be
@@ -450,6 +461,7 @@ currencies and units.
 **Numerals.** Spell out counts inside a sentence about what the reader did or could do:
 "sixty-eight numbers", "four seconds". Use digits for data values, sample sizes, parameters,
 money and percentages, always with the unit and always with the denominator where one exists.
+Write 8%, never "eight percent", including mid-sentence.
 
 **Headings.** Sentence case. A heading is a claim or a question, never a topic label. "Where
 the n − 1 comes from" beats "Bessel's correction". "How spread out is it?" beats "Measures of
@@ -457,15 +469,15 @@ dispersion".
 
 **Buttons and controls.** Verbs for actions: "Draw a new sample", "Show the true value". Nouns
 for settings: "Sample size", "World". Never "Submit". Never "Click here". A button that
-commits the reader to a prediction says what the prediction is, so unit 1 uses "The same way"
-and "Sometimes the other way" rather than a pair of letters.
+commits the reader to a prediction says what the prediction is, so `01-noticing` uses "The
+same way" and "Sometimes the other way" rather than a pair of letters.
 
 **Screen-reader text.** Every canvas carries an `aria-label` that is a sentence describing
-what a sighted reader would take from the picture, not a description of the drawing. Unit 1
-sets the standard, and its labels are rebuilt whenever the picture changes: "The same two
-bars, 5.0 and 5.4 minutes, on an axis starting at 4.9 minutes. Birch's bar is now 5.0 times
-taller than Ash's, from the same 8% difference." A canvas labelled "A canvas showing a bar
-chart" fails.
+what a sighted reader would take from the picture, not a description of the drawing. Unit
+`01-noticing` sets the standard, and its labels are rebuilt whenever the picture changes:
+"The same two bars, 5.0 and 5.4 minutes, on an axis starting at 4.9 minutes. Birch's bar is
+now 5.0 times taller than Ash's, from the same 8% difference." A canvas labelled "A canvas
+showing a bar chart" fails.
 
 **Error messages.** The screen is at fault, never the reader. `router.js` sets the tone:
 "Something in this lesson threw an error, which is our fault rather than yours."
@@ -488,35 +500,12 @@ question: "If I did this study again, how different would the answer be?"
 covered. It is the sentence that would be true of them at the end.
 
 **`lies`** is the distortion, stated as a technique rather than an accusation, in one
-concrete sentence. Unit 3 has "Bin width is a dial, and someone is always turning it." All
-sixteen units carry one today. Nothing in the code checks that yet, so the guarantee rests on
+concrete sentence. `03-pile` has "Bin width is a dial, and someone is always turning it." All
+sixteen units carry one today. Nothing in the code checks that, so the guarantee rests on
 review; PEDAGOGY section 4 sets out the check that would make it structural.
 
----
-
-## The read-aloud check
-
-Before opening a pull request that touches prose, read the screen out loud and run this list.
-
-- [ ] No banned word is doing banned work. Search for: simply, merely, just, obviously,
-      clearly, of course, as you can see, notice how, it is important to note, trivial,
-      don't worry. Then read each hit in its sentence.
-- [ ] No colour word stands in for a data role.
-- [ ] No exclamation mark, no emoji, no em-dash in body prose.
-- [ ] Every symbol on the screen was preceded by the sentence it compresses, and is used
-      afterwards.
-- [ ] Every naming move describes what happened rather than judging the reader.
-- [ ] Every caption says what, of what, in what units, and what it means, and admits when the
-      data are invented.
-- [ ] The figure-vanishes test passes on every figure, and every canvas has an `aria-label`
-      that states the finding.
-- [ ] Every number carries its unit and its denominator.
-- [ ] Uncertainty is stated once, specifically, where it is real.
-- [ ] The unit's distortion is something the reader operates rather than something described,
-      and the reader is on both sides of it.
-- [ ] Nothing on the screen ranks the reader.
-- [ ] No sentence runs past about forty words, and no paragraph opens with a fragment.
-- [ ] It sounds like a person who finds this interesting talking to a person they respect.
-
-The last one is the only check that matters. The other twelve exist because it is hard to run
-on your own writing.
+**Cite units by id, never by number.** `docs/CURRICULUM.md` and `app/curriculum.js` disagree
+from position four onward: the doc has `04-reroll` and totals 344 minutes, the code has
+`04-middle` and totals 336. Until one commit reconciles them, "unit 8" names two different
+lessons depending on which file you opened, and prose that says "unit 8" will be wrong for
+half its readers. Write `08-wobble` and let the reader look it up.

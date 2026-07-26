@@ -1,144 +1,143 @@
-/* engine.js
-   The clock. One animation loop and one tween, both frame-rate independent, both
-   quiet when the reader has asked their device for less motion. Nothing here knows
-   what is being drawn. */
+/* app/core/engine.js
+   The clock. Two jobs only: run a function once per animation frame, and walk a
+   single number from one value to another over a set time. Both measure time in
+   seconds rather than frames, so a slow phone shows the same motion as a fast
+   laptop, just with fewer frames in between. */
 
-const motionQuery = typeof window !== 'undefined' && window.matchMedia
-  ? window.matchMedia('(prefers-reduced-motion: reduce)')
+// Some people get sick from motion, and some just want the answer now. The
+// browser knows which; we ask. Kept live so a reader who changes the setting
+// mid-session gets what they asked for without reloading.
+const motionQuery = typeof matchMedia === 'function'
+  ? matchMedia('(prefers-reduced-motion: reduce)')
   : null;
 
-/** True if the reader asked for less motion, read once when the page loaded. */
-export const reducedMotion = motionQuery ? motionQuery.matches : false;
+export let reducedMotion = motionQuery ? motionQuery.matches : false;
 
-/* The setting can change mid-session, and a const cannot. Anything that has to be
-   right at the moment it runs, including the tween below, asks this instead. */
+if (motionQuery) {
+  const onMotionChange = (e) => { reducedMotion = !!e.matches; };
+  // Safari before 14 only has the old addListener, and plenty of cheap phones
+  // are still on it.
+  if (typeof motionQuery.addEventListener === 'function') {
+    motionQuery.addEventListener('change', onMotionChange);
+  } else if (typeof motionQuery.addListener === 'function') {
+    motionQuery.addListener(onMotionChange);
+  }
+}
+
+// The freshest possible read, for code that captured the value once.
 export function prefersReducedMotion() {
   return motionQuery ? motionQuery.matches : reducedMotion;
 }
 
-export const ease = {
-  linear: (t) => t,
-  outCubic: (t) => 1 - Math.pow(1 - t, 3),
-  inOutCubic: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
-};
+// Called through wrappers, never stored bare: an unbound requestAnimationFrame
+// throws "Illegal invocation" in Chrome. The setTimeout path only exists so the
+// module can be imported outside a browser (a test runner) without exploding.
+function hasRaf() { return typeof requestAnimationFrame === 'function'; }
+function raf(cb) {
+  return hasRaf() ? requestAnimationFrame(cb) : setTimeout(() => cb(now()), 16);
+}
+function caf(handle) {
+  if (handle == null) return;
+  if (hasRaf()) cancelAnimationFrame(handle); else clearTimeout(handle);
+}
+function now() {
+  return (typeof performance === 'object' && performance && typeof performance.now === 'function')
+    ? performance.now()
+    : Date.now();
+}
 
-/* A tab that was in the background hands back one enormous frame. Capping the step
-   means a simulation resumes where it was rather than teleporting. */
-const MAX_STEP = 0.1;
+// Easing curves take a fraction of the way through (0 to 1) and return a
+// fraction of the way there. linear feels mechanical; outCubic feels like a
+// thing coming to rest.
+export const ease = Object.freeze({
+  linear: (p) => p,
+  outCubic: (p) => 1 - Math.pow(1 - p, 3),
+  inOutCubic: (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2)
+});
 
-/**
- * Run fn(dtSeconds, elapsedSeconds) on every frame. Returns stop().
- * Return false from fn to stop. opts.anchor: an element the loop belongs to, so the
- * loop dies by itself once that element leaves the page.
- */
-export function loop(fn, opts = {}) {
-  const anchor = opts.anchor || null;
-  let raf = 0;
-  let last = 0;
+/* loop(fn) runs fn once per animation frame until you stop it.
+   fn(dt, elapsed) gets seconds since the previous frame and seconds of running
+   time so far. Returns stop(). Keep the returned stop() and call it when the
+   lesson unmounts, or its frames pile up underneath the next lesson.
+
+   Both numbers come from the same clamped clock, so `elapsed` is always the sum
+   of the `dt`s the lesson has actually seen. A tab left in the background for a
+   minute therefore resumes where it paused instead of teleporting. */
+export function loop(fn) {
+  if (typeof fn !== 'function') return function stop() {};
+
+  let handle = null;
+  let running = true;
+  let last = null;
   let elapsed = 0;
-  let live = true;
 
-  const stop = () => {
-    live = false;
-    if (raf) cancelAnimationFrame(raf);
-    raf = 0;
-  };
-
-  const frame = (now) => {
-    raf = 0;
-    if (!live) return;
-    if (anchor && !anchor.isConnected) { stop(); return; }
-    const dt = last ? Math.min((now - last) / 1000, MAX_STEP) : 0;
-    last = now;
+  function frame(stamp) {
+    if (!running) return;
+    if (last === null) last = stamp;
+    let dt = (stamp - last) / 1000;
+    last = stamp;
+    if (!Number.isFinite(dt) || dt < 0) dt = 0;
+    if (dt > 0.1) dt = 0.1;
     elapsed += dt;
+    // The next frame is requested after fn on purpose. If fn throws, nothing
+    // reschedules and the loop dies quietly instead of throwing sixty times a
+    // second; if fn calls stop(), the running check below catches it.
+    fn(dt, elapsed);
+    if (running) handle = raf(frame);
+  }
 
-    let keep;
-    try {
-      keep = fn(dt, elapsed);
-    } catch (err) {
-      stop(); // one broken frame should not become sixty broken frames a second
-      throw err;
-    }
-    if (!live || keep === false) { stop(); return; }
-    raf = requestAnimationFrame(frame);
+  handle = raf(frame);
+
+  return function stop() {
+    running = false;
+    caf(handle);
+    handle = null;
   };
-
-  raf = requestAnimationFrame(frame);
-  return stop;
 }
 
-/* from and to may be numbers, or flat objects of numbers when several things move
-   together (a point, a pair of means). Anything else simply switches at the end. */
-function mixer(from, to) {
-  if (typeof from === 'number' && typeof to === 'number') {
-    return (k) => from + (to - from) * k;
-  }
-  if (from && to && typeof from === 'object' && typeof to === 'object') {
-    const keys = Object.keys(to).filter(
-      (k) => typeof to[k] === 'number' && typeof from[k] === 'number',
-    );
-    return (k) => {
-      const out = { ...to };
-      for (const key of keys) out[key] = from[key] + (to[key] - from[key]) * k;
-      return out;
-    };
-  }
-  return (k) => (k >= 1 ? to : from);
-}
+/* tween({from, to, ms, ease, onStep, onDone}) walks a number from one value to
+   another. onStep(value, p) fires each frame with the eased value and the raw
+   progress; onDone(to) fires once at the end. Returns cancel().
+   If the reader prefers reduced motion, or the duration is zero, we skip the
+   animation: one onStep at the end value, then onDone, synchronously. */
+export function tween(opts) {
+  const o = opts || {};
+  const from = Number.isFinite(o.from) ? o.from : 0;
+  const to = Number.isFinite(o.to) ? o.to : 1;
+  const ms = Number.isFinite(o.ms) ? Math.max(0, o.ms) : 400;
+  const curve = typeof o.ease === 'function' ? o.ease : ease.outCubic;
+  const onStep = typeof o.onStep === 'function' ? o.onStep : null;
+  const onDone = typeof o.onDone === 'function' ? o.onDone : null;
 
-/**
- * Move a value from one place to another over time.
- * opts: {from, to, ms, ease, onStep, onDone}. Returns cancel().
- * onStep(value, t) where t runs 0 to 1. Reduced motion jumps to the end.
- */
-export function tween(opts = {}) {
-  const { from, to } = opts;
-  const ms = Math.max(0, opts.ms == null ? 420 : opts.ms);
-  const curve = typeof opts.ease === 'function'
-    ? opts.ease
-    : (ease[opts.ease] || ease.outCubic);
-  const onStep = typeof opts.onStep === 'function' ? opts.onStep : null;
-  const onDone = typeof opts.onDone === 'function' ? opts.onDone : null;
-  const mix = mixer(from, to);
-
-  let raf = 0;
-  let live = true;
-  let t0 = null;
-
-  const cancel = () => {
-    live = false;
-    if (raf) cancelAnimationFrame(raf);
-    raf = 0;
-  };
-
-  /* Still one frame late rather than instant, so a caller can cancel a tween it
-     started and never see a callback fire before it got the handle back. */
   if (prefersReducedMotion() || ms === 0) {
-    raf = requestAnimationFrame(() => {
-      raf = 0;
-      if (!live) return;
-      live = false;
-      if (onStep) onStep(to, 1);
-      if (onDone) onDone(to);
-    });
-    return cancel;
+    if (onStep) onStep(to, 1);
+    if (onDone) onDone(to);
+    return function cancel() {};
   }
 
-  const frame = (now) => {
-    raf = 0;
-    if (!live) return;
-    if (t0 === null) t0 = now; // the clock starts on the first frame, not at the call
-    const t = Math.min(1, (now - t0) / ms);
-    if (onStep) onStep(mix(curve(t)), t);
-    if (!live) return; // onStep is allowed to cancel us
-    if (t < 1) {
-      raf = requestAnimationFrame(frame);
-    } else {
-      live = false;
-      if (onDone) onDone(to);
-    }
-  };
+  let handle = null;
+  let cancelled = false;
+  let start = null;
 
-  raf = requestAnimationFrame(frame);
-  return cancel;
+  function frame(stamp) {
+    if (cancelled) return;
+    if (start === null) start = stamp;
+    // Progress comes from the clock, not from a frame counter, so a dropped
+    // frame costs smoothness and never duration.
+    const p = Math.min(1, Math.max(0, (stamp - start) / ms));
+    if (onStep) onStep(from + (to - from) * curve(p), p);
+    // onStep is allowed to cancel us, so check again before booking more work.
+    if (cancelled) return;
+    if (p < 1) handle = raf(frame);
+    else if (onDone) onDone(to);
+  }
+
+  handle = raf(frame);
+
+  return function cancel() {
+    if (cancelled) return;
+    cancelled = true;
+    caf(handle);
+    handle = null;
+  };
 }

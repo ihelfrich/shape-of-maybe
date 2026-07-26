@@ -135,7 +135,7 @@ export function home(root) {
   fig.style.border = '0';
   fig.style.boxShadow = 'none';
   fig.style.padding = '0';
-  const canvas = el('canvas', 'ec-figure__canvas');
+  const canvas = el('canvas', 'ec-canvas');
   canvas.setAttribute('role', 'img');
   canvas.setAttribute('aria-label',
     'Two rows of scattered dots. The top row is centred to the left of the bottom row.');

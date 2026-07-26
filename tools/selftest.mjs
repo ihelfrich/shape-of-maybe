@@ -140,7 +140,21 @@ if (!has('app/core/stats.js')) {
   truthy('ols on a vertical cloud returns null, not Infinity',
          flat === null || flat.b1 === null || !Number.isFinite(flat.b1));
   truthy('corr with a flat column returns null', S.corr([1, 1, 1], [2, 3, 4]) === null);
-  truthy('meanCI of one value returns null', S.meanCI([5]) === null);
+  // One point has a mean but no spread, so it must not be handed a range.
+  const one = S.meanCI([5]);
+  truthy('meanCI of one value invents no interval',
+         one === null || (one.lo === null && one.hi === null && one.se === null));
+  truthy('quantile refuses to coerce a null into a number',
+         Number.isNaN(S.quantile([1, null, 3], 0.5)));
+
+  console.log('\nstats.js — the far tail (where a clamped search would lie)');
+  // A search that stops early returns its own stopping point and looks plausible.
+  // The round trip is what catches it.
+  for (const [p, df] of [[1e-30, 1], [1e-12, 3], [1e-8, 2], [0.025, 19]]) {
+    const t = S.tCrit(p, df);
+    const back = S.tTail(t, df);
+    check(`tCrit(${p}, ${df}) round-trips`, back / p, 1, 1e-6);
+  }
 }
 
 console.log(`\n${pass} passed, ${fail} failed, ${skipped} file(s) skipped\n`);

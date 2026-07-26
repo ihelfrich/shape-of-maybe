@@ -1,598 +1,630 @@
-/* viz.js
-   A thin drawing layer over one <canvas>: axes, dots, lines, curves, brackets, labels.
-   Not a chart library. A lesson says what it wants in data coordinates, and the four
-   course colours (truth, data, result, test) mean the same thing in every figure. */
+/* app/core/viz.js
+   A thin honest layer over one canvas. Not a chart library: there are no chart
+   types here, only marks (dots, lines, curves, bars, brackets, labels) placed in
+   data coordinates. A lesson says where things go in its own units, and viz
+   turns that into pixels, on any screen, at any pixel density. */
 
-/* The palette. Four roles, two verdicts, two inks, one hairline.
-   A reader who learns the four roles in unit one can read any figure without a legend. */
-export const COLORS = {
-  truth:  '#4C6EF5', // the population, the parameter, what is actually true
-  data:   '#E8590C', // the sample, the observed, what we measured
-  result: '#099268', // the conclusion, the estimate, the answer
-  test:   '#7048E8', // the test statistic, the machinery of doubt
-  wrong:  '#E03131',
-  right:  '#2B8A3E',
-  ink:    '#1F2024',
-  ink2:   '#5F6270',
-  grid:   '#E8E4DA',
-};
+// The palette carries meaning, and the meaning is the same in every lesson:
+// truth = the population or parameter we can never see directly,
+// data = the sample we actually got, result = the conclusion we drew,
+// test = a test statistic, wrong / right = an answer being marked,
+// ink / ink2 = text, grid = hairlines.
+// Frozen because a lesson that quietly repainted the palette would break the
+// colour code for every other lesson on the page.
+export const COLORS = Object.freeze({
+  truth: '#4C6EF5', data: '#E8590C', result: '#099268', test: '#7048E8',
+  wrong: '#E03131', right: '#2B8A3E', ink: '#1F2024', ink2: '#5F6270', grid: '#E8E4DA'
+});
 
-/* Every role also exists as a CSS custom property in tokens.css. We prefer the live
-   value at draw time, so a reader in dark mode gets the lifted version of the same
-   meaning. The hex above is the fallback for before the stylesheet has arrived. */
-const ROLE_VAR = {
-  truth: '--truth', data: '--data', result: '--result', test: '--test',
-  wrong: '--wrong', right: '--right', ink: '--ink', ink2: '--ink-2', grid: '--line',
-};
-const SURFACE_VAR = '--card'; // what labels sit on: used for halos and dot rings
-const FONT_VAR = '--sans';
+const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif';
+const TAU = Math.PI * 2;
 
-/* Passing COLORS.truth should behave exactly like passing 'truth', so we can look a
-   hex back up and swap in the themed version of it. */
-const ROLE_OF_HEX = new Map(Object.entries(COLORS).map(([k, v]) => [v.toLowerCase(), k]));
+// Reverse lookup, so a lesson that passes COLORS.truth as a literal still gets
+// the themed colour when CSS has overridden --viz-truth for dark mode.
+const ROLE_OF = {};
+for (const role of Object.keys(COLORS)) ROLE_OF[COLORS[role].toLowerCase()] = role;
 
-/* Reading a custom property costs a style lookup, and a figure asks for the same
-   handful of colours on every frame, so we hold the answers briefly. Briefly is the
-   point: any theme change, from the system or from a toggle in the page, lands within
-   about half a second and we do not have to keep a listener alive to hear about it. */
-const COLOR_TTL_MS = 400;
-const cache = new Map();
-let rootStyle = null;
-let readAt = -Infinity;
-
-function msNow() {
-  return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
+// Bumped when the OS colour scheme flips, so every stage re-reads its palette on
+// the next fit() instead of waiting out its cache.
+let themeEpoch = 0;
+const schemeQuery = typeof matchMedia === 'function'
+  ? matchMedia('(prefers-color-scheme: dark)')
+  : null;
+if (schemeQuery) {
+  const bump = () => { themeEpoch++; };
+  if (typeof schemeQuery.addEventListener === 'function') schemeQuery.addEventListener('change', bump);
+  else if (typeof schemeQuery.addListener === 'function') schemeQuery.addListener(bump);
 }
 
-function cssValue(name, fallback) {
-  const t = msNow();
-  if (t - readAt > COLOR_TTL_MS) {
-    readAt = t;
-    cache.clear();
-    try {
-      rootStyle = getComputedStyle(document.documentElement);
-    } catch {
-      rootStyle = null; // no document (a test harness, say): the fallbacks below carry us
-    }
+function num(v, fallback) { return Number.isFinite(v) ? v : fallback; }
+
+// How many decimals does a step of this size need? 0.25 needs two, 5 needs none.
+function decimalsFor(step) {
+  if (!Number.isFinite(step) || step <= 0) return 0;
+  let d = 0;
+  let s = Math.abs(step);
+  while (d < 6 && Math.abs(Math.round(s) - s) > 1e-9) { s *= 10; d++; }
+  return d;
+}
+
+/* Plain-words number formatting for tick labels: no trailing zeros, thousands
+   separators once the numbers get long, exponents only when there is no room
+   for anything else. step is the gap between ticks and decides the precision. */
+export function fmtNum(v, step) {
+  if (!Number.isFinite(v)) return '';
+  if (v === 0) return '0';
+  const a = Math.abs(v);
+  // Past ten million a grouped label is wider than a phone axis can hold.
+  if (a >= 1e7 || a < 1e-4) return v.toExponential(1).replace('e+', 'e');
+  const d = decimalsFor(Math.abs(step));
+  if (a >= 10000) {
+    return v.toLocaleString(undefined, {
+      minimumFractionDigits: 0, maximumFractionDigits: Math.min(d, 2)
+    });
   }
-  if (cache.has(name)) return cache.get(name);
-  let v = '';
-  if (rootStyle) {
-    try { v = rootStyle.getPropertyValue(name).trim(); } catch { v = ''; }
+  let s = v.toFixed(Math.min(6, d));
+  if (s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/\.$/, '');
+  return s === '-0' ? '0' : s;
+}
+
+/* Tick positions a human would have chosen: steps of 1, 2, 5 or 10 times a power
+   of ten, so labels read 0, 0.5, 1 and never 0.333, 0.667. Takes the two ends in
+   either order and always returns them ascending. */
+export function niceTicks(lo, hi, count = 5) {
+  if (!Number.isFinite(lo) || !Number.isFinite(hi)) return [];
+  const a = Math.min(lo, hi);
+  const b = Math.max(lo, hi);
+  if (a === b) return [a];
+  const want = Math.max(1, Math.round(num(count, 5)));
+  const raw = (b - a) / want;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  // A range small enough to underflow the power of ten gets its two ends and
+  // nothing in between, which is honest and never loops forever.
+  if (!Number.isFinite(mag) || mag <= 0) return [a, b];
+  const norm = raw / mag;
+  const step = (norm < 1.5 ? 1 : norm < 3 ? 2 : norm < 7 ? 5 : 10) * mag;
+  if (!Number.isFinite(step) || step <= 0) return [a, b];
+  const first = Math.ceil(a / step - 1e-9);
+  if (!Number.isFinite(first)) return [a, b];
+  const out = [];
+  for (let i = 0; i < 512; i++) {
+    const v = (first + i) * step;
+    if (v > b + step * 1e-9) break;
+    // toPrecision clears the floating-point dust: 0.6000000000000001 -> 0.6
+    const r = Number(v.toPrecision(12));
+    out.push(Math.abs(r) < step * 1e-9 ? 0 : r);
+    if (out.length >= 200) break;
   }
-  const out = v || fallback;
-  cache.set(name, out);
   return out;
 }
 
-function roleColor(role) {
-  return cssValue(ROLE_VAR[role] || ROLE_VAR.ink, COLORS[role] || COLORS.ink);
-}
-
-/** Turn a role name, a COLORS hex, or any CSS colour into something to paint with. */
-export function paint(color, fallbackRole = 'ink') {
-  if (color == null || color === '') return roleColor(fallbackRole);
-  if (typeof color !== 'string') return String(color);
-  if (Object.hasOwn(ROLE_VAR, color)) return roleColor(color);
-  const role = ROLE_OF_HEX.get(color.toLowerCase());
-  if (role) return roleColor(role);
-  return color;
-}
-
-function surface() { return cssValue(SURFACE_VAR, '#FFFFFF'); }
-function uiFont() { return cssValue(FONT_VAR, 'system-ui, sans-serif'); }
-
-/* ---- numbers ------------------------------------------------------------- */
-
-/* Spacings a person would choose: 1, 2, 2.5 or 5 times a power of ten. We take the
-   spacing the requested tick count implies and snap it to the nearest rung, where
-   "nearest" is measured the way the ladder is built, by ratio rather than difference. */
-const LADDER = [
-  [Math.SQRT2, 1],              // 1.414
-  [Math.sqrt(2 * 2.5), 2],      // 2.236
-  [Math.sqrt(2.5 * 5), 2.5],    // 3.536
-  [Math.sqrt(5 * 10), 5],       // 7.071
-];
-
-/** Tick positions that land on round numbers. Pass an array to place them yourself. */
-export function tickValues(lo, hi, count = 5) {
-  if (Array.isArray(count)) return count.slice();
-  if (!Number.isFinite(lo) || !Number.isFinite(hi) || hi <= lo) return [lo];
-  const n = Math.max(2, Math.round(count) || 5);
-  const raw = (hi - lo) / n;
-  const mag = Math.pow(10, Math.floor(Math.log10(raw)));
-  const norm = raw / mag;
-  let rung = 10;
-  for (const [limit, value] of LADDER) {
-    if (norm < limit) { rung = value; break; }
-  }
-  const step = rung * mag;
-  // A range so narrow that the step underflows to zero would loop forever below.
-  if (!Number.isFinite(step) || step <= 0) return [lo, hi];
-  const first = Math.ceil(lo / step - 1e-9) * step;
-  if (!Number.isFinite(first)) return [lo, hi];
-  const out = [];
-  for (let i = 0; i < 200; i++) {
-    const v = first + i * step;
-    if (v > hi + step * 1e-9) break;
-    out.push(Math.abs(v) < step * 1e-9 ? 0 : v); // kill the -0 that floats out of this
-  }
-  return out.length ? out : [lo, hi];
-}
-
-/* How many decimals a step of this size needs: the fewest that still write it down
-   exactly. A step of 0.25 needs two, a step of 0.2 needs one. */
-function decimalsFor(step) {
-  if (!Number.isFinite(step) || step <= 0) return 2; // nothing to go on: two reads fine
-  for (let d = 0; d <= 6; d++) {
-    const scale = Math.pow(10, d);
-    if (Math.abs(step - Math.round(step * scale) / scale) <= Math.abs(step) * 1e-9) return d;
-  }
-  return 6;
-}
-
-/* Fixed to en-US on purpose: a figure should read the same in every screenshot and
-   every classroom, and the course prose is English. */
-const GROUPED = new Intl.NumberFormat('en-US', { maximumFractionDigits: 6 });
-
-/** A number as a person would write it: no trailing zeros, commas above 9999. */
-export function fmtNum(v, step) {
-  if (!Number.isFinite(v)) return '';
-  const d = decimalsFor(step);
-  let s = v.toFixed(d);
-  if (s.indexOf('.') >= 0) s = s.replace(/0+$/, '').replace(/\.$/, '');
-  if (s === '-0') s = '0';
-  const n = Number(s);
-  if (v !== 0 && n === 0) return v.toExponential(1); // too small to show at this scale
-  if (Math.abs(n) > 9999) return GROUPED.format(n);
-  return s;
-}
-
-/* ---- drawing helpers ----------------------------------------------------- */
-
-/* A 1px line drawn on a whole pixel straddles two of them and comes out grey.
-   Half-pixel offsets keep hairlines actually hairline. */
-const crisp = (v) => Math.round(v) + 0.5;
-
-function dashOf(dash) {
-  if (!dash) return [];
-  if (Array.isArray(dash)) return dash;
-  return [dash, dash];
-}
-
-function ptX(p) { return Array.isArray(p) ? p[0] : NaN; }
-function ptY(p) { return Array.isArray(p) ? p[1] : NaN; }
-
-class Stage {
-  constructor(canvas) {
-    this.canvas = canvas;
-    this.ctx = canvas.getContext('2d');
-    this.W = 0;
-    this.H = 0;
-    this.x0 = 0; this.x1 = 1; this.y0 = 0; this.y1 = 1;
-    this._p = { l: 12, r: 12, t: 12, b: 12 };
-    this._gL = 0; this._gR = 0; this._gT = 0; this._gB = 0;
-  }
-
-  /* Size the backing store for this screen's pixel density and reset the transform,
-     so one unit of drawing is one CSS pixel no matter what device we are on. */
-  fit() {
-    const c = this.canvas;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2); // capped: a cheap phone has better uses for its GPU
-    const w = Math.max(1, Math.round(c.clientWidth) || 320); // 0 when the figure is hidden
-    let h = Math.round(c.clientHeight);
-    if (!(h > 0)) {
-      // Hidden, or not laid out yet. Draw at a sane shape and touch nothing: the real
-      // numbers arrive on the frame after the element becomes visible.
-      h = Math.round(w * 0.56);
-    } else if (!c.style.height && Math.abs(h - c.height) <= 1) {
-      /* No CSS height, so the box is being sized by the height attribute. Writing that
-         attribute would then grow the element every frame (h, h*dpr, h*dpr*dpr, ...),
-         so we pin the layout height once and let the attribute be about pixels only.
-         This is the one style write in the file, and it exists to stop that runaway. */
-      c.style.height = h + 'px';
-    }
-    const bw = Math.round(w * dpr);
-    const bh = Math.round(h * dpr);
-    if (c.width !== bw || c.height !== bh) { c.width = bw; c.height = bh; }
-    this.W = w;
-    this.H = h;
-    const g = this.ctx;
-    g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    g.lineJoin = 'round';
-    g.lineCap = 'round';
-    return this;
-  }
-
-  clear() {
-    if (!this.W) this.fit();
-    this.ctx.clearRect(0, 0, this.W, this.H);
-    return this;
-  }
-
-  /** The data window this figure shows. Y grows upward, the way a reader expects. */
-  domain(x0, x1, y0, y1) {
-    if (x1 === x0) { x0 -= 0.5; x1 += 0.5; }
-    if (y1 === y0) { y0 -= 0.5; y1 += 0.5; }
-    this.x0 = x0; this.x1 = x1; this.y0 = y0; this.y1 = y1;
-    return this;
-  }
-
-  /** Inner margins in pixels. Omitted sides copy the first one given. */
-  pad(l = 12, r = l, t = l, b = t) {
-    this._p = { l, r, t, b };
-    return this;
-  }
-
-  /* The plotting rectangle, recomputed rather than stored so a pad or a resize takes
-     effect at once. On a narrow phone the axis gutters can add up to more than the
-     canvas is wide, so we shrink them together instead of handing back a box that is
-     inside out and drawing everything backwards. */
-  _geom() {
-    if (!this.W) this.fit();
-    const p = this._p;
-    let L = p.l, R = this.W - p.r, T = p.t, B = this.H - p.b;
-    const wSum = p.l + p.r;
-    if (R - L < 8 && wSum > 0) {
-      const k = Math.max(0, this.W - 8) / wSum;
-      L = p.l * k; R = this.W - p.r * k;
-    }
-    const hSum = p.t + p.b;
-    if (B - T < 8 && hSum > 0) {
-      const k = Math.max(0, this.H - 8) / hSum;
-      T = p.t * k; B = this.H - p.b * k;
-    }
-    this._gL = L; this._gR = R; this._gT = T; this._gB = B;
-  }
-
-  /** The plotting rectangle in pixels: left, right, top, bottom. */
-  box() {
-    this._geom();
-    return { L: this._gL, R: this._gR, T: this._gT, B: this._gB };
-  }
-
-  X(v) {
-    this._geom();
-    return this._gL + ((v - this.x0) / (this.x1 - this.x0)) * (this._gR - this._gL);
-  }
-
-  Y(v) {
-    this._geom();
-    return this._gB - ((v - this.y0) / (this.y1 - this.y0)) * (this._gB - this._gT);
-  }
-
-  /* ---- axes ---- */
-
-  /* Both axes claim their gutter before they measure the box, and the claim is a
-     high water mark that survives the frame, so a figure does not shift sideways the
-     moment a label grows a digit. Call axisY first: it is the one that moves the left
-     edge, and the x axis wants to know where the left edge ended up. */
-  axisX(ticks = 5, fmt, opts = {}) {
-    this._p.b = Math.max(this._p.b, 28); // room for the numbers underneath
-    const { L, R, T, B } = this.box();
-    const vals = tickValues(this.x0, this.x1, ticks);
-    const step = vals.length > 1 ? vals[1] - vals[0] : 0;
-    const g = this.ctx;
-    g.save();
-    g.setLineDash([]);
-    g.lineCap = 'butt';
-    g.lineWidth = 1;
-    g.strokeStyle = paint('grid');
-    g.beginPath();
-    g.moveTo(L, crisp(B));
-    g.lineTo(R, crisp(B));
-    g.stroke();
-    g.font = `500 11px ${uiFont()}`;
-    g.textAlign = 'center';
-    g.textBaseline = 'top';
-    for (const v of vals) {
-      const px = this.X(v);
-      if (!Number.isFinite(px) || px < L - 0.5 || px > R + 0.5) continue;
-      g.strokeStyle = paint('grid');
-      g.beginPath();
-      if (opts.grid) { g.moveTo(crisp(px), T); g.lineTo(crisp(px), B); }
-      else { g.moveTo(crisp(px), B); g.lineTo(crisp(px), B + 5); }
-      g.stroke();
-      const text = fmt ? fmt(v) : fmtNum(v, step);
-      const half = g.measureText(text).width / 2;
-      const tx = Math.min(this.W - 3 - half, Math.max(3 + half, px));
-      g.fillStyle = paint('ink2');
-      g.fillText(text, tx, B + 7);
-    }
-    g.restore();
-    return this;
-  }
-
-  axisY(ticks = 4, fmt, opts = {}) {
-    const vals = tickValues(this.y0, this.y1, ticks);
-    const step = vals.length > 1 ? vals[1] - vals[0] : 0;
-    const g = this.ctx;
-    g.save();
-    g.font = `500 11px ${uiFont()}`;
-    const texts = vals.map(v => (fmt ? fmt(v) : fmtNum(v, step)));
-    // Grow the left gutter to whatever the widest label actually needs.
-    const widest = texts.reduce((m, t) => Math.max(m, g.measureText(t).width), 0);
-    this._p.l = Math.max(this._p.l, Math.ceil(widest) + 12);
-    const { L, R, T, B } = this.box();
-    g.setLineDash([]);
-    g.lineCap = 'butt';
-    g.lineWidth = 1;
-    g.textAlign = 'right';
-    g.textBaseline = 'middle';
-    for (let i = 0; i < vals.length; i++) {
-      const py = this.Y(vals[i]);
-      if (!Number.isFinite(py) || py < T - 0.5 || py > B + 0.5) continue;
-      g.strokeStyle = paint('grid');
-      g.beginPath();
-      if (opts.grid) { g.moveTo(L, crisp(py)); g.lineTo(R, crisp(py)); }
-      else { g.moveTo(L - 5, crisp(py)); g.lineTo(L, crisp(py)); }
-      g.stroke();
-      g.fillStyle = paint('ink2');
-      g.fillText(texts[i], L - 8, py);
-    }
-    g.restore();
-    return this;
-  }
-
-  /* ---- marks ---- */
-
-  /* Each dot gets a thin ring in the page colour, so a pile of overlapping dots still
-     reads as a pile of dots rather than a blob. Past a few thousand the ring costs
-     more than it gives, and the pile is the point by then, so it goes. */
-  dots(points, o = {}) {
-    if (!points) return this;
-    const g = this.ctx;
-    const r = o.r == null ? 5 : o.r;
-    const many = (points.length | 0) > 4000;
-    const ring = o.ring === false || many ? null : (o.ring ? paint(o.ring) : surface());
-    g.save();
-    g.globalAlpha = o.alpha == null ? 0.9 : o.alpha;
-    g.fillStyle = paint(o.fill, 'data');
-    g.lineWidth = Math.min(1.6, r * 0.35);
-    if (ring) g.strokeStyle = ring;
-    for (const p of points) {
-      const x = this.X(ptX(p));
-      const y = this.Y(ptY(p));
-      if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
-      g.beginPath();
-      g.arc(x, y, r, 0, Math.PI * 2);
-      g.fill();
-      if (ring) g.stroke();
-    }
-    g.restore();
-    return this;
-  }
-
-  line(points, o = {}) {
-    if (!points) return this;
-    const g = this.ctx;
-    g.save();
-    g.globalAlpha = o.alpha == null ? 1 : o.alpha;
-    g.strokeStyle = paint(o.color, 'ink');
-    g.lineWidth = o.width == null ? 2.5 : o.width;
-    g.lineCap = 'round';
-    g.lineJoin = 'round';
-    g.setLineDash(dashOf(o.dash));
-    g.beginPath();
-    let started = false;
-    for (const p of points) {
-      const x = this.X(ptX(p));
-      const y = this.Y(ptY(p));
-      // A gap in the data should read as a gap, not as a straight line across it.
-      if (!Number.isFinite(x) || !Number.isFinite(y)) { started = false; continue; }
-      if (started) g.lineTo(x, y);
-      else { g.moveTo(x, y); started = true; }
-    }
-    g.stroke();
-    g.restore();
-    return this;
-  }
-
-  /** Draw y = fn(x) across the domain. Gaps where fn returns nothing finite. */
-  curve(fn, o = {}) {
-    const from = o.from == null ? this.x0 : o.from;
-    const to = o.to == null ? this.x1 : o.to;
-    const steps = Math.max(2, o.steps == null ? 160 : o.steps);
-    const pts = [];
-    for (let i = 0; i <= steps; i++) {
-      const x = from + ((to - from) * i) / steps;
-      pts.push([x, fn(x)]);
-    }
-    return this.line(pts, o);
-  }
-
-  /** Fill the region under a curve. This is how a probability becomes an area. */
-  area(fn, o = {}) {
-    const from = o.from == null ? this.x0 : o.from;
-    const to = o.to == null ? this.x1 : o.to;
-    const steps = Math.max(2, o.steps == null ? 160 : o.steps);
-    // Fill down to zero when zero is on screen, otherwise to the nearer edge.
-    const base = o.baseline == null ? clampToY(this.y0, this.y1, 0) : o.baseline;
-    const g = this.ctx;
-    g.save();
-    g.globalAlpha = o.alpha == null ? 0.18 : o.alpha;
-    g.fillStyle = paint(o.color, 'test');
-    g.beginPath();
-    g.moveTo(this.X(from), this.Y(base));
-    for (let i = 0; i <= steps; i++) {
-      const x = from + ((to - from) * i) / steps;
-      const y = fn(x);
-      g.lineTo(this.X(x), this.Y(Number.isFinite(y) ? y : base));
-    }
-    g.lineTo(this.X(to), this.Y(base));
-    g.closePath();
-    g.fill();
-    g.restore();
-    return this;
-  }
-
-  /** bins: [{x0, x1, h}, ...] with h in data units. Heights measured from y = 0. */
-  bars(bins, o = {}) {
-    if (!bins) return this;
-    const g = this.ctx;
-    const gap = o.gap == null ? 1 : o.gap;
-    const base = this.Y(clampToY(this.y0, this.y1, 0));
-    const round = typeof g.roundRect === 'function';
-    g.save();
-    g.globalAlpha = o.alpha == null ? 0.85 : o.alpha;
-    g.fillStyle = paint(o.color, 'data');
-    for (const b of bins) {
-      const xa = this.X(b.x0);
-      const xb = this.X(b.x1);
-      const top = this.Y(b.h);
-      if (!Number.isFinite(xa) || !Number.isFinite(xb) || !Number.isFinite(top)) continue;
-      const x = Math.min(xa, xb) + gap / 2;
-      const w = Math.max(0.5, Math.abs(xb - xa) - gap);
-      const y = Math.min(top, base);
-      const h = Math.max(0, Math.abs(base - top));
-      const r = Math.min(3, w / 3, h);
-      if (round && r > 0.5) {
-        g.beginPath();
-        g.roundRect(x, y, w, h, [r, r, 0, 0]);
-        g.fill();
-      } else {
-        g.fillRect(x, y, w, h);
-      }
-    }
-    g.restore();
-    return this;
-  }
-
-  vline(x, o = {}) {
-    const { T, B } = this.box();
-    const px = this.X(x);
-    if (!Number.isFinite(px)) return this;
-    const g = this.ctx;
-    g.save();
-    g.globalAlpha = o.alpha == null ? 1 : o.alpha;
-    g.strokeStyle = paint(o.color, 'ink');
-    g.lineWidth = o.width == null ? 2 : o.width;
-    g.setLineDash(dashOf(o.dash));
-    g.beginPath();
-    g.moveTo(px, T);
-    g.lineTo(px, B);
-    g.stroke();
-    g.restore();
-    if (o.label) {
-      const at = o.labelAt == null ? 0.04 : o.labelAt;
-      this.note(o.label, px, T + (B - T) * at, {
-        color: o.color, align: 'center', baseline: 'alphabetic', weight: 700, size: o.size,
-      });
-    }
-    return this;
-  }
-
-  hline(y, o = {}) {
-    const { L, R } = this.box();
-    const py = this.Y(y);
-    if (!Number.isFinite(py)) return this;
-    const g = this.ctx;
-    g.save();
-    g.globalAlpha = o.alpha == null ? 1 : o.alpha;
-    g.strokeStyle = paint(o.color, 'ink');
-    g.lineWidth = o.width == null ? 2 : o.width;
-    g.setLineDash(dashOf(o.dash));
-    g.beginPath();
-    g.moveTo(L, py);
-    g.lineTo(R, py);
-    g.stroke();
-    g.restore();
-    if (o.label) {
-      const at = o.labelAt == null ? 0.02 : o.labelAt;
-      this.note(o.label, L + (R - L) * at, py - 6, {
-        color: o.color, align: 'left', baseline: 'alphabetic', weight: 700, size: o.size,
-      });
-    }
-    return this;
-  }
-
-  /* A measuring bracket: the caps point down at the two things being compared and the
-     label sits above the bar. This is how a gap gets to be a quantity. */
-  bracket(x0, x1, y, o = {}) {
-    const a = this.X(x0);
-    const b = this.X(x1);
-    const yy = this.Y(y);
-    if (!Number.isFinite(a) || !Number.isFinite(b) || !Number.isFinite(yy)) return this;
-    const cap = o.cap == null ? 7 : o.cap;
-    const g = this.ctx;
-    g.save();
-    g.strokeStyle = paint(o.color, 'ink2');
-    g.lineWidth = o.width == null ? 1.5 : o.width;
-    g.setLineDash(dashOf(o.dash));
-    g.beginPath();
-    g.moveTo(a, yy + cap);
-    g.lineTo(a, yy);
-    g.lineTo(b, yy);
-    g.lineTo(b, yy + cap);
-    g.stroke();
-    g.restore();
-    if (o.label) {
-      // Clear of the bar: close enough to belong to it, far enough that the halo
-      // behind the text does not eat a hole in the line.
-      this.note(o.label, (a + b) / 2, yy - 9, {
-        color: o.color || 'ink2', align: 'center', baseline: 'alphabetic', weight: 700, size: o.size,
-      });
-    }
-    return this;
-  }
-
-  /** Text placed in data coordinates. */
-  label(text, x, y, o = {}) {
-    return this.note(text, this.X(x), this.Y(y), o);
-  }
-
-  /* Text placed in pixel coordinates, with a halo of page colour behind it so it stays
-     readable wherever it lands, and a nudge inward if it would fall off an edge. */
-  note(text, px, py, o = {}) {
-    if (!Number.isFinite(px) || !Number.isFinite(py)) return this;
-    const g = this.ctx;
-    const str = String(text);
-    const size = o.size || 12;
-    g.save();
-    g.font = `${o.weight || 600} ${size}px ${uiFont()}`;
-    g.textAlign = o.align || 'center';
-    g.textBaseline = o.baseline || 'alphabetic';
-    g.globalAlpha = o.alpha == null ? 1 : o.alpha;
-    let x = px + (o.dx || 0);
-    let y = py + (o.dy || 0);
-    if (o.clamp !== false) {
-      const w = g.measureText(str).width;
-      const al = g.textAlign;
-      const left = al === 'center' ? x - w / 2 : al === 'right' ? x - w : x;
-      x += Math.max(0, 3 - left) - Math.max(0, left + w - (this.W - 3));
-      // Same idea vertically, using a rough ascent for the baseline in force.
-      const bl = g.textBaseline;
-      const asc = bl === 'top' ? 0 : bl === 'middle' ? size * 0.5 : size * 0.8;
-      const desc = size - asc;
-      y += Math.max(0, 2 - (y - asc)) - Math.max(0, (y + desc) - (this.H - 2));
-    }
-    if (o.halo !== false) {
-      g.lineWidth = 3.5;
-      g.lineJoin = 'round';
-      g.strokeStyle = surface();
-      g.strokeText(str, x, y);
-    }
-    g.fillStyle = paint(o.color, 'ink');
-    g.fillText(str, x, y);
-    g.restore();
-    return this;
-  }
-}
-
-/* Zero if zero is inside the window, otherwise the nearer edge: a bar or an area
-   should sit on the floor the reader can actually see. */
-function clampToY(y0, y1, v) {
-  const lo = Math.min(y0, y1);
-  const hi = Math.max(y0, y1);
-  return Math.min(Math.max(v, lo), hi);
-}
-
-/** Bind a drawing stage to one canvas. Call .fit() first on every frame. */
+/* stage(canvas) — everything below draws into one canvas.
+   A typical frame:  st.fit().clear().domain(0, 10, 0, 1); st.axisX(5).axisY(4);
+   Axes claim the padding they need (left 40, bottom 28) unless the lesson calls
+   .pad() itself, so draw the axes before the marks or call .pad() after .fit().*/
 export function stage(canvas) {
-  if (!canvas || typeof canvas.getContext !== 'function') {
-    throw new TypeError('stage(canvas): expected a <canvas> element');
+  const ctx = canvas && typeof canvas.getContext === 'function' ? canvas.getContext('2d') : null;
+  if (!ctx) throw new Error('viz.stage needs a <canvas> with a 2d context');
+
+  let W = 1, H = 1;                 // logical (CSS) pixels
+  let x0 = 0, x1 = 1, y0 = 0, y1 = 1;
+  let padL = 12, padR = 12, padT = 12, padB = 12;
+  let padAuto = true;               // until the lesson sets padding itself
+  let theme = COLORS;
+  let paper = '#FFFFFF';
+  let themeAt = -1e9;
+  let themeSeen = -1;
+
+  // The page may recolour the palette for dark mode by defining --viz-truth,
+  // --viz-ink and friends, plus --paper for the colour behind text haloes and
+  // dot rings. Reading computed style costs a style recalculation, so we cache.
+  function readTheme(force) {
+    const t = Date.now();
+    if (!force && themeSeen === themeEpoch && t - themeAt < 500) return;
+    themeAt = t;
+    themeSeen = themeEpoch;
+    let cs = null;
+    try { cs = getComputedStyle(canvas); } catch (e) { cs = null; }
+    if (!cs) return;
+    const read = (prop) => {
+      const v = cs.getPropertyValue(prop);
+      return typeof v === 'string' ? v.trim() : '';
+    };
+    const next = {};
+    let any = false;
+    for (const role of Object.keys(COLORS)) {
+      const v = read('--viz-' + role);
+      next[role] = v || COLORS[role];
+      if (v) any = true;
+    }
+    theme = any ? next : COLORS;
+    paper = read('--paper') || cs.backgroundColor || '#FFFFFF';
+    if (!paper || paper === 'transparent' || /rgba\(0,\s*0,\s*0,\s*0\)/.test(paper)) paper = '#FFFFFF';
   }
-  const s = new Stage(canvas);
-  if (!s.ctx) throw new Error('stage(canvas): this browser gave us no 2d context');
-  return s;
+
+  // Resolve a colour the caller gave us, falling back to the role's palette entry.
+  function paint(c, role) {
+    if (typeof c === 'string' && c) {
+      const mapped = ROLE_OF[c.toLowerCase()];
+      return mapped ? theme[mapped] : c;
+    }
+    return theme[role] || COLORS[role] || theme.ink;
+  }
+
+  const plotW = () => Math.max(1, W - padL - padR);
+  const plotH = () => Math.max(1, H - padT - padB);
+  const snap = (p) => Math.round(p) + 0.5;   // crisp 1px hairlines
+  const clampX = (p) => Math.min(W - padR, Math.max(padL, p));
+
+  function X(v) {
+    if (x1 === x0) return padL + plotW() / 2;
+    return padL + ((v - x0) / (x1 - x0)) * plotW();
+  }
+  function Y(v) {
+    if (y1 === y0) return padT + plotH() / 2;
+    return H - padB - ((v - y0) / (y1 - y0)) * plotH();
+  }
+
+  function clipPlot() {
+    ctx.beginPath();
+    ctx.rect(padL - 0.5, padT - 0.5, plotW() + 1, plotH() + 1);
+    ctx.clip();
+  }
+
+  function setDash(d) { ctx.setLineDash(Array.isArray(d) ? d : (d ? [5, 4] : [])); }
+
+  function drawText(text, px, py, o) {
+    if (!Number.isFinite(px) || !Number.isFinite(py)) return;
+    const opt = o || {};
+    ctx.save();
+    ctx.font = `${opt.weight || 500} ${num(opt.size, 12.5)}px ${FONT}`;
+    ctx.textAlign = opt.align || 'center';
+    ctx.textBaseline = opt.baseline || 'bottom';
+    if (opt.halo !== false) {
+      // A ring of background colour, so a label can sit on top of a dense cloud
+      // of dots and still be read.
+      ctx.lineWidth = 3.5;
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = paper;
+      ctx.strokeText(text, px, py);
+    }
+    ctx.fillStyle = paint(opt.color, 'ink');
+    ctx.fillText(text, px, py);
+    ctx.restore();
+  }
+
+  function tickList(ticks, lo, hi) {
+    if (Array.isArray(ticks)) return ticks.filter((v) => Number.isFinite(v));
+    return niceTicks(lo, hi, num(ticks, 5));
+  }
+
+  const S = {
+    W: 1,
+    H: 1,
+    ctx,          // escape hatch for a lesson that needs one custom mark
+    X, Y,
+    get pads() { return { l: padL, r: padR, t: padT, b: padB }; },
+
+    /* Size the backing store for this screen's pixel density and reset the
+       transform, so everything below can be written in ordinary CSS pixels.
+       Call it first, every frame: the reader may have rotated the phone. */
+    fit() {
+      const rawDpr = typeof devicePixelRatio === 'number' ? devicePixelRatio : 1;
+      const dpr = Math.max(1, Math.min(3, Number.isFinite(rawDpr) && rawDpr > 0 ? rawDpr : 1));
+      // A hidden canvas reports zero size. Falling back to the backing store
+      // keeps the last good geometry instead of collapsing to a 1px stripe and
+      // dividing the whole plot by nothing.
+      const w = Math.max(1, canvas.clientWidth || Math.round(canvas.width / dpr) || 300);
+      const h = Math.max(1, canvas.clientHeight || Math.round(canvas.height / dpr) || 180);
+      const bw = Math.round(w * dpr);
+      const bh = Math.round(h * dpr);
+      // Only resize when it actually changed; assigning width clears the canvas.
+      const resized = canvas.width !== bw || canvas.height !== bh;
+      if (resized) { canvas.width = bw; canvas.height = bh; }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      S.W = W = w;
+      S.H = H = h;
+      readTheme(resized);
+      return S;
+    },
+
+    clear() {
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+      return S;
+    },
+
+    /* The window onto the data: which x and y values the plot area covers.
+       Either axis may run backwards; a zero-width range is nudged open so
+       nothing downstream divides by zero. */
+    domain(ax0, ax1, ay0, ay1) {
+      if (Number.isFinite(ax0) && Number.isFinite(ax1)) {
+        x0 = ax0; x1 = ax1;
+        if (x0 === x1) { x0 -= 0.5; x1 += 0.5; }
+      }
+      if (Number.isFinite(ay0) && Number.isFinite(ay1)) {
+        y0 = ay0; y1 = ay1;
+        if (y0 === y1) { y0 -= 0.5; y1 += 0.5; }
+      }
+      return S;
+    },
+
+    /* Inner margins in pixels. Call with one number for all four sides.
+       If you never call it, the axes claim the room they need. */
+    pad(l, r, t, b) {
+      if (Number.isFinite(l) && r === undefined) { padL = padR = padT = padB = l; }
+      else {
+        if (Number.isFinite(l)) padL = l;
+        if (Number.isFinite(r)) padR = r;
+        if (Number.isFinite(t)) padT = t;
+        if (Number.isFinite(b)) padB = b;
+      }
+      padAuto = false;
+      return S;
+    },
+
+    /* Bottom axis: a hairline, small ticks, and labels that skip themselves
+       rather than collide. ticks is a count (default 5) or an array of x values. */
+    axisX(ticks, fmtFn) {
+      if (padAuto) { padB = Math.max(padB, 28); padT = Math.max(padT, 16); padR = Math.max(padR, 16); }
+      const vals = tickList(ticks, x0, x1);
+      const step = vals.length > 1 ? vals[1] - vals[0] : (x1 - x0);
+      const f = typeof fmtFn === 'function' ? fmtFn : (v) => fmtNum(v, step);
+      const base = snap(H - padB);
+
+      ctx.save();
+      ctx.lineWidth = 1;
+      ctx.setLineDash([]);
+      ctx.strokeStyle = theme.grid;
+      ctx.beginPath();
+      ctx.moveTo(padL, base);
+      ctx.lineTo(W - padR, base);
+      ctx.stroke();
+
+      ctx.font = `500 11.5px ${FONT}`;
+      ctx.fillStyle = theme.ink2;
+      ctx.textBaseline = 'top';
+      ctx.textAlign = 'center';
+      let lastRight = -Infinity;
+      for (const v of vals) {
+        const px = X(v);
+        if (!Number.isFinite(px) || px < padL - 0.5 || px > W - padR + 0.5) continue;
+        ctx.beginPath();
+        ctx.moveTo(snap(px), base);
+        ctx.lineTo(snap(px), base + 4);
+        ctx.stroke();
+        const t = String(f(v));
+        if (!t) continue;
+        const w = ctx.measureText(t).width;
+        let cx = px;
+        if (cx - w / 2 < 2) cx = 2 + w / 2;                 // keep the first label on screen
+        if (cx + w / 2 > W - 2) cx = W - 2 - w / 2;         // and the last one
+        if (cx - w / 2 < lastRight + 8) continue;           // it would touch the previous label
+        ctx.fillText(t, cx, base + 8);
+        lastRight = cx + w / 2;
+      }
+      ctx.restore();
+      return S;
+    },
+
+    /* Left axis: horizontal hairlines across the plot, labels outside it.
+       A zero line, when zero is in view, is drawn slightly stronger. */
+    axisY(ticks, fmtFn) {
+      if (padAuto) { padL = Math.max(padL, 40); padT = Math.max(padT, 16); padR = Math.max(padR, 16); }
+      const vals = tickList(ticks, y0, y1);
+      const step = vals.length > 1 ? vals[1] - vals[0] : (y1 - y0);
+      const f = typeof fmtFn === 'function' ? fmtFn : (v) => fmtNum(v, step);
+      const yLo = Math.min(y0, y1);
+      const yHi = Math.max(y0, y1);
+
+      ctx.save();
+      ctx.lineWidth = 1;
+      ctx.setLineDash([]);
+      ctx.font = `500 11.5px ${FONT}`;
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      let lastLabelY = null;
+      for (const v of vals) {
+        const py = Y(v);
+        if (!Number.isFinite(py) || py < padT - 0.5 || py > H - padB + 0.5) continue;
+        const isZero = v === 0 && yLo < 0 && yHi > 0;
+        ctx.strokeStyle = isZero ? theme.ink2 : theme.grid;
+        ctx.globalAlpha = isZero ? 0.35 : 1;
+        ctx.beginPath();
+        ctx.moveTo(padL, snap(py));
+        ctx.lineTo(W - padR, snap(py));
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        // Absolute distance, so the check still works when the axis runs the
+        // other way (y1 below y0).
+        if (lastLabelY !== null && Math.abs(py - lastLabelY) < 14) continue;
+        const t = String(f(v));
+        if (!t) continue;
+        ctx.fillStyle = theme.ink2;
+        ctx.fillText(t, padL - 8, py);
+        lastLabelY = py;
+      }
+      ctx.restore();
+      return S;
+    },
+
+    /* Points. Each dot gets a hairline ring in the background colour, which is
+       what keeps a pile of overlapping dots readable as a pile. */
+    dots(points, opts) {
+      const o = opts || {};
+      const r = Math.max(0.5, num(o.r, 3.4));
+      ctx.save();
+      clipPlot();
+      ctx.globalAlpha = num(o.alpha, 0.9);
+      ctx.fillStyle = paint(o.fill, 'data');
+      ctx.strokeStyle = paper;
+      ctx.lineWidth = Math.min(1.5, r * 0.45);
+      for (const p of (points || [])) {
+        if (!p || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) continue;
+        const px = X(p[0]);
+        const py = Y(p[1]);
+        if (!Number.isFinite(px) || !Number.isFinite(py)) continue;
+        ctx.beginPath();
+        ctx.arc(px, py, r, 0, TAU);
+        ctx.fill();
+        if (r >= 2.5) ctx.stroke();
+      }
+      ctx.restore();
+      return S;
+    },
+
+    /* A path through given points. Gaps (non-finite values) break the line
+       rather than jumping across, because a jump would be a lie. */
+    line(points, opts) {
+      const o = opts || {};
+      ctx.save();
+      clipPlot();
+      ctx.globalAlpha = num(o.alpha, 1);
+      ctx.strokeStyle = paint(o.color, 'ink');
+      ctx.lineWidth = num(o.width, 2);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      setDash(o.dash);
+      ctx.beginPath();
+      let drawing = false;
+      for (const p of (points || [])) {
+        if (!p || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) { drawing = false; continue; }
+        const px = X(p[0]);
+        const py = Y(p[1]);
+        if (!Number.isFinite(px) || !Number.isFinite(py)) { drawing = false; continue; }
+        if (drawing) ctx.lineTo(px, py);
+        else { ctx.moveTo(px, py); drawing = true; }
+      }
+      if (drawing) ctx.stroke();
+      ctx.restore();
+      return S;
+    },
+
+    /* A function drawn as a curve: fn takes an x in data units, returns a y.
+       Wherever fn returns something that is not a number the curve breaks. */
+    curve(fn, opts) {
+      if (typeof fn !== 'function') return S;
+      const o = opts || {};
+      const from = num(o.from, x0);
+      const to = num(o.to, x1);
+      const steps = Math.max(2, Math.round(num(o.steps, Math.min(600, Math.max(24, plotW())))));
+      ctx.save();
+      clipPlot();
+      ctx.globalAlpha = num(o.alpha, 1);
+      ctx.strokeStyle = paint(o.color, 'truth');
+      ctx.lineWidth = num(o.width, 2.5);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      setDash(o.dash);
+      ctx.beginPath();
+      let drawing = false;
+      for (let i = 0; i <= steps; i++) {
+        const xv = from + ((to - from) * i) / steps;
+        const yv = fn(xv);
+        if (!Number.isFinite(yv)) { drawing = false; continue; }
+        const px = X(xv);
+        const py = Y(yv);
+        if (!Number.isFinite(px) || !Number.isFinite(py)) { drawing = false; continue; }
+        if (drawing) ctx.lineTo(px, py);
+        else { ctx.moveTo(px, py); drawing = true; }
+      }
+      if (drawing) ctx.stroke();
+      ctx.restore();
+      return S;
+    },
+
+    /* The region under a curve between two x values: how probability gets shown.
+       The floor is y = 0 when zero is in view, otherwise the nearer edge. */
+    area(fn, opts) {
+      if (typeof fn !== 'function') return S;
+      const o = opts || {};
+      const from = num(o.from, x0);
+      const to = num(o.to, x1);
+      const steps = Math.max(2, Math.round(num(o.steps, Math.min(600, Math.max(24, plotW())))));
+      const lo = Math.min(y0, y1);
+      const hi = Math.max(y0, y1);
+      const baseY = Y(Math.min(hi, Math.max(lo, 0)));
+      ctx.save();
+      clipPlot();
+      ctx.globalAlpha = num(o.alpha, 0.18);
+      ctx.fillStyle = paint(o.color, 'truth');
+      ctx.beginPath();
+      ctx.moveTo(X(from), baseY);
+      for (let i = 0; i <= steps; i++) {
+        const xv = from + ((to - from) * i) / steps;
+        const yv = fn(xv);
+        const py = Number.isFinite(yv) ? Y(yv) : baseY;
+        ctx.lineTo(X(xv), Number.isFinite(py) ? py : baseY);
+      }
+      ctx.lineTo(X(to), baseY);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+      return S;
+    },
+
+    /* Histogram bars. bins are [{x0, x1, h}] in data units: the drawing knows
+       nothing about counting, which is the lesson's job. */
+    bars(bins, opts) {
+      const o = opts || {};
+      const wantGap = Math.max(0, num(o.gap, 1));
+      const lo = Math.min(y0, y1);
+      const hi = Math.max(y0, y1);
+      const baseY = Y(Math.min(hi, Math.max(lo, 0)));
+      ctx.save();
+      clipPlot();
+      ctx.globalAlpha = num(o.alpha, 0.85);
+      ctx.fillStyle = paint(o.color, 'data');
+      for (const b of (bins || [])) {
+        if (!b || !Number.isFinite(b.x0) || !Number.isFinite(b.x1) || !Number.isFinite(b.h)) continue;
+        const pa = X(b.x0);
+        const pb = X(b.x1);
+        if (!Number.isFinite(pa) || !Number.isFinite(pb)) continue;
+        const full = Math.abs(pb - pa);
+        if (!(full > 0)) continue;
+        // With two hundred thin bins a fixed gap would eat the bars entirely,
+        // so the gap shrinks with the bar and never takes more than a quarter.
+        const gap = Math.min(wantGap, full * 0.25);
+        const w = Math.max(0.75, full - gap);
+        const left = Math.min(pa, pb) + gap / 2;
+        const topY = Y(b.h);
+        if (!Number.isFinite(topY)) continue;
+        let h = Math.abs(baseY - topY);
+        if (h === 0) continue;              // an empty bin draws nothing
+        if (h < 1) h = 1;                   // one rare count still earns a hairline
+        const up = topY <= baseY;
+        const y = up ? baseY - h : baseY;
+        const r = Math.max(0, Math.min(3, w / 3, h / 2));
+        ctx.beginPath();
+        if (r > 0.5 && typeof ctx.roundRect === 'function') {
+          ctx.roundRect(left, y, w, h, up ? [r, r, 0, 0] : [0, 0, r, r]);
+        } else {
+          ctx.rect(left, y, w, h);
+        }
+        ctx.fill();
+      }
+      ctx.restore();
+      return S;
+    },
+
+    /* A vertical marker: where the true value is, where our estimate landed.
+       opts {color, width, dash, label, labelAt} — labelAt is a y in data units. */
+    vline(x, opts) {
+      const o = opts || {};
+      const px = X(x);
+      if (!Number.isFinite(px) || px < padL - 0.5 || px > W - padR + 0.5) return S;
+      ctx.save();
+      ctx.strokeStyle = paint(o.color, 'ink2');
+      ctx.lineWidth = num(o.width, 1.5);
+      setDash(o.dash === undefined ? [5, 4] : o.dash);
+      ctx.beginPath();
+      ctx.moveTo(snap(px), padT);
+      ctx.lineTo(snap(px), H - padB);
+      ctx.stroke();
+      ctx.restore();
+      if (o.label) {
+        const py = Number.isFinite(o.labelAt) ? Y(o.labelAt) : padT + 12;
+        // Near the right edge the label would run off, so it flips to the left.
+        const near = px > W - padR - 40;
+        drawText(String(o.label), near ? px - 6 : px + 6, py, {
+          color: o.color, align: near ? 'right' : 'left', baseline: 'middle', size: 12, weight: 600
+        });
+      }
+      return S;
+    },
+
+    /* A horizontal marker. Same idea, other direction. */
+    hline(y, opts) {
+      const o = opts || {};
+      const py = Y(y);
+      if (!Number.isFinite(py) || py < padT - 0.5 || py > H - padB + 0.5) return S;
+      ctx.save();
+      ctx.strokeStyle = paint(o.color, 'ink2');
+      ctx.lineWidth = num(o.width, 1.5);
+      setDash(o.dash === undefined ? [5, 4] : o.dash);
+      ctx.beginPath();
+      ctx.moveTo(padL, snap(py));
+      ctx.lineTo(W - padR, snap(py));
+      ctx.stroke();
+      ctx.restore();
+      if (o.label) {
+        const px = Number.isFinite(o.labelAt) ? X(o.labelAt) : W - padR - 4;
+        drawText(String(o.label), px, py - 5, {
+          color: o.color, align: 'right', baseline: 'bottom', size: 12, weight: 600
+        });
+      }
+      return S;
+    },
+
+    /* A measuring bracket: this much, from here to here. Margins of error, gaps
+       between two groups, any distance that needs a name.
+       opts {color, label, cap, down} */
+    bracket(a, b, y, opts) {
+      const o = opts || {};
+      const py = Y(y);
+      const rawA = X(a);
+      const rawB = X(b);
+      if (!Number.isFinite(py) || !Number.isFinite(rawA) || !Number.isFinite(rawB)) return S;
+      // Kept inside the plot so a bracket never scribbles across the axis labels.
+      const pa = snap(clampX(rawA));
+      const pb = snap(clampX(rawB));
+      const line = snap(py);
+      const cap = num(o.cap, 5) * (o.down ? 1 : -1);
+      ctx.save();
+      ctx.strokeStyle = paint(o.color, 'ink2');
+      ctx.lineWidth = 1.5;
+      ctx.lineCap = 'butt';
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(pa, line);
+      ctx.lineTo(pb, line);
+      ctx.moveTo(pa, line);
+      ctx.lineTo(pa, line + cap);
+      ctx.moveTo(pb, line);
+      ctx.lineTo(pb, line + cap);
+      ctx.stroke();
+      ctx.restore();
+      if (o.label) {
+        drawText(String(o.label), (pa + pb) / 2, o.down ? line + 8 : line - 8, {
+          color: o.color, align: 'center', baseline: o.down ? 'top' : 'bottom', size: 12, weight: 600
+        });
+      }
+      return S;
+    },
+
+    /* Text placed in data coordinates: it follows the thing it names. Sits just
+       above the point unless you nudge it with dx / dy pixels. */
+    label(text, x, y, opts) {
+      const o = opts || {};
+      drawText(String(text), X(x) + num(o.dx, 0), Y(y) + num(o.dy, 0), o);
+      return S;
+    },
+
+    /* Text placed in pixel coordinates, for legends and corner notes.
+       opts {swatch} draws a colour dot first, which is how a legend earns its keep. */
+    note(text, px, py, opts) {
+      const o = opts || {};
+      let x = px;
+      if (o.swatch && Number.isFinite(px) && Number.isFinite(py)) {
+        ctx.save();
+        ctx.fillStyle = paint(o.swatch, 'ink');
+        ctx.beginPath();
+        ctx.arc(x + 4, py + 6, 4, 0, TAU);
+        ctx.fill();
+        ctx.restore();
+        x += 14;
+      }
+      drawText(String(text), x, py, {
+        color: o.color, align: o.align || 'left', baseline: o.baseline || 'top',
+        size: num(o.size, 12), weight: o.weight || 500, halo: o.halo
+      });
+      return S;
+    }
+  };
+
+  // One sizing pass now, so .W, .H, .X and .Y are usable before the first frame.
+  S.fit();
+  return S;
 }
